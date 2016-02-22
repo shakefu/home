@@ -49,9 +49,14 @@ binary="$VIM_APP_DIR/MacVim.app/Contents/MacOS/Vim"
 name="`basename "$0"`"
 gui=
 opts=
+stdin=false
+diffmode=false
 
 # GUI mode, implies forking
 case "$name" in m*|g*|rm*|rg*) gui=true ;; esac
+
+# Always use GUI mode
+gui=true
 
 # Restricted mode
 case "$name" in r*) opts="$opts -Z";; esac
@@ -69,16 +74,38 @@ case "$name" in
 		;;
 esac
 
+# Preserve command line options lazily
+while [ -n "$1" ]; do
+    case $1 in
+        -d) diffmode=true; shift;;
+        -?*) opts="$opts $1"; shift;;
+        -) stdin=true; break;;
+        *) echo "*"; break;;
+    esac
+done
+
 # Last step:  fire up vim.
 # The program should fork by default when started in GUI mode, but it does
 # not; we work around this when this script is invoked as "gvim" or "rgview"
 # etc., but not when it is invoked as "vim -g".
 if [ "$gui" ]; then
-	# Note: this isn't perfect, because any error output goes to the
-	# terminal instead of the console log.
-	# But if you use open instead, you will need to fully qualify the
-	# path names for any filenames you specify, which is hard.
-	exec "$binary" -g $opts ${1:+"$@"}
+  # Note: this isn't perfect, because any error output goes to the
+  # terminal instead of the console log.
+  # But if you use open instead, you will need to fully qualify the
+  # path names for any filenames you specify, which is hard.
+
+  # Handle stdin
+  if $stdin; then
+    exec "$binary" -g $opts -
+  elif $diffmode; then
+    exec "$binary" -f -g -d $opts $*
+  elif $tabs && [[ `$binary --serverlist` = "VIM" ]]; then
+    #make macvim open stuff in the same window instead of new ones
+    exec "$binary" -g $opts --remote-tab-silent ${1:+"$@"} &
+    wait
+  else
+    exec "$binary" -g $opts ${1:+"$@"}
+  fi
 else
-	exec "$binary" $opts ${1:+"$@"}
+  exec "$binary" $opts ${1:+"$@"}
 fi
