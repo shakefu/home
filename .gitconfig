@@ -4,3 +4,6 @@
     email = shakefu@gmail.com
 [push]
     default = simple
+[merge]
+    tool = opendiff
+
