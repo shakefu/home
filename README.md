@@ -24,6 +24,8 @@ git subtree add --prefix .vim/bundle/vim-projectroot vim-projectroot master --sq
   the current working directory
 - [CtrlP](https://github.com/ctrlpvim/ctrlp.vim) - Easily open files within the
   current project
+- [Jedi Vim](https://github.com/davidhalter/jedi-vim) - Awesome Python
+  autocompletion
 - [Pathogen](https://github.com/tpope/vim-pathogen) - We would add this as a
   subtree but it conflicts with the existing .vim path
   - [src](https://raw.githubusercontent.com/tpope/vim-pathogen/master/autoload/pathogen.vim) -
