@@ -30,6 +30,7 @@ git subtree add --prefix .vim/bundle/vim-projectroot vim-projectroot master --sq
   current project
 - [Jedi Vim](https://github.com/davidhalter/jedi-vim) - Awesome Python
   autocompletion
-- [Dockerfile.vim](https://github.com/ekalinin/Dockerfile.vim) - Syntax highlighting for Dockerfiles
- 
+- [Dockerfile.vim](https://github.com/ekalinin/Dockerfile.vim) - Syntax
+  highlighting for Dockerfiles
+- [Tabmerge](https://github.com/vim-scripts/Tabmerge) - Merging tabs made easy 
 
