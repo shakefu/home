@@ -34,4 +34,5 @@ git subtree add --prefix .vim/bundle/vim-projectroot vim-projectroot master --sq
   highlighting for Dockerfiles
 - [Tabmerge](https://github.com/vim-scripts/Tabmerge) - Merging tabs made easy 
 - [Supertab](https://github.com/ervandew/supertab) - Awesome tab completion
+- [YAJS](https://github.com/othree/yajs.vim) - ES6 syntax highlighting and more
 
