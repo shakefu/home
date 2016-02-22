@@ -33,4 +33,5 @@ git subtree add --prefix .vim/bundle/vim-projectroot vim-projectroot master --sq
 - [Dockerfile.vim](https://github.com/ekalinin/Dockerfile.vim) - Syntax
   highlighting for Dockerfiles
 - [Tabmerge](https://github.com/vim-scripts/Tabmerge) - Merging tabs made easy 
+- [Supertab](https://github.com/ervandew/supertab) - Awesome tab completion
 
