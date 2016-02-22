@@ -10,7 +10,7 @@ so I'm putting them under version control.
 
 - [Pathogen](https://github.com/tpope/vim-pathogen) - We would add this as a
   subtree but it conflicts with the existing .vim path
-  - [src](https://raw.githubusercontent.com/tpope/vim-pathogen/master/autoload/pathogen.vim) \
-    - To be used with `curl [src] > .vim/autoload/pathogen.vim`.
+  - [src](https://raw.githubusercontent.com/tpope/vim-pathogen/master/autoload/pathogen.vim) -
+    To be used with `curl [src] > .vim/autoload/pathogen.vim`.
  
 
