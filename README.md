@@ -3,13 +3,23 @@
 This repository contains configuration files that I don't want to have to lose
 so I'm putting them under version control.
 
+## Installing
+
+You should be able to untar the repository archive directly into your `$HOME`
+directory.
+
+```bash
+cd $HOME
+curl -sL https://github.com/shakefu/home/archive/master.tar.gz | tar -xzv --strip-components=1
+```
+
 ## Breadcrumbs
 
 ### Git
 
 Adding a subtree project:
 
-```
+```bash
 git remote add -f vim-projectroot git@github.com:dbakker/vim-projectroot.git
 git subtree add --prefix .vim/bundle/vim-projectroot vim-projectroot master --squash
 ```
