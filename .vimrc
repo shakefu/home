@@ -59,6 +59,16 @@ set wildignore+=*.pyc,*.pyo,*/node_modules/*,*/bower/*
 " Change to the project root of the current buffer when switching
 au WinEnter * if &ft != 'help' | call ProjectRootCD() | endif
 
+" Syntastic settings
+set statusline+=%#warningmsg#
+set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%*
+
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_loc_list = 1
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 0
+
 
 """"""""""""""
 " Key mappings
