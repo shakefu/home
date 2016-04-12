@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 ###############
 # Jake's bashrc
 #
@@ -144,6 +145,9 @@ alias gundo='git reset --soft "HEAD^"'
 alias gunstage='git reset --'
 alias gstaged='git diff --staged'
 
+# Remove merged branches
+gclean(){ git branch --merged | egrep -v '(^\*|master)' | xargs git branch -d; }
+
 # Git methods with tab completion
 gcom(){ local msg="$1"; shift; git commit -m "$msg" $*; }
 gdiff(){ git diff $*; }
@@ -159,9 +163,20 @@ gcheck(){
     # Clean up compiled files for switching branches
     find . -name '*.pyc' | xargs rm
 }
+gmerge(){
+    local branch=$(git symbolic-ref --short HEAD 2>/dev/null)
+    local target=${@: -1}
+    if [ -z "$branch" ]; then branch="detached"; fi
+    echo "Merging '$target' into '$branch' ..."
+    if [[ -z "$(git branch -a | grep "remotes/origin/$branch")" ]]; then
+        echo "Remote upstream does not exist. Attempting rebase instead ..."
+        git rebase $target
+    else
+        git merge --no-edit $*;
+    fi
+}
 grebase(){ git rebase $*; }
 gforward(){ git fetch origin $1:$1; }
-gmerge(){ git merge --no-edit $*; }
 gbranch(){ git branch $*; }
 gpush(){ git push $*; }
 # Tab completion for branch name
