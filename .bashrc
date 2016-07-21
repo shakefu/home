@@ -122,11 +122,8 @@ alias kbg='kill %%;fg'
 alias bell="afplay \"/Applications/iMovie.app/Contents/Resources/iMovie '08 Sound Effects/Bell Buoy.mp3\""
 
 # Docker aliases
-alias dm='docker-machine'
 alias dc='docker-compose'
 alias dps='docker ps'
-alias denv='eval $(docker-machine env $(docker-machine ls -q --filter state=Running | head -1)) && env | grep DOCKER'
-alias dssh='docker-machine ssh $(dm ls -q --filter state=Running | head -1)'
 alias dclean='docker rmi $(docker images -q -f dangling=true)'
 
 function dkill () {
@@ -146,7 +143,7 @@ alias gunstage='git reset --'
 alias gstaged='git diff --staged'
 
 # Remove merged branches
-gclean(){ git branch --merged | egrep -v '(^\*|master)' | xargs git branch -d; }
+gclean(){ git pull --prune; git branch --merged | egrep -v '(^\*|master)' | xargs git branch -d; }
 
 # Git methods with tab completion
 gcom(){ local msg="$1"; shift; git commit -m "$msg" $*; }
@@ -188,6 +185,21 @@ complete -F _gbranch gcheck
 complete -F _gbranch gmerge
 complete -F _gbranch gforward
 
+# Update the current branch with master
+# alias gup='git checkout master && git pull && gclean'
+gup(){
+    local branch=$(git symbolic-ref --short HEAD 2>/dev/null)
+    git checkout master && \
+    echo -n "git pull: " && git pull && \
+    echo -n "gclean: " && gclean
+    if [[ -z "$branch" ]]; then
+        echo "gup: Couldn't find original branch."
+    fi
+    git checkout $branch && \
+    echo -n "git pull: " && git pull && \
+    echo -n "gmerge master: " && gmerge master
+}
+
 # Run pyflakes against uncommitted changes
 gflake(){
     if ! pyflakes --version &>/dev/null; then
@@ -195,15 +207,6 @@ gflake(){
         return 1
     fi
     git status -suno | awk '{print $2}' | grep '\.py$' | xargs pyflakes
-}
-
-# Run jshint against uncommitted changes
-glint(){
-    if ! jshint &>/dev/null; then
-        echo "jshint is not installed."
-        return 1
-    fi
-    git status -suno | awk '{print $2}' | grep '\.js$' | xargs jshint
 }
 
 # Current git branch
