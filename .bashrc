@@ -34,6 +34,8 @@ export NODE_PATH="$NODE_PATH:./node_modules"
 # Fix for Python not being able to detect terminal width
 export COLUMNS
 
+# Make dockerize speak
+export DOCKERIZE_SAY=true
 
 ########
 # Prompt
@@ -281,6 +283,7 @@ gr(){
     shift
     grep -nR --exclude-dir='node_modules' --exclude-dir='.git' \
         --exclude-dir='build' --exclude-dir='bower_components' \
+        --exclude-dir='coverage' --exclude-dir='.nyc_output' \
         --exclude-dir=test* "$pattern" $* .
 }
 
@@ -365,3 +368,5 @@ function tabname {
 if [ -f $HOME/.venvburrito/startup.sh ]; then
     . $HOME/.venvburrito/startup.sh
 fi
+
+export PATH="$HOME/.yarn/bin:$PATH"
