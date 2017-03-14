@@ -25,6 +25,8 @@ export PATH="$PATH:/usr/local/share/npm/bin"
 export PATH="$PATH:/usr/local/opt/ruby/bin"
 # Node path
 export NODE_PATH="$NODE_PATH:./node_modules"
+# Rust path
+export PATH="$HOME/.cargo/bin:$PATH"
 
 
 ###########
@@ -116,7 +118,7 @@ export PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
 #
 
 # General aliases
-alias ls='ls -Gp'
+alias ls='ls --color=auto -p'
 alias grep='grep --binary-files=without-match --color=auto'
 alias beep='tput bel'
 alias nocolor='sed -E "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]//g"'
@@ -160,7 +162,7 @@ complete -F _complete_unstaged gdiff
 gcheck(){
     git checkout $*
     # Clean up compiled files for switching branches
-    find . -name '*.pyc' | xargs rm
+    # find . -name '*.pyc' | xargs rm 2>/dev/null
 }
 gmerge(){
     local branch=$(git symbolic-ref --short HEAD 2>/dev/null)
@@ -370,3 +372,10 @@ if [ -f $HOME/.venvburrito/startup.sh ]; then
 fi
 
 export PATH="$HOME/.yarn/bin:$PATH"
+
+
+##################
+# RUST ENVIRONMENT
+if [[ -f "$HOME/.cargo/env" ]]; then
+    source $HOME/.cargo/env
+fi
