@@ -17,6 +17,15 @@
 au! BufWritePost $MYVIMRC source $MYVIMRC
 
 
+"""""""""""""
+" Vim display
+
+if has("gui_running")
+    " Maximize the window when it opens
+    set lines=999 columns=999
+endif
+
+
 """""""""
 " Plugins
 
@@ -79,6 +88,10 @@ let g:jsx_ext_required = 0
 """"""""""""""
 " Key mappings
 
+" Move left and right in tabs
+nnoremap <silent> <C-[> :tabprevious<CR>
+nnoremap <silent> <C-]> :tabnext<CR>
+
 " Change the leader to '
 let mapleader = "'"
 
@@ -116,7 +129,7 @@ if has("gui_running")
     " Set our colorscheme (the most important thing, that's why we do it first
     colorscheme ir_black
     " Set transparency
-    set transparency=20
+    " set transparency=20
 endif
 
 " Change highlight fold colors
@@ -141,7 +154,7 @@ au WinLeave * setlocal nocursorline nocursorcolumn
 """""""
 " Font
 if has("gui_running")
-    set guifont=Menlo\ Regular:h12
+    set guifont="Menlo Regular:h12"
 endif
 
 
@@ -149,7 +162,11 @@ endif
 " Editing conveniences
 
 " Don't beep when I relentlessly mash ESC/CtrlC
-set visualbell
+if has("gui_running")
+    set novisualbell
+else
+    set visualbell
+endif
 
 " Keep cursor vertically centered at all times
 set scrolloff=999

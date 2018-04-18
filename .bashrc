@@ -27,6 +27,8 @@ export PATH="$PATH:/usr/local/opt/ruby/bin"
 export PATH="$PATH:/Users/jacobalheid/Library/Python/3.6/bin"
 # Node path
 export NODE_PATH="$NODE_PATH:./node_modules"
+# Rust path
+export PATH="$HOME/.cargo/bin:$PATH"
 
 
 ###########
@@ -115,12 +117,13 @@ export PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
 #
 
 # General aliases
-alias ls='ls -Gp'
+alias ls='ls --color=auto -p'
 alias grep='grep --binary-files=without-match --color=auto'
 alias beep='tput bel'
 alias nocolor='sed -E "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]//g"'
 alias kbg='kill %%;fg'
 alias bell="afplay \"/Applications/iMovie.app/Contents/Resources/iMovie '08 Sound Effects/Bell Buoy.mp3\""
+alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
 
 # Docker aliases
 alias dc='docker-compose'
@@ -159,7 +162,7 @@ complete -F _complete_unstaged gdiff
 gcheck(){
     git checkout $*
     # Clean up compiled files for switching branches
-    find . -name '*.pyc' | xargs rm
+    # find . -name '*.pyc' | xargs rm 2>/dev/null
 }
 gmerge(){
     local branch=$(git symbolic-ref --short HEAD 2>/dev/null)
@@ -384,6 +387,12 @@ function tabname {
 # fi
 
 export PATH="$HOME/.yarn/bin:$PATH"
+
+##################
+# RUST ENVIRONMENT
+# if [[ -f "$HOME/.cargo/env" ]]; then
+# source $HOME/.cargo/env
+# fi
 
 
 ##########
