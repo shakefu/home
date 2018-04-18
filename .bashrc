@@ -23,6 +23,8 @@ export PATH="$PATH:./node_modules/.bin"
 export PATH="$PATH:/usr/local/share/npm/bin"
 # Add ruby gems to path
 export PATH="$PATH:/usr/local/opt/ruby/bin"
+# Add Python3 path
+export PATH="$PATH:/Users/jacobalheid/Library/Python/3.6/bin"
 # Node path
 export NODE_PATH="$NODE_PATH:./node_modules"
 
@@ -33,9 +35,6 @@ export NODE_PATH="$NODE_PATH:./node_modules"
 
 # Fix for Python not being able to detect terminal width
 export COLUMNS
-
-# Make dockerize speak
-export DOCKERIZE_SAY=true
 
 ########
 # Prompt
@@ -191,6 +190,11 @@ complete -F _gbranch gforward
 # alias gup='git checkout master && git pull && gclean'
 gup(){
     local branch=$(git symbolic-ref --short HEAD 2>/dev/null)
+    if [[ "$branch" == "master" ]]; then
+        echo -n "git pull: " && git pull && \
+        echo -n "gclean: " && gclean && return
+    fi
+
     git checkout master && \
     echo -n "git pull: " && git pull && \
     echo -n "gclean: " && gclean
@@ -209,6 +213,12 @@ gflake(){
         return 1
     fi
     git status -suno | awk '{print $2}' | grep '\.py$' | xargs pyflakes
+}
+
+# Tag current commit
+gtag(){
+    local tag="$*"
+    git tag -am "Release $tag" v$tag
 }
 
 # Current git branch
@@ -236,7 +246,7 @@ _gsettab(){
 
 # Work on an about.me project
 awork(){
-    if ! cd ~/github.com/aboutdotme/$1 2>/dev/null; then
+    if ! cd ~/github.com/axiomexergy/$1 2>/dev/null; then
         echo "No such project."
         return
     fi
@@ -244,7 +254,7 @@ awork(){
     tabname $1
 }
 # Tab completion for awork helper
-_awork(){ _complete "`/bin/ls -1 ~/github.com/aboutdotme/`"; }
+_awork(){ _complete "`/bin/ls -1 ~/github.com/axiomexergy/`"; }
 complete -F _awork awork
 
 # Helper for switching to a project directory and starting the venv
@@ -284,7 +294,9 @@ gr(){
     grep -nR --exclude-dir='node_modules' --exclude-dir='.git' \
         --exclude-dir='build' --exclude-dir='bower_components' \
         --exclude-dir='coverage' --exclude-dir='.nyc_output' \
-        --exclude-dir=test* "$pattern" $* .
+        --exclude-dir='.terraform' --exclude-dir='.eggs' \
+        --exclude='terraform.tfstate*' \
+        --exclude='yarn.lock' --exclude='*.log' "$pattern" $* .
 }
 
 # Python grep
@@ -296,7 +308,8 @@ pyg(){
     if [ -z "$args" ]; then
         args=.
     fi
-    grep -nR --exclude-dir node_modules --include=*py "$pattern" $args
+    grep -nR --exclude-dir node_modules --exclude-dir .eggs \
+        --include=*py "$pattern" $args
 }
 
 # JS and HTML grep
@@ -365,8 +378,22 @@ function tabname {
 #
 
 # startup virtualenv-burrito
-if [ -f $HOME/.venvburrito/startup.sh ]; then
-    . $HOME/.venvburrito/startup.sh
-fi
+# Uncomment this to actually load it, otherwise it slows down loading new shells
+# if [ -f $HOME/.venvburrito/startup.sh ]; then
+#     . $HOME/.venvburrito/startup.sh
+# fi
 
 export PATH="$HOME/.yarn/bin:$PATH"
+
+
+##########
+# NODE NVM
+
+export NVM_DIR="$HOME/.nvm"
+source /usr/local/opt/nvm/nvm.sh
+
+#############
+# PYENV SHELL
+#
+
+# if which pyenv > /dev/null; then eval "$(pyenv init -)"; fi
