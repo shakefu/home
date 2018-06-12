@@ -154,13 +154,13 @@ function axtest () {
     echo "Running tests for service $name"
 
     # Run tests with docker-compose
-    docker-compose up --build --force-recreate --remove-orphans \
-        --exit-code-from $name
-
+    local msg="Tests passed!"
+    local cmd="docker-compose up --build --force-recreate --remove-orphans
+        --exit-code-from $name"
+    $cmd
     # Set the notification message based on the exit code of docker-compose
-    local msg="Tests failed."
-    if [[ ! $? ]]; then
-        msg="Tests passed!"
+    if [[ "$?" -ne "0" ]]; then
+        msg="Tests failed."
     fi
 
     # Pop up a notification on Mac OS X ... comment this out if your'e not on a Mac
