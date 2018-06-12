@@ -17,15 +17,6 @@
 au! BufWritePost $MYVIMRC source $MYVIMRC
 
 
-"""""""""""""
-" Vim display
-
-if has("gui_running")
-    " Maximize the window when it opens
-    set lines=999 columns=999
-endif
-
-
 """""""""
 " Plugins
 
@@ -76,6 +67,8 @@ set statusline+=%*
 " Disable HTML checking
 let g:syntastic_html_checkers=['']
 
+" Disable syntastic unless explicitly enabled
+let g:syntastic_mode_map = { 'mode': 'passive', 'active_filetypes': [],'passive_filetypes': [] }
 let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_auto_loc_list = 1
 let g:syntastic_check_on_open = 0
@@ -87,10 +80,6 @@ let g:jsx_ext_required = 0
 
 """"""""""""""
 " Key mappings
-
-" Move left and right in tabs
-nnoremap <silent> <C-[> :tabprevious<CR>
-nnoremap <silent> <C-]> :tabnext<CR>
 
 " Change the leader to '
 let mapleader = "'"
@@ -121,6 +110,9 @@ map <Leader>d :execute "silent grep! -srnwIE --exclude-dir=.git " .
         \ "' ." <Bar> cwindow<CR>
 au BufReadPost quickfix map <buffer> <CR> <C-W><CR>:cclose<CR>"
 
+map <Leader># :norm ^i# <CR>
+map <Leader>3 :norm ^xx<CR>
+
 
 """"""""""""""
 " Color scheme
@@ -129,7 +121,7 @@ if has("gui_running")
     " Set our colorscheme (the most important thing, that's why we do it first
     colorscheme ir_black
     " Set transparency
-    " set transparency=20
+    set transparency=20
 endif
 
 " Change highlight fold colors
@@ -154,7 +146,7 @@ au WinLeave * setlocal nocursorline nocursorcolumn
 """""""
 " Font
 if has("gui_running")
-    set guifont="Menlo Regular:h12"
+    set guifont=Menlo\ Regular:h12
 endif
 
 
@@ -162,11 +154,7 @@ endif
 " Editing conveniences
 
 " Don't beep when I relentlessly mash ESC/CtrlC
-if has("gui_running")
-    set novisualbell
-else
-    set visualbell
-endif
+set visualbell
 
 " Keep cursor vertically centered at all times
 set scrolloff=999
