@@ -27,8 +27,6 @@ export PATH="$PATH:/usr/local/opt/ruby/bin"
 export PATH="$PATH:/Users/jacobalheid/Library/Python/3.6/bin"
 # Node path
 export NODE_PATH="$NODE_PATH:./node_modules"
-# Rust path
-export PATH="$HOME/.cargo/bin:$PATH"
 
 
 ###########
@@ -117,13 +115,12 @@ export PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
 #
 
 # General aliases
-alias ls='ls --color=auto -p'
+alias ls='ls -Gp'
 alias grep='grep --binary-files=without-match --color=auto'
 alias beep='tput bel'
 alias nocolor='sed -E "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]//g"'
 alias kbg='kill %%;fg'
 alias bell="afplay \"/Applications/iMovie.app/Contents/Resources/iMovie '08 Sound Effects/Bell Buoy.mp3\""
-alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
 
 # Docker aliases
 alias dc='docker-compose'
@@ -133,6 +130,42 @@ alias dclean='docker rmi $(docker images -q -f dangling=true)'
 function dkill () {
     docker kill $*
     docker rm $*
+}
+
+function axtest () {
+    # Check the current directory has a docker-compose and is a git repository
+    if [[ ! -f docker-compose.yml ]]; then
+        echo "No docker-compose.yml present."
+        return 1
+    elif [[ ! -d .git ]]; then
+        echo "Not a git repository."
+        return 1
+    fi
+
+    local name
+
+    # Get the current directory name
+    name="$(basename $(pwd))"
+
+    # Get anything before a hyphen in the name, which is most likely to be the
+    # individual service name
+    name=${name%%-*}
+
+    echo "Running tests for service $name"
+
+    # Run tests with docker-compose
+    docker-compose up --build --force-recreate --remove-orphans \
+        --exit-code-from $name
+
+    # Set the notification message based on the exit code of docker-compose
+    local msg="Tests failed."
+    if [[ ! $? ]]; then
+        msg="Tests passed!"
+    fi
+
+    # Pop up a notification on Mac OS X ... comment this out if your'e not on a Mac
+    terminal-notifier -title "$name" -message "$msg" -group "axiom" \
+        -remove "axiom"
 }
 
 
@@ -162,7 +195,7 @@ complete -F _complete_unstaged gdiff
 gcheck(){
     git checkout $*
     # Clean up compiled files for switching branches
-    # find . -name '*.pyc' | xargs rm 2>/dev/null
+    find . -name '*.pyc' | xargs rm
 }
 gmerge(){
     local branch=$(git symbolic-ref --short HEAD 2>/dev/null)
@@ -211,11 +244,15 @@ gup(){
 
 # Run pyflakes against uncommitted changes
 gflake(){
-    if ! pyflakes --version &>/dev/null; then
-        echo "Pyflakes is not installed."
+    if flake8 --version &>/dev/null; then
+        cmd="flake8"
+    elif ! pyflakes --version &>/dev/null; then
+        cmd="pyflakes"
+    else
+        echo "Neither pyflakes nor flake8 is installed."
         return 1
     fi
-    git status -suno | awk '{print $2}' | grep '\.py$' | xargs pyflakes
+    git status -suno | awk '{print $2}' | grep '\.py$' | xargs $cmd
 }
 
 # Tag current commit
@@ -387,12 +424,6 @@ function tabname {
 # fi
 
 export PATH="$HOME/.yarn/bin:$PATH"
-
-##################
-# RUST ENVIRONMENT
-# if [[ -f "$HOME/.cargo/env" ]]; then
-# source $HOME/.cargo/env
-# fi
 
 
 ##########
