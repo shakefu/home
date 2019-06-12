@@ -14,19 +14,28 @@ ulimit -n 65536 65536 2>/dev/null
 # PATH
 #
 
-# Adding user bin directory to PATH
-export PATH="$HOME/.bin:$PATH"
+#### Append language specific paths in search order
+# Add Python's site.USER_BASE bin
+export PATH="$PATH:/Users/jacobalheid/Library/Python/3.7/bin"
 # Adding opt bin to PATH
-export PATH="${PATH}:/opt/local/bin"
+# export PATH="$PATH:/opt/local/bin"
 # Add node modules to path
-export PATH="$PATH:./node_modules/.bin"
-export PATH="$PATH:/usr/local/share/npm/bin"
+# export PATH="$PATH:./node_modules/.bin"
+# export PATH="$PATH:/usr/local/share/npm/bin"
 # Add ruby gems to path
 export PATH="$PATH:/usr/local/opt/ruby/bin"
-# Add Python3 path
-export PATH="$PATH:/Users/jacobalheid/Library/Python/3.6/bin"
 # Node path
-export NODE_PATH="$NODE_PATH:./node_modules"
+# export NODE_PATH="$NODE_PATH:./node_modules"
+
+#### Prepend priority paths in reverse search order
+
+# Add local bin directory to PATH
+# export PATH="/usr/local/bin:$PATH"
+# export PATH="/usr/local/sbin:$PATH"
+# Add Homebrew unversioned Python binaries to PATH
+export PATH="/usr/local/opt/python/libexec/bin:$PATH"
+# Adding user bin directory to PATH
+export PATH="$HOME/.bin:$PATH"
 
 
 ###########
@@ -115,12 +124,13 @@ export PROMPT_COMMAND="history -a; history -c; history -r; $PROMPT_COMMAND"
 #
 
 # General aliases
-alias ls='ls -Gp'
-alias grep='grep --binary-files=without-match --color=auto'
 alias beep='tput bel'
-alias nocolor='sed -E "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]//g"'
-alias kbg='kill %%;fg'
 alias bell="afplay \"/Applications/iMovie.app/Contents/Resources/iMovie '08 Sound Effects/Bell Buoy.mp3\""
+alias grep='grep --binary-files=without-match --color=auto'
+alias kbg='kill %%;fg'
+alias ls='ls -Gp'
+alias nocolor='sed -E "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]//g"'
+alias vim='mvim --remote-tab-silent'
 
 # Docker aliases
 alias dc='docker-compose'
@@ -163,9 +173,68 @@ function axtest () {
         msg="Tests failed."
     fi
 
-    # Pop up a notification on Mac OS X ... comment this out if your'e not on a Mac
-    terminal-notifier -title "$name" -message "$msg" -group "axiom" \
-        -remove "axiom"
+    if [ $(which terminal-notifier) ]; then
+        # Pop up a notification on Mac OS X ... comment this out if your'e not
+        # on a Mac
+        terminal-notifier -title "$name" -message "$msg" -group "axiom" \
+            -remove "axiom" &>/dev/null
+    fi
+}
+
+
+function pytest() {
+    local args="${*:-.}"
+
+    # Only run this if we're in a virtaulenv
+    if [ -z "$VIRTUAL_ENV" ]; then
+        echo "Error: No virtualenv"
+        return 1
+    fi
+
+    # Find the package name
+    local name
+    name="$(find . -depth 2 -name '__init__.py' -type f | grep -Ev 'test|fixtures' | head -1 | cut -d / -f 2)"
+    if [ -z "$name" ]; then
+        echo "Error: Could not resolve package name"
+        return 1
+    fi
+
+    if [ -z "$(pip freeze -l | grep 'nose==')" ]; then
+        echo "Error: Missing nosetests package"
+        return 1
+    fi
+
+    # nose-timer plugin switches
+    if [ -n "$(pip freeze -l | grep 'nose-timer==')" ]; then
+        args="--with-timer --timer-top-n 3 --timer-ok 10ms $args"
+    fi
+
+    # coverage plugin switches
+    if [ -n "$(pip freeze -l | grep 'coverage==')" ]; then
+        args="--with-coverage --cover-package $name $args"
+    fi
+
+    # Final command
+    cmd="nosetests $args"
+    echo "$cmd"
+
+    # Notifier message to use
+    local msg="Tests passed!"
+
+    # Execute!
+    $cmd
+
+    # Set the notification message based on the exit code of nosetests
+    if [[ "$?" -ne "0" ]]; then
+        msg="Tests failed."
+    fi
+
+    if [ $(which terminal-notifier) ]; then
+        # Pop up a notification on Mac OS X ... comment this out if your'e not
+        # on a Mac
+        terminal-notifier -title "$name" -message "$msg" -group "axiom" \
+            -remove "axiom" &>/dev/null
+    fi
 }
 
 
@@ -259,6 +328,7 @@ gflake(){
 gtag(){
     local tag="$*"
     git tag -am "Release $tag" v$tag
+    git tag -ln
 }
 
 # Current git branch
@@ -408,7 +478,6 @@ function tabname {
 #################
 # VIM KEYBINDINGS
 #
-
 # Switch to vim mode
 # set -o vi
 
@@ -416,24 +485,27 @@ function tabname {
 ##########################
 # PYTHON VIRTUALENVWRAPPER
 #
-
 # startup virtualenv-burrito
 # Uncomment this to actually load it, otherwise it slows down loading new shells
 # if [ -f $HOME/.venvburrito/startup.sh ]; then
 #     . $HOME/.venvburrito/startup.sh
 # fi
 
-export PATH="$HOME/.yarn/bin:$PATH"
+export WORKON_HOME=$HOME/.virtualenvs
+export PROJECT_HOME=$HOME/tmp
+source /Users/jacobalheid/Library/Python/3.7/bin/virtualenvwrapper.sh
 
+##########
+# YARN BIN
+# export PATH="$HOME/.yarn/bin:$PATH"
 
 ##########
 # NODE NVM
 
-export NVM_DIR="$HOME/.nvm"
-source /usr/local/opt/nvm/nvm.sh
+# export NVM_DIR="$HOME/.nvm"
+# source /usr/local/opt/nvm/nvm.sh
 
 #############
 # PYENV SHELL
 #
-
 # if which pyenv > /dev/null; then eval "$(pyenv init -)"; fi
