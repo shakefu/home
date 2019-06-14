@@ -180,7 +180,12 @@ function axtest () {
             -remove "axiom" &>/dev/null
     fi
 }
+# Make pytest available in subshells
+export -f axtest
 
+function axwatch() {
+    watcher axtest
+}
 
 function pytest() {
     local args="${*:-.}"
@@ -235,6 +240,40 @@ function pytest() {
         terminal-notifier -title "$name" -message "$msg" -group "axiom" \
             -remove "axiom" &>/dev/null
     fi
+}
+# Make pytest available in subshells
+export -f pytest
+
+function pywatch() {
+    watcher pytest
+}
+
+function watcher() {
+    local test_cmd
+    test_cmd='echo "error: No test command."'
+    test_cmd="${1:-$test_cmd}"
+    if [ ! $(which fswatch) ]; then
+        echo "error: fswatch not installed"
+        return 1
+    fi
+
+    if [ -z "$(find . -name 'Dockerfile' -depth 1)" ]; then
+        echo "error: Dockerfile not present, you sure this is a service?"
+        return 1
+    fi
+
+    local paths
+    paths="$(grep -E '^COPY \w+/ ./\w+/$' Dockerfile | awk '{print $2}' | sort -u)"
+
+    echo "Waiting for file changes..."
+
+    local cmd
+    cmd='echo -e "$(date)\nRunning tests..."'
+    cmd="$cmd ; $test_cmd"
+    cmd="$cmd ; echo -e 'Waiting for file changes...\n\n'"
+
+    # fswatch -ro -e '.*' -i '.*\.py$' *.py $paths | xargs -o -n1 -I{} bash -c 'declare -f pytest ; pytest'
+    fswatch -ro -e '.*' -i '.*\.py$' *.py $paths | xargs -o -n1 -I{} bash -c "$cmd"
 }
 
 
