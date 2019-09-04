@@ -21,7 +21,13 @@ au! BufWritePost $MYVIMRC source $MYVIMRC
 " Plugins
 
 " Load pathogen
+filetype off
+
 call pathogen#infect()
+call pathogen#helptags()
+
+filetype plugin indent on
+syntax on
 
 
 """""""""""""""""""""""""
@@ -31,20 +37,20 @@ call pathogen#infect()
 "
 
 " SuperTab settings
-let g:SuperTabDefaultCompletionType = "context"
-let g:SuperTabLongestEnhanced = 1
-let g:SuperTabLongestHighlight = 1
-let g:SuperTabClosePreviewOnPopupClose = 1
+" let g:SuperTabDefaultCompletionType = "context"
+" let g:SuperTabLongestEnhanced = 1
+" let g:SuperTabLongestHighlight = 1
+" let g:SuperTabClosePreviewOnPopupClose = 1
 
 " Jedi settings
-let g:jedi#popup_on_dot = 0
-let g:jedi#documentation_command = "K"
-let g:jedi#show_call_signatures = "0"
+" let g:jedi#popup_on_dot = 0
+" let g:jedi#documentation_command = "K"
+" let g:jedi#show_call_signatures = "0"
 
 " Omnicomplete settings
-set completeopt=longest,menu
-set wildmode=longest,list:longest
-let g:omni_syntax_ignorecase = 0
+" set completeopt=longest,menu
+" set wildmode=longest,list:longest
+" let g:omni_syntax_ignorecase = 0
 
 
 """""""""""""""""""""""
@@ -52,34 +58,78 @@ let g:omni_syntax_ignorecase = 0
 "
 
 " CtrlP settings
-set wildignore+=*.pyc,*.pyo,*/node_modules/*,*/bower/*
-" let g:ctrlp_custom_ignore = '\v\.(pyc|pyo)$'
+set wildignore+=*.pyc,*.pyo,*/node_modules/*,*/bower/*,*/__pycache__/*
+" Makes CtrlP open selected files in new tabs instead of same buffer
+let g:ctrlp_prompt_mappings = {
+    \ 'AcceptSelection("e")': ['<c-t>', '<2-LeftMouse>'],
+    \ 'AcceptSelection("t")': ['<cr>'],
+\ }
 
 " ProjectRoot settings
 " Change to the project root of the current buffer when switching
 au WinEnter * if &ft != 'help' | call ProjectRootCD() | endif
 
+" vim-markdown settings
+" Highlight fenced code blocks GitHub style
+let g:markdown_fenced_languages = ['html', 'python', 'bash=sh']
+
+" YouCompleteMe settings
+" Change the number of chars before showing completion menu
+let g:ycm_min_num_of_chars_for_completion = 2
+" Number of characters required in ID (identifier) matches
+let g:ycm_min_num_identifier_candidate_chars = 0
+" Change to 1 to enable completion inside comments
+let g:ycm_complete_in_comments = 0
+" Change to 1 to enable completion inside strings
+let g:ycm_complete_in_strings = 0
+" Don't populate completion with Syntax from filetype
+let g:ycm_seed_identifiers_with_syntax = 0
+" Close the preview window on completion
+let g:ycm_autoclose_preview_window_after_completion = 1
+" Close the preview window on insertion
+let g:ycm_autoclose_preview_window_after_insertion = 1
+" Select the highlighted completion on Enter
+" let g:ycm_key_list_select_completion = ['<TAB>', '<Down>', '<Enter>']
+
+" Powerline
+" Enable Powerline
+set rtp+=~/.vim/bundle/powerline/powerline/bindings/vim
+" Always show Powerline
+set laststatus=2
+
+" Pymode
+" Use Python3
+let g:pymode_python = "python3"
+" Enable virtualenvs
+let g:pymode_virtualenv = 1
+" Disable linting
+let g:pymode_lint = 0
+
 " Syntastic settings
-set statusline+=%#warningmsg#
-set statusline+=%{SyntasticStatuslineFlag()}
-set statusline+=%*
+" set statusline+=%#warningmsg#
+" set statusline+=%{SyntasticStatuslineFlag()}
+" set statusline+=%*
 
 " Disable HTML checking
-let g:syntastic_html_checkers=['']
+" let g:syntastic_html_checkers=['']
 
 " Disable syntastic unless explicitly enabled
-let g:syntastic_mode_map = { 'mode': 'passive', 'active_filetypes': [],'passive_filetypes': [] }
-let g:syntastic_always_populate_loc_list = 1
-let g:syntastic_auto_loc_list = 1
-let g:syntastic_check_on_open = 0
-let g:syntastic_check_on_wq = 0
+" let g:syntastic_mode_map = { 'mode': 'passive', 'active_filetypes': [],'passive_filetypes': [] }
+" let g:syntastic_always_populate_loc_list = 1
+" let g:syntastic_auto_loc_list = 1
+" let g:syntastic_check_on_open = 0
+" let g:syntastic_check_on_wq = 0
 
 " JSX highlighting
-let g:jsx_ext_required = 0
+" let g:jsx_ext_required = 0
 
 
 """"""""""""""
 " Key mappings
+
+" Remap Ctrl-C to Esc during insert mode so we don't skip trigging InsertLeave
+" events
+inoremap <C-c> <Esc>
 
 " Change the leader to '
 let mapleader = "'"
@@ -89,18 +139,21 @@ map <Leader><Leader> ''
 " Merge the current tab and right tab in a vertical split
 map <Leader>l :Tabmerge right<Enter>
 
-
+" CoffeeScript shortcuts (unused)
 " Execute the current coffeescript buffer
-map <Leader>a :ExecuteBuffer<Enter>
+" map <Leader>a :ExecuteBuffer<Enter>
 " Execute the current coffeescript selection
-map <Leader>s :ExecuteSelection<Enter>
+" map <Leader>s :ExecuteSelection<Enter>
 " Run grunt test suite in a Conque split - probably should make this more
 " generic at some point, since it's specific to Retaliator right now
-map <Leader>t :ConqueTermSplit grunt coffeelint:lib coffee:lib mochaTest<CR>
+" map <Leader>t :ConqueTermSplit grunt coffeelint:lib coffee:lib mochaTest<CR>
 
 " Diff the currently open panes
 map <Leader>f :windo diffthis<Enter>
 map <Leader>ff :diffoff!<Enter>
+
+" Show documentation for word under cursor if it exists
+map <Leader>D :call pymode#doc#find()<Enter>
 
 " Find the definition of the word under the cursor in same file types (really
 " only works for Python at the moment.)
@@ -110,7 +163,9 @@ map <Leader>d :execute "silent grep! -srnwIE --exclude-dir=.git " .
         \ "' ." <Bar> cwindow<CR>
 au BufReadPost quickfix map <buffer> <CR> <C-W><CR>:cclose<CR>"
 
+" Comment out all lines with '# '
 map <Leader># :norm ^i# <CR>
+" Delete first two charaters (e.g. '# ')
 map <Leader>3 :norm ^xx<CR>
 
 
@@ -120,8 +175,17 @@ map <Leader>3 :norm ^xx<CR>
 if has("gui_running")
     " Set our colorscheme (the most important thing, that's why we do it first
     colorscheme ir_black
-    " Set transparency
     set transparency=20
+
+    " Zenburn
+    " let g:zenburn_high_Contrast = 1
+    " colorscheme zenburn
+    " set transparency=10
+
+    " Solarized
+    " colorscheme solarized
+    " set background=dark
+    " set transparency=0
 endif
 
 " Change highlight fold colors
@@ -146,7 +210,8 @@ au WinLeave * setlocal nocursorline nocursorcolumn
 """""""
 " Font
 if has("gui_running")
-    set guifont=Menlo\ Regular:h12
+    " set guifont=Menlo\ Regular:h12
+    set guifont=Noto\ Mono\ for\ Powerline:h12
 endif
 
 
