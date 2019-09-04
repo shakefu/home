@@ -209,6 +209,24 @@ function pytest() {
         return 1
     fi
 
+    local msg="flake8 failed!"
+    # Find and set the notifier commmand
+    local notify="$(which terminal-notifier)"
+    # Or use a nullop
+    notify=${notify:-":"}
+
+    # Flake things
+    if [ $(which flake8) ]; then
+        flake8 $name test/
+
+        # Notify and early exit if flake8 fails
+        if [[ "$?" -ne "0" ]]; then
+            $notify -title "$name" -message "$msg" -group "axiom" \
+                -remove "axiom" &>/dev/null
+            return 1
+        fi
+    fi
+
     # nose-timer plugin switches
     if [ -n "$(pip freeze -l | grep 'nose-timer==')" ]; then
         args="--with-timer --timer-top-n 3 --timer-ok 10ms $args"
@@ -224,7 +242,7 @@ function pytest() {
     echo "$cmd"
 
     # Notifier message to use
-    local msg="Tests passed!"
+    msg="Tests passed!"
 
     # Execute!
     $cmd
@@ -234,12 +252,10 @@ function pytest() {
         msg="Tests failed."
     fi
 
-    if [ $(which terminal-notifier) ]; then
-        # Pop up a notification on Mac OS X ... comment this out if your'e not
-        # on a Mac
-        terminal-notifier -title "$name" -message "$msg" -group "axiom" \
-            -remove "axiom" &>/dev/null
-    fi
+    # Pop up a notification on Mac OS X ... comment this out if your'e not
+    # on a Mac
+    $notify -title "$name" -message "$msg" -group "axiom" \
+        -remove "axiom" &>/dev/null
 }
 # Make pytest available in subshells
 export -f pytest
@@ -392,8 +408,21 @@ _gsettab(){
 ###########
 # Functions
 #
+twork(){
+    if ! cd ~/github.com/turo/$1 2>/dev/null; then
+        echo "No such project."
+        return
+    fi
+    if [[ -n "$1" ]]; then
+        workon $1 2>/dev/null
+        tabname $1
+    fi
+}
+# Tab completion for twork helper
+_twork(){ _complete "`/bin/ls -1 ~/github.com/turo/`"; }
+complete -F _twork twork
 
-# Work on an about.me project
+# Work on an Axiom Exergy project
 awork(){
     if ! cd ~/github.com/axiomexergy/$1 2>/dev/null; then
         echo "No such project."
