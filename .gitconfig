@@ -7,3 +7,5 @@
 [merge]
     tool = opendiff
 
+[core]
+	editor = /usr/local/bin/vim
