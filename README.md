@@ -13,6 +13,19 @@ cd $HOME
 curl -sL https://github.com/shakefu/home/archive/master.tar.gz | tar -xzv --strip-components=1
 ```
 
+### Vim plugins and bundles
+
+After installing the files into your `$HOME`, navigate to `$HOME/.vim/bundle`.
+There you should see a `bundles.git` file with the repository links for the needed
+plugins for my vimrc.
+
+Use the following snippet to clone all the bundles needed:
+
+```bash
+$ cd ~/.vim/bundle
+$ for name in $(cat bundles.git); do git clone $name; done
+```
+
 ## Breadcrumbs
 
 ### Git
