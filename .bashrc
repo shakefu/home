@@ -408,6 +408,22 @@ _gsettab(){
 ###########
 # Functions
 #
+# Work on relayrides projects
+rwork(){
+    if ! cd ~/github.com/relayrides/$1 2>/dev/null; then
+        echo "No such project."
+        return
+    fi
+    if [[ -n "$1" ]]; then
+        workon $1 2>/dev/null
+        tabname $1
+    fi
+}
+# Tab completion for rwork helper
+_rwork(){ _complete "`/bin/ls -1 ~/github.com/relayrides/`"; }
+complete -F _rwork rwork
+
+# Work on turo projects
 twork(){
     if ! cd ~/github.com/turo/$1 2>/dev/null; then
         echo "No such project."
@@ -561,7 +577,8 @@ function tabname {
 
 export WORKON_HOME=$HOME/.virtualenvs
 export PROJECT_HOME=$HOME/tmp
-source /Users/jacobalheid/Library/Python/3.7/bin/virtualenvwrapper.sh
+source /usr/local/bin/virtualenvwrapper.sh
+# source /Users/jacobalheid/Library/Python/3.7/bin/virtualenvwrapper.sh
 
 ##########
 # YARN BIN
