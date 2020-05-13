@@ -200,17 +200,30 @@ alias gcheck='git checkout'
 # Switch to repostory based on short name, with tab completion
 function repo {
     local name="$1"
-    # echo "Searching for repo $name"
-    local path=$(fd -a -t d -d 2 "$name" --base-directory "$HOME" \
-        --search-path "$HOME/github/" \
-        --search-path "$HOME/code")
+    local found
+    local search=(
+        "$HOME/github"
+        "$HOME/code"
+    )
+    for dir in $search; do
+        # Prefer github repos to local
+        found=$(fd -a -t d -d 2 -1 --base-directory "$dir" "$name")
+        if [[ ! -z "$found" ]]; then
+            cd "$found"
+            return
+        fi
+    done
 
-    # echo "Found $path"
-    cd "$path"
+    echo "Repository not found: $1"
+    return 1
 }
-_repos=( $(fd -t d -d 1 . "$HOME/github") )
-_repos+=( "$HOME/code" )
-compdef "_files -/ -W \"($_repos)\"" repo
+function _repo {
+    local _repos
+    _repos=( $(fd -a -t d -d 1 --base-directory "$HOME/github" .) )
+    _repos+=( "$HOME/code" )
+    _files -/ -W _repos
+}
+compdef _repo repo
 
 # Grep all
 unalias gr  # Override zsh plugin alias
