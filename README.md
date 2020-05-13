@@ -13,6 +13,59 @@ cd $HOME
 curl -sL https://github.com/shakefu/home/archive/master.tar.gz | tar -xzv --strip-components=1
 ```
 
+### Homebrew dependencies
+
+These are the following homebrew modules that I installed during the setup
+process. <!-- Some of these are dependencies, and shouldn't need to be
+installed directly. But that can be sorted out later. -->
+
+```bash
+$ brew install \
+    fd \
+    fzf \
+    git-extras \
+    macvim \
+    pygments \
+    python \
+    python@3.8 \
+    thefuck \
+    tree \
+    zsh-syntax-highlighting
+```
+
+<!--
+*TODO: Document me better*
+
+```
+$ brew ls
+autoconf
+cmake
+cscope
+fd
+fortune
+fzf
+gdbm
+git-extras
+libyaml
+lua
+macvim
+openssl@1.1
+pam_reattach
+pkg-config
+pygments
+python
+python@3.8
+readline
+ruby
+sqlite
+terraform
+thefuck
+tree
+xz
+zsh-syntax-highlighting
+```
+-->
+
 ### Vim plugins and bundles
 
 After installing the files into your `$HOME`, navigate to `$HOME/.vim/bundle`.
