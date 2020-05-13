@@ -27,6 +27,8 @@ TIMER_FORMAT="# %d"
 TIMER_PRECISION="3"
 # Options for zsh-autosuggestions plugin
 ZSH_AUTOSUGGEST_USE_ASYNC="true"
+# Fuzzy completion, we might want to export this variable
+FZF_BASE="/usr/local/opt/fzf/"
 
 #########
 # History
@@ -57,6 +59,7 @@ plugins=(
     docker-compose
     dotenv
     emoji-clock
+    fzf
     git
     # gitfast  # More up to date version of git?
     git-auto-fetch
@@ -155,6 +158,8 @@ alias vim='mvim --remote-tab-silent'
 # Use colorized versions of less and more
 alias less='cless'
 alias more='cless'
+# Nice tree output
+alias tree='tree --noreport --matchdirs -a -C -x -I ".git" -L 2'
 
 # Docker aliases
 alias dc='docker-compose'
@@ -165,7 +170,10 @@ alias gundo='git reset --soft "HEAD^"'
 alias gunstage='git reset --'
 alias gstaged='git diff --staged'
 alias gdiff='git diff'
-
+alias gcom='git commit -m'
+alias gadd='git add'
+alias gpush='git push'
+alias gcheck='git checkout'
 
 ###########
 # Functions
@@ -217,3 +225,5 @@ function pgr {
 function tabname {
   printf "\e]1;$1\a"
 }
+
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
