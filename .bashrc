@@ -503,6 +503,7 @@ pyg(){
         args=.
     fi
     grep -nR --exclude-dir node_modules --exclude-dir .eggs \
+        --exclude-dir __pycache__ \
         --include=*py "$pattern" $args
 }
 
