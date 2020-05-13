@@ -64,6 +64,7 @@ plugins=(
     # gitfast  # More up to date version of git?
     git-auto-fetch
     git-extras
+    git-escape-magic
     git-prompt
     last-working-dir
     pip
@@ -88,6 +89,9 @@ source $ZSH/oh-my-zsh.sh
 # These are set for us by oh-my-zsh
 HISTSIZE=100000
 SAVEHIST=100000
+
+# Enable zsh syntax highlighting
+source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 
 #####################
@@ -138,6 +142,20 @@ source /usr/local/bin/virtualenvwrapper_lazy.sh
 # Don't need this, script is on our path
 # export VIRTUALENVWRAPPER_SCRIPT=/usr/local/bin/virtualenvwrapper.sh
 
+######################
+# FZF fuzzy completion
+
+# Set the trigger sequence (same as default **)
+export FZF_COMPLETION_TRIGGER='**'
+# Options to fzf command
+export FZF_COMPLETION_OPTS='+c -x'
+# Use fd (https://github.com/sharkdp/fd) instead of the default find
+function _fzf_compgen_path { fd --hidden --follow --exclude ".git" . "$1"; }
+# Use fd to generate the list for directory completion
+function _fzf_compgen_dir { fd --type d --hidden --follow --exclude ".git" . "$1"; }
+# Source fzf into zsh
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
 #########
 # Aliases
 #########
@@ -178,6 +196,21 @@ alias gcheck='git checkout'
 ###########
 # Functions
 ###########
+
+# Switch to repostory based on short name, with tab completion
+function repo {
+    local name="$1"
+    # echo "Searching for repo $name"
+    local path=$(fd -a -t d -d 2 "$name" --base-directory "$HOME" \
+        --search-path "$HOME/github/" \
+        --search-path "$HOME/code")
+
+    # echo "Found $path"
+    cd "$path"
+}
+_repos=( $(fd -t d -d 1 . "$HOME/github") )
+_repos+=( "$HOME/code" )
+compdef "_files -/ -W \"($_repos)\"" repo
 
 # Grep all
 unalias gr  # Override zsh plugin alias
@@ -226,4 +259,3 @@ function tabname {
   printf "\e]1;$1\a"
 }
 
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh

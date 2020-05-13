@@ -8,6 +8,9 @@ so I'm putting them under version control.
 You should be able to untar the repository archive directly into your `$HOME`
 directory.
 
+<!-- TODO: Create an install script to clone the repository, symlink or copy
+fils into place. Perform dependency checks, etc. -->
+
 ```bash
 cd $HOME
 curl -sL https://github.com/shakefu/home/archive/master.tar.gz | tar -xzv --strip-components=1
@@ -27,14 +30,15 @@ $ brew install \
     macvim \
     pygments \
     python \
-    python@3.8 \
     thefuck \
     tree \
     zsh-syntax-highlighting
 ```
 
+<!-- TODO: Document me better* -->
 <!--
-*TODO: Document me better*
+
+Full list of brew install:
 
 ```
 $ brew ls
@@ -65,6 +69,15 @@ xz
 zsh-syntax-highlighting
 ```
 -->
+
+### oh-my-zsh custom plugins
+
+There is at least one plugin which needs to be installed into
+`.oh-my-zsh/custom/plugins`.
+
+See the documentation for
+[zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions) on
+GitHub.
 
 ### Vim plugins and bundles
 
@@ -108,7 +121,7 @@ git subtree add --prefix .vim/bundle/vim-projectroot vim-projectroot master --sq
   autocompletion
 - [Dockerfile.vim](https://github.com/ekalinin/Dockerfile.vim) - Syntax
   highlighting for Dockerfiles
-- [Tabmerge](https://github.com/vim-scripts/Tabmerge) - Merging tabs made easy 
+- [Tabmerge](https://github.com/vim-scripts/Tabmerge) - Merging tabs made easy
 - [Supertab](https://github.com/ervandew/supertab) - Awesome tab completion
 - [YAJS](https://github.com/othree/yajs.vim) - ES6 syntax highlighting and more
 
