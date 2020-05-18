@@ -16,6 +16,16 @@ cd $HOME
 curl -sL https://github.com/shakefu/home/archive/master.tar.gz | tar -xzv --strip-components=1
 ```
 
+### Install Powerline fonts
+
+Powerline fonts are used by various plugins and *vimrc* and they're nice.
+
+```bash
+$ git clone git@github.com:powerline/fonts.git
+$ cd fonts
+$ ./install.sh
+```
+
 ### Homebrew dependencies
 
 These are the following homebrew modules that I installed during the setup
