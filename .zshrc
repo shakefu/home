@@ -57,7 +57,7 @@ plugins=(
     django
     docker
     docker-compose
-    dotenv
+    # dotenv  # This is kind of noisy and I'm not sure I want it
     emoji-clock
     fzf
     git
@@ -200,6 +200,12 @@ alias gcheck='git checkout'
 # Switch to repostory based on short name, with tab completion
 function repo {
     local name="$1"
+
+    if [[ -z "$1" ]]; then
+        cd "$HOME/github"
+        return
+    fi
+
     local found
     local search=(
         "$HOME/github"
@@ -229,26 +235,36 @@ compdef _repo repo
 unalias gr  # Override zsh plugin alias
 function gr {
     local pattern="$1"
-    shift
+    if [[ $# > 1 ]]; then
+        shift
+        args="$*"
+    fi
+    if [[ -z "$args" ]]; then
+        args="."
+    fi
     grep -nR --exclude-dir='node_modules' --exclude-dir='.git' \
         --exclude-dir='build' --exclude-dir='bower_components' \
         --exclude-dir='coverage' --exclude-dir='.nyc_output' \
         --exclude-dir='.terraform' --exclude-dir='.eggs' \
-        --exclude='terraform.tfstate*' \
-        --exclude='yarn.lock' --exclude='*.log' "$pattern" $* .
+        --exclude-dir='external' --exclude-dir='vendor' \
+        --exclude='terraform.tfstate*' --exclude='*.min.*' \
+        --exclude='*.js.map' --exclude='*.css.map' \
+        --exclude='yarn.lock' --exclude='*.log' "$pattern" $args
 }
 
 # Python grep
 function pyg {
     local pattern="$1"
-    shift
-    local args="$*"
-    if [ -z "$args" ]; then
+    if [[ $# > 1 ]]; then
+        shift
+        args="$*"
+    fi
+    if [[ -z "$args" ]]; then
         args="."
     fi
     grep -nR --exclude-dir node_modules --exclude-dir .eggs \
         --exclude-dir __pycache__ \
-        --include=*py "$pattern" $args
+        --include *py "$pattern" $args
 }
 
 # JS and HTML grep

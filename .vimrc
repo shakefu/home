@@ -240,6 +240,11 @@ set ruler
 " This is disabled 'cause it screws with tab labelling dynamically
 " autocmd BufEnter * silent! lcd %:p:h
 
+" Handle newlines forcefully
+set ffs=unix
+set encoding=utf-8
+set fileencoding=utf-8
+
 
 """"""""""""""""""
 " Syntax specifics
