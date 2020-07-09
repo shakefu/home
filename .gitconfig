@@ -1,11 +1,15 @@
-# This is Git's per-user configuration file.
 [user]
-    name = Jacob Alheid
-    email = shakefu@gmail.com
+	name = Jacob Alheid
+	email = shakefu@gmail.com
 [push]
     default = simple
 [merge]
-    tool = opendiff
-
+	tool = opendiff
+[diff]
+    tool = icdiff
+[difftool]
+    prompt = false
+[difftool "icdiff"]
+    cmd = "BASE=\"$BASE\" /usr/local/bin/icdiff --is-git-diff --line-numbers --no-bold --numlines 3 --color-map 'line-numbers:black' \"$LOCAL\" \"$REMOTE\""
 [core]
-	editor = /usr/local/bin/vim
+	editor = /usr/local/bin/vi
