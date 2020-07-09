@@ -1,3 +1,10 @@
+# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+# Initialization code that may require console input (password prompts, [y/n]
+# confirmations, etc.) must go above this block; everything else may go below.
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
+
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
@@ -7,7 +14,34 @@ export ZSH="/Users/jacobalheid/.oh-my-zsh"
 # zsh/oh-my-zsh settings
 
 # Use default theme (for now)
-ZSH_THEME="robbyrussell"
+# ZSH_THEME="robbyrussell"
+ZSH_THEME="powerlevel10k/powerlevel10k"
+
+###############
+# Custom prompt
+#
+# Current git branch
+function _gcurbranch { git rev-parse --abbrev-ref HEAD 2>/dev/null; }
+
+# Current git repo
+function gcurrepo { git remote show -n origin 2>/dev/null | grep Fetch \
+    | sed 's/.*\/\([^/.]*\).*/\1/'; }
+
+# Set the current tab name to repo/branch
+_gsettab(){
+    local repo branch
+    repo=`_gcurrepo`
+    if [ -n "$repo" ]; then
+        branch=`_gcurbranch`
+        tabname "$repo/$branch"
+    else
+        tabname ""
+    fi
+}
+
+###################
+# zsh configuration
+
 # Use default custom directory
 ZSH_CUSTOM="$HOME/.oh-my-zsh/custom"
 # Treat - and _ the same for history search
@@ -23,7 +57,7 @@ DISABLE_AUTO_TITLE="true"
 # Show stamps instead of history number
 HIST_STAMPS="yyyy-mm-dd"  # Doesn't seem to work?
 # Options for timer plugin
-TIMER_FORMAT="# %d"
+TIMER_FORMAT="# %d "
 TIMER_PRECISION="3"
 # Options for zsh-autosuggestions plugin
 ZSH_AUTOSUGGEST_USE_ASYNC="true"
@@ -65,7 +99,7 @@ plugins=(
     git-auto-fetch
     git-extras
     git-escape-magic
-    git-prompt
+    # git-prompt  # Adds right-hand prompt with branch
     last-working-dir
     pip
     rust
@@ -74,7 +108,7 @@ plugins=(
     terraform
     thefuck
     themes
-    timer
+    # timer  # Dupes p10k behavior
     virtualenv
     virtualenvwrapper
     zsh-autosuggestions  # https://github.com/zsh-users/zsh-autosuggestions
@@ -186,12 +220,28 @@ alias dc='docker-compose'
 alias gpull='git pull --no-edit'
 alias gundo='git reset --soft "HEAD^"'
 alias gunstage='git reset --'
-alias gstaged='git diff --staged'
-alias gdiff='git diff'
+alias gstaged='git difftool --staged'
+alias gdiff='git difftool'
 alias gcom='git commit -m'
 alias gadd='git add'
 alias gpush='git push'
 alias gcheck='git checkout'
+
+# Remove git plugin aliases that I don't like
+unalias gbr     # git branch --remote
+unalias gsta	# git stash save
+unalias gstaa	# git stash apply
+unalias gstc	# git stash clear
+unalias gstd	# git stash drop
+unalias gstl	# git stash list
+unalias gstp	# git stash pop
+unalias gsts	# git stash show --text
+unalias gstu	# git stash --include-untracked
+unalias gstall	# git stash --all
+
+# Remap some of them
+alias gbr='git branch'
+alias gsta='git difftool --staged'
 
 ###########
 # Functions
@@ -288,3 +338,5 @@ function tabname {
   printf "\e]1;$1\a"
 }
 
+# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
