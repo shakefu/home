@@ -26,6 +26,31 @@ $ cd fonts
 $ ./install.sh
 ```
 
+### ZSH and its dependencies
+
+This section talks about setting up zsh, yeyh.
+
+Install oh-my-zsh since we use it extensively:
+
+```bash
+sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+```
+
+Install our zsh custom plugins (Powerlevel10k and autosuggestions):
+
+```bash
+sh .oh-my-zsh.git
+```
+
+... and then [follow the
+instructions](https://github.com/romkatv/powerlevel10k#fonts) to install the
+font we use (MesloLGS NF).
+
+#### Breadcrumbs
+
+- https://ohmyz.sh/ 
+- https://github.com/romkatv/powerlevel10k
+
 ### Homebrew dependencies
 
 These are the following homebrew modules that I installed during the setup
