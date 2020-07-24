@@ -49,6 +49,12 @@ $ git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
 $ ~/.fzf/install
 ```
 
+Install thefuck:
+
+```bash
+$ sudo pip install thefuck
+```
+
 ... and then [follow the
 instructions](https://github.com/romkatv/powerlevel10k#fonts) to install the
 font we use (MesloLGS NF).
@@ -62,6 +68,7 @@ font we use (MesloLGS NF).
   nice and convenient prompt completion
 - [zsh-syntax-highlighting](https://github.com/zsh-users/zsh-syntax-highlighting) -
   awesome colorized prompt syntax with error highlighting
+- [thefuck](https://github.com/nvbn/thefuck)
 
 ### Homebrew dependencies
 
