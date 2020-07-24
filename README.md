@@ -33,13 +33,20 @@ This section talks about setting up zsh, yeyh.
 Install oh-my-zsh since we use it extensively:
 
 ```bash
-sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+$ sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 ```
 
 Install our zsh custom plugins (Powerlevel10k and autosuggestions):
 
 ```bash
-sh .oh-my-zsh.git
+$ sh .oh-my-zsh.git
+```
+
+Install fzf fuzzy file finder:
+
+```bash
+$ git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+$ ~/.fzf/install
 ```
 
 ... and then [follow the
@@ -48,9 +55,13 @@ font we use (MesloLGS NF).
 
 #### Breadcrumbs
 
-- https://ohmyz.sh/ 
-- https://github.com/romkatv/powerlevel10k
-- https://github.com/zsh-users/zsh-autosuggestions
+- [oh-my-zsh](https://ohmyz.sh/) - zsh plugin manager and framework
+- [powerlevel10k](https://github.com/romkatv/powerlevel10k) - super
+  configurable zsh prompt theme
+- [zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions) -
+  nice and convenient prompt completion
+- [zsh-syntax-highlighting](https://github.com/zsh-users/zsh-syntax-highlighting) -
+  awesome colorized prompt syntax with error highlighting
 
 ### Homebrew dependencies
 
@@ -120,22 +131,7 @@ $ cd ~/.vim/bundle
 $ for name in $(cat bundles.git); do git clone $name; done
 ```
 
-## Breadcrumbs
-
-### Git
-
-Adding a subtree project:
-
-```bash
-git remote add -f vim-projectroot git@github.com:dbakker/vim-projectroot.git
-git subtree add --prefix .vim/bundle/vim-projectroot vim-projectroot master --squash
-```
-
-- [Git subtree merge](https://help.github.com/articles/about-git-subtree-merges/)
-- [Alternatives to git submodule](https://blogs.atlassian.com/2013/05/alternatives-to-git-submodule-git-subtree/)
-
-
-### Vim
+#### Breadcrumbs
 
 - [Pathogen](https://github.com/tpope/vim-pathogen) - We would add this as a
   subtree but it conflicts with the existing .vim path

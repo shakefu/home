@@ -9,7 +9,7 @@ fi
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
 # Path to your oh-my-zsh installation.
-export ZSH="/Users/jacobalheid/.oh-my-zsh"
+export ZSH="$HOME/.oh-my-zsh"
 
 # zsh/oh-my-zsh settings
 
@@ -112,6 +112,7 @@ plugins=(
     virtualenv
     virtualenvwrapper
     zsh-autosuggestions  # https://github.com/zsh-users/zsh-autosuggestions
+    zsh-syntax-highlighting
 )
 
 source $ZSH/oh-my-zsh.sh
@@ -124,9 +125,6 @@ source $ZSH/oh-my-zsh.sh
 HISTSIZE=100000
 SAVEHIST=100000
 
-# Enable zsh syntax highlighting
-source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-
 
 #####################
 # Shell Configuration
@@ -137,7 +135,7 @@ source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 # Append language specific paths in search order
 # Add Python's site.USER_BASE bin
-export PATH="$PATH:/Users/jacobalheid/Library/Python/3.7/bin"
+export PATH="$PATH:$HOME/Library/Python/3.7/bin"
 # Add Homebrew unversioned Python binaries to PATH
 export PATH="/usr/local/opt/python/libexec/bin:$PATH"
 # Adding user bin directory to PATH as top priority
