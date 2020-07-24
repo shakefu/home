@@ -50,6 +50,7 @@ font we use (MesloLGS NF).
 
 - https://ohmyz.sh/ 
 - https://github.com/romkatv/powerlevel10k
+- https://github.com/zsh-users/zsh-autosuggestions
 
 ### Homebrew dependencies
 
@@ -105,15 +106,6 @@ zsh-syntax-highlighting
 ```
 -->
 
-### oh-my-zsh custom plugins
-
-There is at least one plugin which needs to be installed into
-`.oh-my-zsh/custom/plugins`.
-
-See the documentation for
-[zsh-autosuggestions](https://github.com/zsh-users/zsh-autosuggestions) on
-GitHub.
-
 ### Vim plugins and bundles
 
 After installing the files into your `$HOME`, navigate to `$HOME/.vim/bundle`.
@@ -123,6 +115,7 @@ plugins for my vimrc.
 Use the following snippet to clone all the bundles needed:
 
 ```bash
+$ cp -r ./.vim/bundle ~/.vim/bundle
 $ cd ~/.vim/bundle
 $ for name in $(cat bundles.git); do git clone $name; done
 ```
