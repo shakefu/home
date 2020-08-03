@@ -46,6 +46,22 @@ There's a script for that. There's a few of them.
 $ sh .oh-my-zsh.git
 ```
 
+#### Install `exa`, the nice ls replacement
+
+This works with our `ls` plugin to make everything shiny.
+
+`brew install exa`
+
+You also need to add the completion scripts for exa for zsh to find them.
+
+```bash
+mkdir -p ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/completions
+curl -L https://raw.githubusercontent.com/ogham/exa/master/contrib/completions.zsh > ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/completions/exa.zsh
+```
+
+This path is specifically called out and loaded onto our `fpath` variable which
+is where we look for custom functions to autoload.
+
 #### Install fzf fuzzy file finder
 
 Help make searching the filesystem trees faster and easier than before.
@@ -86,6 +102,7 @@ our baby for the Powerlevel10k prompt.
   nice and convenient prompt completion
 - [zsh-syntax-highlighting](https://github.com/zsh-users/zsh-syntax-highlighting) -
   awesome colorized prompt syntax with error highlighting
+- [exa](https://the.exa.website/)
 - [thefuck](https://github.com/nvbn/thefuck)
 - [fd](https://github.com/sharkdp/fd)
 

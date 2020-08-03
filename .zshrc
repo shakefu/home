@@ -80,6 +80,25 @@ setopt HIST_NO_STORE
 setopt HIST_REDUCE_BLANKS
 setopt NO_HIST_BEEP
 
+
+##########################
+# Completion compatability
+
+fpath=(~/.oh-my-zsh/custom/completions $fpath)
+
+# export FPATH="$FPATH:/usr/local/etc/bash_completion.d/"
+# ZSH_DISABLE_COMPFIX="true"
+# 
+# # Load completion
+# autoload -Uz compinit
+# compinit -i 
+# 
+# # Load bashcompinit for some old bash completions
+# autoload bashcompinit && bashcompinit
+# 
+# # Load exa completions
+# [[ -r /usr/local/etc/bash_completion.d/exa ]] && source /usr/local/etc/bash_completion.d/exa
+
 # zsh plugins
 plugins=(
     ansible
@@ -240,6 +259,14 @@ unalias gstall	# git stash --all
 # Remap some of them
 alias gbr='git branch'
 alias gsta='git difftool --staged'
+
+# Remove other zsh aliases we don't want
+# These conflict with the ls plugin
+unalias l
+unalias la
+unalias ll
+unalias ls
+unalias lsa
 
 ###########
 # Functions
