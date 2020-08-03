@@ -30,34 +30,52 @@ $ ./install.sh
 
 This section talks about setting up zsh, yeyh.
 
-Install oh-my-zsh since we use it extensively:
+#### Install oh-my-zsh
+
+It's our plugin manager and framework for our shell.
 
 ```bash
 $ sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 ```
 
-Install our zsh custom plugins (Powerlevel10k and autosuggestions):
+#### Install our zsh custom plugins
+
+There's a script for that. There's a few of them.
 
 ```bash
 $ sh .oh-my-zsh.git
 ```
 
-Install fzf fuzzy file finder:
+#### Install fzf fuzzy file finder
+
+Help make searching the filesystem trees faster and easier than before.
 
 ```bash
 $ git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
 $ ~/.fzf/install
 ```
 
-Install thefuck:
+#### Install thefuck:
+
+Sometimes you just want to curse.
 
 ```bash
 $ sudo pip install thefuck
 ```
 
-... and then [follow the
-instructions](https://github.com/romkatv/powerlevel10k#fonts) to install the
-font we use (MesloLGS NF).
+#### Install `fd` based on the appropriate instructions for the platform
+
+*fd* is awesome and super fast and makes find just be outdated.
+
+[fd installation](https://github.com/sharkdp/fd#installation) is here for all
+platforms.
+
+#### Install fonts
+
+We need them for their unicode symbol goodness.
+
+[MesloLGS NF font family](https://github.com/romkatv/powerlevel10k#fonts) is
+our baby for the Powerlevel10k prompt.
 
 #### Breadcrumbs
 
@@ -69,6 +87,7 @@ font we use (MesloLGS NF).
 - [zsh-syntax-highlighting](https://github.com/zsh-users/zsh-syntax-highlighting) -
   awesome colorized prompt syntax with error highlighting
 - [thefuck](https://github.com/nvbn/thefuck)
+- [fd](https://github.com/sharkdp/fd)
 
 ### Homebrew dependencies
 

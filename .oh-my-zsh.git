@@ -1,6 +1,9 @@
 #!/usr/bin/env/zsh
 # Custom plugins for oh-my-zsh
 
+# Pretty ls
+git clone --depth=1 https://github.com/zpm-zsh/ls.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/ls
+
 # PowerLevel10k theme
 git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/themes/powerlevel10k
 

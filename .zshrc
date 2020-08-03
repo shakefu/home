@@ -98,9 +98,9 @@ plugins=(
     # gitfast  # More up to date version of git?
     git-auto-fetch
     git-extras
-    git-escape-magic
     # git-prompt  # Adds right-hand prompt with branch
     last-working-dir
+    ls
     pip
     rust
     ssh-agent
@@ -200,7 +200,7 @@ alias grep='grep --binary-files=without-match --color=auto'
 # Kill the most recent backgrounded process
 alias kbg='kill %%;fg'
 # ls with good formatting
-alias ls='ls -Gp'
+# alias ls='ls -Gp'
 # Strip coloring
 alias nocolor='sed -E "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]//g"'
 # Use MacVim GUI
