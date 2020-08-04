@@ -56,7 +56,7 @@ You also need to add the completion scripts for exa for zsh to find them.
 
 ```bash
 mkdir -p ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/completions
-curl -L https://raw.githubusercontent.com/ogham/exa/master/contrib/completions.zsh > ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/completions/exa.zsh
+curl -L https://raw.githubusercontent.com/ogham/exa/master/contrib/completions.zsh > ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/completions/_exa
 ```
 
 This path is specifically called out and loaded onto our `fpath` variable which
@@ -92,6 +92,14 @@ We need them for their unicode symbol goodness.
 
 [MesloLGS NF font family](https://github.com/romkatv/powerlevel10k#fonts) is
 our baby for the Powerlevel10k prompt.
+
+#### Install pygments
+
+This is used if `less` and `more` are aliased to their colored variants.
+
+```bash
+sudo pip install pygments
+```
 
 #### Breadcrumbs
 

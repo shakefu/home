@@ -84,7 +84,7 @@ setopt NO_HIST_BEEP
 ##########################
 # Completion compatability
 
-fpath=(~/.oh-my-zsh/custom/completions $fpath)
+fpath=(${ZSH_CUSTOM}/completions $fpath)
 
 # export FPATH="$FPATH:/usr/local/etc/bash_completion.d/"
 # ZSH_DISABLE_COMPFIX="true"
