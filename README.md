@@ -16,6 +16,15 @@ cd $HOME
 curl -sL https://github.com/shakefu/home/archive/master.tar.gz | tar -xzv --strip-components=1
 ```
 
+### Install Pathogen
+
+[Pathogen](https://github.com/tpope/vim-pathogen) is the VIM plugin manager.
+
+```bash
+mkdir -p ~/.vim/autoload ~/.vim/bundle && \
+curl -LSso ~/.vim/autoload/pathogen.vim https://tpo.pe/pathogen.vim
+```
+
 ### Install Powerline fonts
 
 Powerline fonts are used by various plugins and *vimrc* and they're nice.
@@ -122,9 +131,12 @@ installed directly. But that can be sorted out later. -->
 
 ```bash
 $ brew install \
+    cmake \
+    exa \
     fd \
     fzf \
     git-extras \
+    icdiff \
     macvim \
     pygments \
     python \
