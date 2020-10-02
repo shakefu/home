@@ -32,6 +32,7 @@
   # The list of segments shown on the left. Fill it with the most important segments.
   typeset -g POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(
     # =========================[ Line #1 ]=========================
+    context                 # user@hostname
     dir                     # current directory
     # my_dir                # current directory
     vcs                     # git status
@@ -92,7 +93,6 @@
     # nix_shell             # nix shell (https://nixos.org/nixos/nix-pills/developing-with-nix-shell.html)
     vi_mode                 # vi mode (you don't need this if you've enabled prompt_char)
     background_jobs         # presence of background jobs
-    context                 # user@hostname
     # vpn_ip                # virtual private network indicator
     battery                 # internal battery
     load                    # CPU load

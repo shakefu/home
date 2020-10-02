@@ -234,7 +234,7 @@ alias tree='tree --noreport --matchdirs -a -C -x -I ".git" -L 2'
 alias dc='docker-compose'
 
 # Git aliases
-alias gpull='git pull --no-edit'
+alias gpull='git pull --no-edit --prune --all --verbose'
 alias gundo='git reset --soft "HEAD^"'
 alias gunstage='git reset --'
 alias gstaged='git difftool --staged'
