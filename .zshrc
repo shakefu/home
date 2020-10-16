@@ -285,7 +285,26 @@ function repo {
     local search=(
         "$HOME/github"
         "$HOME/code"
+        "$HOME/code/gitlab"
     )
+    for dir in $search; do
+        # Prefer github repos to local
+        found=$(fd -a -t d -d 2 -1 --base-directory "$dir" "^$name$")
+        if [[ ! -z "$found" ]]; then
+            cd "$found"
+            return
+        fi
+    done
+
+    for dir in $search; do
+        # Prefer github repos to local
+        found=$(fd -a -t d -d 2 -1 --base-directory "$dir" "^$name")
+        if [[ ! -z "$found" ]]; then
+            cd "$found"
+            return
+        fi
+    done
+
     for dir in $search; do
         # Prefer github repos to local
         found=$(fd -a -t d -d 2 -1 --base-directory "$dir" "$name")
@@ -302,6 +321,7 @@ function _repo {
     local _repos
     _repos=( $(fd -a -t d -d 1 --base-directory "$HOME/github" .) )
     _repos+=( "$HOME/code" )
+    _repos+=( "$HOME/code/gitlab" )
     _files -/ -W _repos
 }
 compdef _repo repo
