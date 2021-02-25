@@ -84,7 +84,7 @@ setopt NO_HIST_BEEP
 ##########################
 # Completion compatability
 
-fpath=(${ZSH_CUSTOM}/completions $fpath)
+fpath=(${ZSH_CUSTOM}/completions ${ZSH_CUSTOM}/plugins/exa $fpath)
 
 # export FPATH="$FPATH:/usr/local/etc/bash_completion.d/"
 # ZSH_DISABLE_COMPFIX="true"
@@ -157,6 +157,8 @@ SAVEHIST=100000
 export PATH="$PATH:$HOME/Library/Python/3.7/bin"
 # Add Homebrew unversioned Python binaries to PATH
 export PATH="/usr/local/opt/python/libexec/bin:$PATH"
+# Adding user local bin directory where things get installed in Ubuntu 20.10
+export PATH="$HOME/.local/bin:$PATH"
 # Adding user bin directory to PATH as top priority
 export PATH="$HOME/.bin:$PATH"
 
@@ -189,7 +191,7 @@ export WORKON_HOME=$HOME/.virtualenvs
 # Anything that is done with mkproject ends up in tmp
 export PROJECT_HOME=$HOME/tmp
 # Lazy load virtualenvwrapper commands for quicker shells
-source /usr/local/bin/virtualenvwrapper_lazy.sh
+source $(which virtualenvwrapper_lazy.sh)
 # Don't need this, script is on our path
 # export VIRTUALENVWRAPPER_SCRIPT=/usr/local/bin/virtualenvwrapper.sh
 
