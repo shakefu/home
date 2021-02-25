@@ -88,14 +88,14 @@ fpath=(${ZSH_CUSTOM}/completions $fpath)
 
 # export FPATH="$FPATH:/usr/local/etc/bash_completion.d/"
 # ZSH_DISABLE_COMPFIX="true"
-# 
+#
 # # Load completion
 # autoload -Uz compinit
-# compinit -i 
-# 
+# compinit -i
+#
 # # Load bashcompinit for some old bash completions
 # autoload bashcompinit && bashcompinit
-# 
+#
 # # Load exa completions
 # [[ -r /usr/local/etc/bash_completion.d/exa ]] && source /usr/local/etc/bash_completion.d/exa
 
@@ -223,7 +223,7 @@ alias kbg='kill %%;fg'
 # Strip coloring
 alias nocolor='sed -E "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]//g"'
 # Use MacVim GUI
-alias vim='mvim --remote-tab-silent'
+# alias vim='mvim --remote-tab-silent'
 # Use colorized versions of less and more
 alias less='cless'
 alias more='cless'
@@ -241,7 +241,7 @@ alias gstaged='git difftool --staged'
 alias gdiff='git difftool'
 alias gcom='git commit -m'
 alias gadd='git add'
-alias gpush='git push'
+# alias gpush='git push'
 alias gcheck='git checkout'
 
 # Remove git plugin aliases that I don't like
@@ -272,6 +272,32 @@ unalias lsa
 # Functions
 ###########
 
+# Smart VIM if mvim is available
+function vim {
+    if which mvimv; then
+        mvim --remote-tab-silent $@
+    else
+        $(which vim) $@
+    fi
+}
+
+# Clean rebasing of branches with pull
+function gpush {
+    # Find the default branch so we can rebase
+    local default_branch=$(git remote show $(git remote -v | grep push | awk '{print $2}') | grep 'HEAD branch' | awk '{print $3}')
+    # Fallback to "main"
+    [[ -n "$default_branch" ]] || default_branch="main"
+
+    # Fetch and pull all branches
+    git pull --all --prune -v || exit $?
+
+    # Attempt to rebase onto the default automatically
+    git rebase "$default_branch" || exit $?
+
+    # Attempt to push to the branch remote, safely
+    git push --force-with-lease -v $@ || exit $?
+}
+
 # Switch to repostory based on short name, with tab completion
 function repo {
     local name="$1"
@@ -282,11 +308,19 @@ function repo {
     fi
 
     local found
-    local search=(
+    local paths=(
         "$HOME/github"
         "$HOME/code"
-        "$HOME/code/gitlab"
+        "$HOME/turo"
+        "$HOME/shakefu"
     )
+    local search=()
+    for dir in $paths; do
+        if [[ -d "$dir" ]]; then
+            search+=( "$dir" )
+        fi
+    done
+
     for dir in $search; do
         # Prefer github repos to local
         found=$(fd -a -t d -d 2 -1 --base-directory "$dir" "^$name$")
