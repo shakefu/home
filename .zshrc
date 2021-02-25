@@ -419,3 +419,9 @@ function tabname {
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
+# Load in the profile baybee
+[[ ! -f ~/.profile ]] || source ~/.profile
+
+# Load NVM if it exists
+[[ ! -f ~/.nvm/nvm.sh ]] || source ~/.nvm/nvm.sh
