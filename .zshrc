@@ -21,23 +21,23 @@ ZSH_THEME="powerlevel10k/powerlevel10k"
 # Custom prompt
 #
 # Current git branch
-function _gcurbranch { git rev-parse --abbrev-ref HEAD 2>/dev/null; }
+# function _gcurbranch { git rev-parse --abbrev-ref HEAD 2>/dev/null; }
 
 # Current git repo
-function gcurrepo { git remote show -n origin 2>/dev/null | grep Fetch \
-    | sed 's/.*\/\([^/.]*\).*/\1/'; }
+# function gcurrepo { git remote show -n origin 2>/dev/null | grep Fetch \
+#     | sed 's/.*\/\([^/.]*\).*/\1/'; }
 
 # Set the current tab name to repo/branch
-_gsettab(){
-    local repo branch
-    repo=`_gcurrepo`
-    if [ -n "$repo" ]; then
-        branch=`_gcurbranch`
-        tabname "$repo/$branch"
-    else
-        tabname ""
-    fi
-}
+# _gsettab(){
+#     local repo branch
+#     repo=`_gcurrepo`
+#     if [ -n "$repo" ]; then
+#         branch=`_gcurbranch`
+#         tabname "$repo/$branch"
+#     else
+#         tabname ""
+#     fi
+# }
 
 ###################
 # zsh configuration
@@ -144,6 +144,14 @@ source $ZSH/oh-my-zsh.sh
 HISTSIZE=100000
 SAVEHIST=100000
 
+# Completion for middle of words
+# zstyle ':completion:*' matcher-list '' '' '' 'l:|=* r:|=*'  # Doesn't work
+# zstyle ':completion:*' completer _complete
+# zstyle ':completion:*' matcher-list '' 'm:{[:lower:][:upper:]}={[:upper:][:lower:]}' '+l:|=* r:|=*'
+# autoload -Uz compinit
+# compinit
+# zstyle ':completion:*' matcher-list '' '+m:{a-z}={A-Z}' '+m:{A-Z}={a-z}' '+l:|=* r:|=*'
+# zstyle ':completion:*:complete:*:*:*' matcher-list '' '+m:{a-z}={A-Z}' '+m:{A-Z}={a-z}' '+l:|=* r:|=*'
 
 #####################
 # Shell Configuration
@@ -195,6 +203,12 @@ source $(which virtualenvwrapper_lazy.sh)
 # Don't need this, script is on our path
 # export VIRTUALENVWRAPPER_SCRIPT=/usr/local/bin/virtualenvwrapper.sh
 
+#################################
+# FD cross platform compatability
+
+export FD_FIND="$(command -v fd)"
+[[ ! -x $(command -v fdfind) ]] || export FD_FIND="$(command -v fdfind)"
+
 ######################
 # FZF fuzzy completion
 
@@ -203,9 +217,9 @@ export FZF_COMPLETION_TRIGGER='**'
 # Options to fzf command
 export FZF_COMPLETION_OPTS='+c -x'
 # Use fd (https://github.com/sharkdp/fd) instead of the default find
-function _fzf_compgen_path { fd --hidden --follow --exclude ".git" . "$1"; }
+function _fzf_compgen_path { $FD_FIND --hidden --follow --exclude ".git" . "$1"; }
 # Use fd to generate the list for directory completion
-function _fzf_compgen_dir { fd --type d --hidden --follow --exclude ".git" . "$1"; }
+function _fzf_compgen_dir { $FD_FIND --type d --hidden --follow --exclude ".git" . "$1"; }
 # Source fzf into zsh
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
@@ -243,7 +257,6 @@ alias gstaged='git difftool --staged'
 alias gdiff='git difftool'
 alias gcom='git commit -m'
 alias gadd='git add'
-# alias gpush='git push'
 alias gcheck='git checkout'
 
 # Remove git plugin aliases that I don't like
@@ -276,90 +289,77 @@ unalias lsa
 
 # Smart VIM if mvim is available
 function vim {
-    if which mvimv; then
+    if [[ -x $(command -v mvim ) ]]; then
         mvim --remote-tab-silent $@
     else
-        $(which vim) $@
+        local cmd
+        [[ ! -x /bin/vi ]] || cmd="/bin/vi"
+        [[ ! -x /bin/vim ]] || cmd="/bin/vim"
+        [[ ! -x /usr/bin/vim ]] || cmd="/usr/bin/vim"
+        [[ ! -x /usr/local/bin/vim ]] || cmd="/usr/local/bin/vim"
+        $cmd $@
     fi
 }
 
+# TODO: Relocate this if we start using it all over
+_echo_blue () { printf "\033[1;34m%s\033[0m\n" "$*"; }
+
 # Clean rebasing of branches with pull
 function gpush {
+    # Handle manual arguments
+    if [[ -n "$@" ]]; then
+        git push $@
+        return $?
+    fi
+
+    # Automate our push flow
+
+    # Get the remote name (usually "origin")
+    local remote=$(git remote)
+    # Get the current branch name
+    local current_branch=$(git rev-parse --abbrev-ref HEAD)
+
     # Find the default branch so we can rebase
     local default_branch=$(git remote show $(git remote -v | grep push | awk '{print $2}') | grep 'HEAD branch' | awk '{print $3}')
     # Fallback to "main"
     [[ -n "$default_branch" ]] || default_branch="main"
 
-    # Fetch and pull all branches
-    git pull --all --prune -v || exit $?
+    # Fetch the default branch for rebasing
+    _echo_blue "Fetching $remote/$default_branch"
+    git fetch --verbose --prune $(git remote) "$default_branch:$default_branch" || return $?
 
     # Attempt to rebase onto the default automatically
-    git rebase "$default_branch" || exit $?
+    _echo_blue "Rebasing $current_branch onto $remote/$default_branch"
+    git rebase --verbose --rerere-autoupdate "$default_branch"
+    local result=$?
+    [[ $result -eq 0 ]] || git rebase --verbose --abort
+    [[ $result -eq 0 ]] || return $result
 
     # Attempt to push to the branch remote, safely
-    git push --force-with-lease -v $@ || exit $?
+    # This checks if we have an upstream already, and adds our args
+    local upstream=()
+    git rev-parse --abbrev-ref --symbolic-full-name @{u} &> /dev/null || upstream=( "--set-upstream" "$remote" "$current_branch" )
+
+    # Do the actual push, soft force for rebasing, optionally setting upstream
+    _echo_blue "Pushing $current_branch to $remote"
+    git push --force-with-lease --verbose ${upstream[@]} || return $?
 }
+function _gpush {
+    # Completion for our gpush
+    local branches=( $(git for-each-ref --format='%(refname:short)' 'refs/heads/**') )
+    compadd -M 'l:|=* r:|=*' ${branches[@]}
+}
+compdef _gpush gpush
 
 # Switch to repostory based on short name, with tab completion
 function repo {
-    local name="$1"
-
-    if [[ -z "$1" ]]; then
-        cd "$HOME/github"
-        return
-    fi
-
-    local found
-    local paths=(
-        "$HOME/github"
-        "$HOME/code"
-        "$HOME/turo"
-        "$HOME/shakefu"
-    )
-    local search=()
-    for dir in $paths; do
-        if [[ -d "$dir" ]]; then
-            search+=( "$dir" )
-        fi
-    done
-
-    for dir in $search; do
-        # Prefer github repos to local
-        found=$(fd -a -t d -d 2 -1 --base-directory "$dir" "^$name$")
-        if [[ ! -z "$found" ]]; then
-            cd "$found"
-            return
-        fi
-    done
-
-    for dir in $search; do
-        # Prefer github repos to local
-        found=$(fd -a -t d -d 2 -1 --base-directory "$dir" "^$name")
-        if [[ ! -z "$found" ]]; then
-            cd "$found"
-            return
-        fi
-    done
-
-    for dir in $search; do
-        # Prefer github repos to local
-        found=$(fd -a -t d -d 2 -1 --base-directory "$dir" "$name")
-        if [[ ! -z "$found" ]]; then
-            cd "$found"
-            return
-        fi
-    done
-
-    echo "Repository not found: $1"
-    return 1
+    cd "$HOME/$1"
 }
 function _repo {
-    local _repos
-    _repos=( $(fd -a -t d -d 1 --base-directory "$HOME/github" .) )
-    _repos+=( "$HOME/code" )
-    _repos+=( "$HOME/code/gitlab" )
-    _files -/ -W _repos
+    local repos=( $(fdfind --hidden --base-directory "$HOME" "^\.git$" | sed -e 's/\/\.git$//' | grep -Ev '(^\.|/\.)') )
+    compadd -M 'l:|=* r:|=*' ${repos[@]}
 }
+
 compdef _repo repo
 
 # Grep all
