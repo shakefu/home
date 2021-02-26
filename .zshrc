@@ -324,13 +324,15 @@ function gpush {
     # Fallback to "main"
     [[ -n "$default_branch" ]] || default_branch="main"
 
+    local remote_default_branch="remotes/$remote/$default_branch"
+
     # Fetch the default branch for rebasing
     _echo_blue "Fetching $remote/$default_branch"
-    git fetch --verbose --prune $(git remote) "$default_branch:$default_branch" || return $?
+    git fetch --verbose --prune $(git remote) "$default_branch" || return $?
 
     # Attempt to rebase onto the default automatically
     _echo_blue "Rebasing $current_branch onto $remote/$default_branch"
-    git rebase --verbose --rerere-autoupdate "$default_branch"
+    git rebase --verbose --rerere-autoupdate --autostash "$remote/$default_branch"
     local result=$?
     [[ $result -eq 0 ]] || git rebase --verbose --abort
     [[ $result -eq 0 ]] || return $result
