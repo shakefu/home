@@ -5,9 +5,6 @@ if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]
   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
 fi
 
-# If you come from bash you might have to change your $PATH.
-# export PATH=$HOME/bin:/usr/local/bin:$PATH
-
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
 
@@ -160,7 +157,14 @@ SAVEHIST=100000
 ######
 # PATH
 
+
+# If you come from bash you might have to change your $PATH.
+# export PATH=$HOME/bin:/usr/local/bin:$PATH
 # Append language specific paths in search order
+# Add golang's default install path
+export PATH="$PATH:/usr/local/go/bin"
+# Add golang's package install path
+export PATH="$PATH:$HOME/go/bin"
 # Add Python's site.USER_BASE bin
 export PATH="$PATH:$HOME/Library/Python/3.7/bin"
 # Add Homebrew unversioned Python binaries to PATH
