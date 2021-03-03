@@ -1,0 +1,3 @@
+#!/bin/dash -e
+$RUN pip3 install -U "$NAME"
+$RUN /bin/dash -c "mkdir -p $HOME/.bin && ln -sf /bin/dash $HOME/.bin/$NAME"

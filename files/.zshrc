@@ -205,7 +205,7 @@ export WORKON_HOME=$HOME/.virtualenvs
 # Anything that is done with mkproject ends up in tmp
 export PROJECT_HOME=$HOME/tmp
 # Lazy load virtualenvwrapper commands for quicker shells
-source $(which virtualenvwrapper_lazy.sh)
+[ ! -x "$(command -v virtualenvwrapper.sh)" ] || \. "$(which virtualenvwrapper_lazy.sh)"
 # Don't need this, script is on our path
 # export VIRTUALENVWRAPPER_SCRIPT=/usr/local/bin/virtualenvwrapper.sh
 
@@ -418,7 +418,7 @@ function repo {
         cd "$dirname"
         return
     fi
-    dirname="$HOME/$(fdfind --hidden --base-directory "$HOME" --full-path --glob "**/*$1*/.git" | sed -e 's/\/\.git$//' | sort | head -1)"
+    dirname="$HOME/$($FD_FIND --hidden --base-directory "$HOME" --full-path --glob "**/*$1*/.git" | sed -e 's/\/\.git$//' | sort | head -1)"
     if [[ -d "$dirname" ]]; then
         cd "$dirname"
         return
@@ -428,7 +428,7 @@ function repo {
     fi
 }
 function _repo {
-    local repos=( $(fdfind --hidden --base-directory "$HOME" "^\.git$" | sed -e 's/\/\.git$//' | grep -Ev '(^\.|/\.)') )
+    local repos=( $($FD_FIND --hidden --base-directory "$HOME" "^\.git$" | sed -e 's/\/\.git$//' | grep -Ev '(^\.|/\.)') )
     compadd -M 'l:|=* r:|=*' ${repos[@]}
 }
 

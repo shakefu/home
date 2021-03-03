@@ -1,0 +1,5 @@
+#!/bin/dash -e
+$RUN curl -o "$TMP" -fsSL "https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh"
+$RUN /bin/sh "$TMP"
+# Make the dummy executable for install checking
+$RUN /bin/dash -c "mkdir -p $HOME/.bin && ln -sf /bin/dash $HOME/.bin/$NAME"
