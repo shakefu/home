@@ -359,7 +359,20 @@ compdef _gpush gpush
 
 # Switch to repostory based on short name, with tab completion
 function repo {
-    cd "$HOME/$1"
+    local dirname
+    dirname="$HOME/$1"
+    if [[ -d "$dirname" ]]; then
+        cd "$dirname"
+        return
+    fi
+    dirname="$HOME/$(fdfind --hidden --base-directory "$HOME" --full-path --glob "**/*$1*/.git" | sed -e 's/\/\.git$//' | sort | head -1)"
+    if [[ -d "$dirname" ]]; then
+        cd "$dirname"
+        return
+    else
+        echo "Could not find matching repo for: $1"
+        return 1
+    fi
 }
 function _repo {
     local repos=( $(fdfind --hidden --base-directory "$HOME" "^\.git$" | sed -e 's/\/\.git$//' | grep -Ev '(^\.|/\.)') )
@@ -433,3 +446,6 @@ function tabname {
 
 # Load NVM if it exists
 [[ ! -f ~/.nvm/nvm.sh ]] || source ~/.nvm/nvm.sh
+
+# Load saml2aws credentials if we have them
+[[ ! -x $(command -v saml2aws) ]] || eval $(saml2aws script 2>/dev/null || true)
