@@ -81,7 +81,8 @@ setopt NO_HIST_BEEP
 ##########################
 # Completion compatability
 
-fpath=(${ZSH_CUSTOM}/completions ${ZSH_CUSTOM}/plugins/exa $fpath)
+# Put the _exa completion script in "${ZSH_CUSTOM}/completions" instead
+# fpath=(${ZSH_CUSTOM}/completions ${ZSH_CUSTOM}/plugins/exa $fpath)
 
 # export FPATH="$FPATH:/usr/local/etc/bash_completion.d/"
 # ZSH_DISABLE_COMPFIX="true"
