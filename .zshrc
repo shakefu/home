@@ -387,9 +387,9 @@ compdef _repo repo
 # Grep all
 unalias gr  # Override zsh plugin alias
 function gr {
-    echo "all args: $@"
+    [[ -z "$DEBUG" ]] || echo "all args: $@"
     local pattern="$1"
-    echo "pattern: $pattern"
+    [[ -z "$DEBUG" ]] || echo "pattern: $pattern"
     if [[ $# > 1 ]]; then
         shift
         args="$@"
@@ -397,7 +397,7 @@ function gr {
     if [[ -z "$args" ]]; then
         args="."
     fi
-    echo "args: $args"
+    [[ -z "$DEBUG" ]] || echo "args: $args"
     grep -nR --exclude-dir='node_modules' --exclude-dir='.git' \
         --exclude-dir='build' --exclude-dir='bower_components' \
         --exclude-dir='coverage' --exclude-dir='.nyc_output' \
