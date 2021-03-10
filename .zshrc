@@ -110,6 +110,7 @@ plugins=(
     docker-compose
     # dotenv  # This is kind of noisy and I'm not sure I want it
     emoji-clock
+    exa
     fzf
     git
     # gitfast  # More up to date version of git?
@@ -292,6 +293,10 @@ unalias lsa
 # Functions
 ###########
 
+# Colors
+# TODO: Relocate this if we start using it all over
+_echo_blue () { printf "\033[1;34m%s\033[0m\n" "$*"; }
+
 # Smart VIM if mvim is available
 function vim {
     if [[ -x $(command -v mvim ) ]]; then
@@ -305,9 +310,6 @@ function vim {
         $cmd $@
     fi
 }
-
-# TODO: Relocate this if we start using it all over
-_echo_blue () { printf "\033[1;34m%s\033[0m\n" "$*"; }
 
 # Clean rebasing of branches with pull
 function gpush {
@@ -385,14 +387,17 @@ compdef _repo repo
 # Grep all
 unalias gr  # Override zsh plugin alias
 function gr {
+    echo "all args: $@"
     local pattern="$1"
+    echo "pattern: $pattern"
     if [[ $# > 1 ]]; then
         shift
-        args="$*"
+        args="$@"
     fi
     if [[ -z "$args" ]]; then
         args="."
     fi
+    echo "args: $args"
     grep -nR --exclude-dir='node_modules' --exclude-dir='.git' \
         --exclude-dir='build' --exclude-dir='bower_components' \
         --exclude-dir='coverage' --exclude-dir='.nyc_output' \
@@ -438,6 +443,103 @@ function pgr {
 function tabname {
   printf "\e]1;$1\a"
 }
+
+########################
+# Work related functions
+
+if [[ -x $(command -v turo) ]]; then
+    function turo() {
+        case $* in
+            *"--help"* ) command turo "$@" ;;
+            aws\ set-profile\ * ) eval $(command turo "$@") ;;
+            k8s\ login\ * ) eval $(command turo "$@") ;;
+            * ) command turo "$@" ;;
+        esac
+    }
+fi
+
+
+function _old-aws-profile {
+    local profile=${1:-saml}
+    local target=${2:-}
+
+    if [[ "$profile" == "--help" ]]; then
+        echo "Usage: $0 [SOURCE_PROFILE] TARGET_PROFILE"
+        return
+    fi
+
+    # Multi-arg default override
+    if [[ -z "$target" ]]; then
+        target="$profile"
+        profile="saml"
+    fi
+
+    if [[ "$target" == "saml" ]]; then
+        echo "Missing required argument: TARGET_PROFILE"
+        return 1
+    fi
+
+    _echo_blue "Using profile '$profile' to assume '$target'"
+
+    local principal="$(aws configure get x_principal_arn --profile $profile)"
+    if [[ -z "$principal" ]]; then
+        echo "Error: Principal ARN not found."
+        return 1
+    fi
+
+    local role="$(aws configure get role_arn --profile $target)"
+    if [[ -z "$role" ]]; then
+        echo "Error: Role ARN not found."
+        return 1
+    fi
+
+    _echo_blue "Role: $role"
+
+    eval $(aws sts assume-role --profile "$profile" --role-arn "$role" --role-session-name "$target" | jq -r '.Credentials | "export AWS_ACCESS_KEY_ID=\(.AccessKeyId)\nexport AWS_SECRET_ACCESS_KEY=\(.SecretAccessKey)\nexport AWS_SESSION_TOKEN=\(.SessionToken)\n"')
+
+    for var in $(env | grep AWS_ | sort); do
+        echo "$var"
+    done
+}
+
+function aws-env {
+    if [[ ! -x $(command -v aws) ]]; then
+        echo "Error: aws-cli not installed"
+        return 1
+    fi
+    profile=${1:-${AWS_PROFILE:-default}}
+
+    if [[ "${profile}" == "clear" ]]; then
+        _echo_blue "Clearing environment"
+
+        for name in $(env | grep '^AWS_' | cut -d '=' -f 1); do
+            echo "  unset $name"
+            unset $name
+        done
+        return
+    fi
+
+    _echo_blue "Using profile: $profile"
+
+    local role_arn
+    role_arn=$(aws configure get role_arn --profile "${profile}") || return 1
+    echo "  Assuming $role_arn"
+
+    eval $(aws sts assume-role --profile "$profile" --role-arn "$role" --role-session-name "$target" | jq -r '.Credentials | "export AWS_ACCESS_KEY_ID=\(.AccessKeyId)\nexport AWS_SECRET_ACCESS_KEY=\(.SecretAccessKey)\nexport AWS_SESSION_TOKEN=\(.SessionToken)\n"')
+
+    export AWS_DEFAULT_REGION="$(aws configure get region --profile ${profile})"
+    # export AWS_ACCESS_KEY_ID="$(aws configure get aws_access_key_id --profile ${profile})"
+    # export AWS_SECRET_ACCESS_KEY="$(aws configure get aws_secret_access_key --profile ${profile})"
+    # export AWS_SESSION_TOKEN="$(aws configure get aws_session_token --profile ${profile})"
+    # export AWS_SECRET_KEY=${AWS_SECRET_ACCESS_KEY}
+
+    for var in $(env | grep AWS_ | sort); do
+        echo "$var"
+    done
+}
+
+###########################
+# Sourcing external scripts
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh

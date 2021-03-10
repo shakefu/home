@@ -5,17 +5,6 @@ so I'm putting them under version control.
 
 ## Installing
 
-You should be able to untar the repository archive directly into your `$HOME`
-directory.
-
-<!-- TODO: Create an install script to clone the repository, symlink or copy
-fils into place. Perform dependency checks, etc. -->
-
-```bash
-cd $HOME
-curl -sL https://github.com/shakefu/home/archive/master.tar.gz | tar -xzv --strip-components=1
-```
-
 ### Install Pathogen
 
 [Pathogen](https://github.com/tpope/vim-pathogen) is the VIM plugin manager.
@@ -53,6 +42,21 @@ There's a script for that. There's a few of them.
 
 ```bash
 $ sh .oh-my-zsh.git
+```
+
+#### Install home repository
+
+This needs to be done after oh-my-zsh and plugins installed because it overwrites some things.
+
+You should be able to untar the repository archive directly into your `$HOME`
+directory.
+
+<!-- TODO: Create an install script to clone the repository, symlink or copy
+fils into place. Perform dependency checks, etc. -->
+
+```bash
+cd $HOME
+curl -sL https://github.com/shakefu/home/archive/master.tar.gz | tar -xzv --strip-components=1
 ```
 
 #### Install `exa`, the nice ls replacement
