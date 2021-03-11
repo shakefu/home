@@ -261,7 +261,7 @@ alias gundo='git reset --soft "HEAD^"'
 alias gunstage='git reset --'
 alias gstaged='git difftool --staged'
 alias gdiff='git difftool'
-alias gcom='git commit -m'
+# alias gcom='git commit -m'  # Move to function
 alias gadd='git add'
 alias gcheck='git checkout'
 
@@ -309,6 +309,14 @@ function vim {
         [[ ! -x /usr/local/bin/vim ]] || cmd="/usr/local/bin/vim"
         $cmd $@
     fi
+}
+
+function gcom {
+    if [[ -z "$1" ]]; then
+        git commit
+        return $?
+    fi
+    git commit -m $@
 }
 
 # Clean rebasing of branches with pull

@@ -1,0 +1,7 @@
+#!/bin/sh
+# Exit quietly if cz doesn't exist
+[ -x "$(command -v cz)" ] || exit 0
+# Prevent issues when rebasing
+[ "$1"  = ".git/COMMIT_EDITMSG" -a "$2" = "message" ] && exit 0
+# Run the commitizen script
+exec < /dev/tty && cz --hook || true
