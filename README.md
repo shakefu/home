@@ -114,6 +114,50 @@ This is used if `less` and `more` are aliased to their colored variants.
 sudo pip install pygments
 ```
 
+#### Install icdiff
+
+This has to be installed from GitHub directly because they haven't published
+the main version yet.
+
+- [icdiff on GitHub](https://github.com/jeffkaufman/icdiff)
+
+#### Install nvm
+
+We use node.js for some tooling, bleh.
+
+- [nvm-sh/nvm](https://github.com/nvm-sh/nvm) script for easy install.
+
+#### Install commitizen
+
+Makes nice commit messages that comply with the standard.
+
+- [commitizen on GitHub](https://github.com/commitizen/cz-cli)
+
+This wants node.js v12, so, something like:
+
+```bash
+# Use node.js 12
+nvm install v12
+nvm use v12
+# Install "globally"
+npm install -g commitizen
+# Link the command from the nvm bin/ into our PATh so we don't have to screw
+# with nvm each time we want to use it
+ln -s "$(which cz)" "$HOME/.bin/cz"
+```
+
+#### Install pre-commit
+
+This runs pre-commit scripts for us with git and makes it easier to not
+forget to run local tests and formatters and linters. It's helpful.
+
+- [pre-commit GitHub](https://github.com/pre-commit/pre-commit)
+
+```bash
+# Install via pip globally
+sudo pip install pre-commit
+```
+
 #### Breadcrumbs
 
 - [oh-my-zsh](https://ohmyz.sh/) - zsh plugin manager and framework
