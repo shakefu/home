@@ -264,6 +264,7 @@ alias gdiff='git difftool'
 # alias gcom='git commit -m'  # Move to function
 alias gadd='git add'
 alias gcheck='git checkout'
+alias gch='git checkout'
 
 # Remove git plugin aliases that I don't like
 unalias gbr     # git branch --remote
@@ -296,6 +297,38 @@ unalias lsa
 # Colors
 # TODO: Relocate this if we start using it all over
 _echo_blue () { printf "\033[1;34m%s\033[0m\n" "$*"; }
+
+# Really specific usage of `exa` that I like
+function ll {
+    local ignore=".git|.terraform|.DS_Store|.idea|.vs_code"
+    local args=(
+        --tree
+        --ignore-glob "$ignore"
+        --all
+        --group-directories-first
+        --long
+        --created
+        --modified
+        --header
+    )
+    # If we have no arguments, use a default level of 2
+    [[ ! -z "$@" ]] || args+=( --level 2 )
+    # If there's arguments let's do some easy parsing for shorthand
+    while [[ -n "$1" ]]; do
+        if [[ "$1" =~ '^-[0-9]+$' ]]; then
+            # Found hyphen-digit, strip the hyphen, set level
+            args+=( --level "${1:1}" )
+        elif  [[ "$1" =~ '^[0-9]+$' ]]; then
+            # Found single digit, interpret as a level
+            args+=( --level "$1" )
+        else
+            # Found some other arg
+            args+=( "$1" )
+        fi
+        shift
+    done
+    exa "${args[@]}"
+}
 
 # Smart VIM if mvim is available
 function vim {
