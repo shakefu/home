@@ -263,7 +263,7 @@ alias gstaged='git difftool --staged'
 alias gdiff='git difftool'
 # alias gcom='git commit -m'  # Move to function
 alias gadd='git add'
-alias gcheck='git checkout'
+# alias gcheck='git checkout'  # Fights tab completion with gch
 alias gch='git checkout'
 
 # Remove git plugin aliases that I don't like
@@ -310,6 +310,7 @@ function ll {
         --created
         --modified
         --header
+        --icons
     )
     # If we have no arguments, use a default level of 2
     [[ ! -z "$@" ]] || args+=( --level 2 )
