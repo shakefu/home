@@ -1,0 +1,21 @@
+#!/bin/dash -e
+# Make sure nvm is loaded
+export NVM_DIR="$HOME/.nvm"
+
+[ -f "/usr/local/opt/nvm/nvm.sh" ] || exit 0
+. "/usr/local/opt/nvm/nvm.sh"
+
+# Install and use node.js 12
+$RUN nvm install v12
+$RUN nvm use v12
+
+# Install "globally"
+$RUN npm install -g commitizen
+$RUN npm install -g cz-conventional-changelog
+
+# Link the command from the nvm bin/ into our PATH so we don't have to screw
+# with nvm each time we want to use it
+if which cz >/dev/null; then
+    $RUN mkdir -p "$HOME/.bin"
+    $RUN ln -sf "$(which cz)" "$HOME/.bin/"
+fi

@@ -1,0 +1,7 @@
+#!/bin/dash -e
+if [ ! -x "$(command -v $NAME)" ]; then
+    [ -z "$UPGRADE" ] || exit 0
+    echo "Error: $NAME not installed"
+    exit 1
+fi
+echo "$NAME cannot be upgraded automatically"

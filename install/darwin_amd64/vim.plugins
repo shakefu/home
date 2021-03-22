@@ -1,0 +1,38 @@
+#!/bin/dash -e
+# Custom plugins for oh-my-zsh
+# Set our default dir
+VIM_BUNDLE="$HOME/.vim/bundle"
+
+$RUN mkdir -p "$VIM_BUNDLE"
+cd "$VIM_BUNDLE"
+
+# Helper to clone into tmp directory
+safe_clone () {
+    local uri="$1"
+    local name
+    name="$(basename "$uri" .git)"
+    # shellcheck disable=SC2115
+    rm -rf "$VIM_BUNDLE/$name"
+    $RUN git clone --depth=1 --recurse-submodules --shallow-submodules "$uri" "$name"
+}
+
+# Not loading this yet 'cause VSCode I don't think likes it
+# https://github.com/Valloric/YouCompleteMe.git
+safe_clone "https://github.com/altercation/vim-colors-solarized.git"
+safe_clone "https://github.com/chr4/nginx.vim.git"
+safe_clone "https://github.com/ctrlpvim/ctrlp.vim.git"
+safe_clone "https://github.com/dbakker/vim-projectroot.git"
+safe_clone "https://github.com/ekalinin/Dockerfile.vim.git"
+safe_clone "https://github.com/fatih/vim-go.git"
+safe_clone "https://github.com/hashivim/vim-terraform.git"
+safe_clone "https://github.com/powerline/powerline.git"
+safe_clone "https://github.com/python-mode/python-mode.git"
+safe_clone "https://github.com/rizzatti/dash.vim.git"
+safe_clone "https://github.com/rust-lang/rust.vim.git"
+safe_clone "https://github.com/tpope/vim-markdown.git"
+safe_clone "https://github.com/vim-python/python-syntax.git"
+safe_clone "https://github.com/vim-scripts/Tabmerge.git"
+safe_clone "https://github.com/vimscript/toml.git"
+
+# Make the dummy executable for install checking
+$RUN /bin/dash -c "mkdir -p $HOME/.bin && ln -sf /bin/dash $HOME/.bin/$NAME"

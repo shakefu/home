@@ -1,0 +1,21 @@
+#!/bin/dash -e
+
+# Install Powerline fonts
+
+# Places to check for fonts
+font_dirs="/System/Library/Fonts /Library/Fonts $HOME/Library/Fonts"
+
+# shellcheck disable=SC2086
+existing=$(find $font_dirs -name "*Powerline*.ttf" )
+
+# Found some fonts, exit if we're not upgrading
+if [ -n "$existing" ] && [ -z "$UPGRADE" ]; then
+    exit 0
+fi
+
+# Clone the powerline repo
+$RUN git clone https://github.com/powerline/fonts.git --depth=1 "$TMP"
+# Install the fonts
+$RUN "$TMP/install.sh"
+# Make the dummy executable for install checking
+$RUN /bin/dash -c "mkdir -p $HOME/.bin && ln -sf /bin/dash $HOME/.bin/$NAME"

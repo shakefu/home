@@ -3,3 +3,4 @@ tfplan
 tfchanges
 .terraform/
 .terraform.lock.hcl
+aws.auto.tfvars

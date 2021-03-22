@@ -1,0 +1,5 @@
+#!/usr/bin/dash -e
+$RUN mkdir -p "$HOME/.vim/autoload" "$HOME/.vim/bundle"
+$RUN curl -LSso "$HOME/.vim/autoload/pathogen.vim" "https://tpo.pe/pathogen.vim"
+# Make the dummy executable for install checking
+$RUN /bin/dash -c "mkdir -p $HOME/.bin && ln -sf /bin/dash $HOME/.bin/$NAME"

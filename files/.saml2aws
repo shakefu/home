@@ -1,0 +1,21 @@
+[default]
+Name                 = default
+app_id               =
+url                  = https://turo.okta.com/home/amazon_aws/0oa4lrfg35lnIaMH6357/272
+username             = jalheid@turo.com
+provider             = Okta
+mfa                  = TOTP
+skip_verify          = false
+timeout              = 0
+aws_urn              = urn:amazon:webservices
+aws_session_duration = 28800
+aws_profile          = default
+resource_id          =
+subdomain            =
+role_arn             =
+region               =
+http_attempts_count  =
+http_retry_delay     =
+credentials_file     =
+saml_cache           = false
+
