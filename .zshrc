@@ -303,7 +303,7 @@ function ll {
     local ignore=".git|.terraform|.DS_Store|.idea|.vs_code"
     local args=(
         --tree
-        --ignore-glob "$ignore"
+        --ignore-glob \'$ignore\'
         --all
         --group-directories-first
         --long
@@ -312,22 +312,30 @@ function ll {
         --header
         --icons
     )
-    # If we have no arguments, use a default level of 2
-    [[ ! -z "$@" ]] || args+=( --level 2 )
+    local list_home
+    local level
+
     # If there's arguments let's do some easy parsing for shorthand
     while [[ -n "$1" ]]; do
         if [[ "$1" =~ '^-[0-9]+$' ]]; then
             # Found hyphen-digit, strip the hyphen, set level
             args+=( --level "${1:1}" )
-        elif  [[ "$1" =~ '^[0-9]+$' ]]; then
+            level="1"
+        elif [[ "$1" =~ '^[0-9]+$' ]]; then
             # Found single digit, interpret as a level
             args+=( --level "$1" )
+            level="1"
         else
-            # Found some other arg
+            # Everything else just gets slapped on
             args+=( "$1" )
         fi
         shift
     done
+
+    # Use a default level of 2
+    [[ -n "$level" ]] || args+=( --level 2 )
+
+    # Long list command
     exa "${args[@]}"
 }
 
@@ -500,25 +508,182 @@ if [[ -x $(command -v turo) ]]; then
     }
 fi
 
+function _aws-login {
+    # Check if saml2aws has been installed, and configured
+    if [[ ! -x "$(command -v saml2aws)" ]]; then
+        echo "Error: saml2aws not installed"
+        return 1
+    fi
 
-function _old-aws-profile {
+    if [[ ! -f "$HOME/.saml2aws" ]]; then
+        # Configure saml2aws to set default profile (instead of saml profile)
+        saml2aws configure --session-duration 28800 --profile default
+    fi
+
+    # Use saml2aws to do login process (preferably without prompting)
+    local args=()
+    args+=( $(aws sts get-caller-identity &>/dev/null || echo "--force") )
+    args+=( $(pass saml2aws &>/dev/null && echo "--skip-prompt") )
+
+    _echo_blue "Refreshing credentials"  # "(${args[@]})"
+
+    saml2aws login "${args[@]}"
+    local result=$?
+    if [[ $result -ne 0 ]]; then
+        echo "Error: could not authenticate"
+        return $result
+    fi
+}
+
+function _aws-profile {
+    local profile="${1:-default}"
+
+    # Run login (transparent)
+    _aws-login
+
+    # Check principal
+    local principal="$(aws --profile $profile sts get-caller-identity 2>/dev/null | jq .Arn)"
+    if [[ -z "$principal" ]]; then
+        echo "Error: Principal ARN not found."
+        return 1
+    fi
+
+    # Export AWS_PROFILE for delegated auth
+    export AWS_PROFILE="$profile"
+
+    # Maybe export region?
+    export AWS_DEFAULT_REGION="us-east-1"
+
+    _echo_blue "Set profile to '$profile'"
+}
+
+function _aws-env {
+    # Maybe export region?
+    local target="$1"
+    local profile="${2:-default}"
+
+    # If no arguments, print current env
+    if [[ -z "$target" ]]; then
+        _aws-print-env
+        return
+    fi
+
+    # Run login (transparent)
+    _aws-login
+
+    local role="$(aws configure get role_arn --profile $target)"
+    if [[ -z "$role" ]]; then
+        echo "Error: Role ARN not found."
+        return 1
+    fi
+
+    _echo_blue "Role: $role"
+
+    # Export all AWS vars needed
+    eval $(aws sts assume-role --profile "$profile" --role-arn "$role" --role-session-name "$target" | jq -r '.Credentials | "export AWS_ACCESS_KEY_ID=\(.AccessKeyId)\nexport AWS_SECRET_ACCESS_KEY=\(.SecretAccessKey)\nexport AWS_SESSION_TOKEN=\(.SessionToken)\n"')
+}
+
+function _aws-clear {
+    # Clear all AWS related env vars
+    _echo_blue "Clearing environment"
+
+    for name in $(env | grep '^AWS_' | cut -d '=' -f 1); do
+        echo "  unset $name"
+        unset $name
+    done
+    return
+}
+
+function _aws-print-env {
+    # Print all AWS related env vars (maybe)
+    for var in $(env | grep ^AWS_ | sort); do
+        echo "$var"
+    done
+}
+
+# If aws-cli is installed, we augment
+if whence -p aws >/dev/null; then
+    function _aws {
+        "$(whence -p aws)" "$@"
+        return $?
+    }
+    function aws {
+        if [ "$1" = "login" ]; then shift; _aws-login "$@"; return $?; fi
+        if [ "$1" = "profile" ]; then shift; _aws-profile "$@"; return $?; fi
+        if [ "$1" = "env" ]; then shift; _aws-env "$@"; return $?; fi
+        if [ "$1" = "clear" ]; then shift; _aws-clear "$@"; return $?; fi
+        _aws "$@"
+        return $?
+    }
+else
+    function _aws {
+        echo 'Error: aws-cli is not installed'
+        return 1
+    }
+fi
+
+function _aws-profile-old {
     local profile=${1:-saml}
-    local target=${2:-}
+    local target=${2:-${AWS_PROFILE}}
 
+    # Provide some useful-ish help
     if [[ "$profile" == "--help" ]]; then
         echo "Usage: $0 [SOURCE_PROFILE] TARGET_PROFILE"
         return
     fi
 
-    # Multi-arg default override
-    if [[ -z "$target" ]]; then
-        target="$profile"
-        profile="saml"
+    # Little sanity checking
+    if [[ ! -x $(command -v aws) ]]; then
+        echo "Error: aws-cli not installed"
+        return 1
     fi
 
+    if [[ "$profile" == "clear" ]]; then
+        _echo_blue "Clearing environment"
+
+        for name in $(env | grep '^AWS_' | cut -d '=' -f 1); do
+            echo "  unset $name"
+            unset $name
+        done
+        return
+    fi
+
+    # Get the default profile name or fallback to 'saml'
+    local default_profile="$( (aws configure list | grep -v '<not set>' | grep profile || echo 'profile saml' ) | awk '{print $2}')"
+
+    # If we have a single argument, default to making that the target
+    if [[ -z "$target" ]]; then
+        target="$profile"
+        profile="$default_profile"
+    fi
+
+    # Always try to refresh credentials if we should
+    if [[ "$default_profile" == "saml" && -x "$(command -v saml2aws)" ]]; then
+        local args=()
+        args+=( $(aws sts get-caller-identity &>/dev/null || echo "--force") )
+        args+=( $(pass saml2aws &>/dev/null && echo "--skip-prompt") )
+        _echo_blue "Refreshing credentials (${args[@]})"
+        saml2aws login "${args[@]}"
+        local result=$?
+        if [[ $result -ne 0 ]]; then
+            echo "Error: could not authenticate"
+            return $result
+        fi
+    fi
+
+    # If we basically have no arguments, or are using the default, we assume
+    # the main SAML role for the environment
     if [[ "$target" == "saml" ]]; then
-        echo "Missing required argument: TARGET_PROFILE"
-        return 1
+        if [[ ! -x "$(command -v saml2aws)" ]]; then
+            echo "Missing required argument: TARGET_PROFILE"
+            return 1
+        fi
+        _echo_blue "Setting environment for profile '$target'"
+        eval $(saml2aws script)
+        for var in $(env | grep AWS_ | sort); do
+            echo "$var"
+        done
+        return
     fi
 
     _echo_blue "Using profile '$profile' to assume '$target'"
@@ -539,43 +704,7 @@ function _old-aws-profile {
 
     eval $(aws sts assume-role --profile "$profile" --role-arn "$role" --role-session-name "$target" | jq -r '.Credentials | "export AWS_ACCESS_KEY_ID=\(.AccessKeyId)\nexport AWS_SECRET_ACCESS_KEY=\(.SecretAccessKey)\nexport AWS_SESSION_TOKEN=\(.SessionToken)\n"')
 
-    for var in $(env | grep AWS_ | sort); do
-        echo "$var"
-    done
-}
-
-function aws-env {
-    if [[ ! -x $(command -v aws) ]]; then
-        echo "Error: aws-cli not installed"
-        return 1
-    fi
-    profile=${1:-${AWS_PROFILE:-default}}
-
-    if [[ "${profile}" == "clear" ]]; then
-        _echo_blue "Clearing environment"
-
-        for name in $(env | grep '^AWS_' | cut -d '=' -f 1); do
-            echo "  unset $name"
-            unset $name
-        done
-        return
-    fi
-
-    _echo_blue "Using profile: $profile"
-
-    local role_arn
-    role_arn=$(aws configure get role_arn --profile "${profile}") || return 1
-    echo "  Assuming $role_arn"
-
-    eval $(aws sts assume-role --profile "$profile" --role-arn "$role" --role-session-name "$target" | jq -r '.Credentials | "export AWS_ACCESS_KEY_ID=\(.AccessKeyId)\nexport AWS_SECRET_ACCESS_KEY=\(.SecretAccessKey)\nexport AWS_SESSION_TOKEN=\(.SessionToken)\n"')
-
-    export AWS_DEFAULT_REGION="$(aws configure get region --profile ${profile})"
-    # export AWS_ACCESS_KEY_ID="$(aws configure get aws_access_key_id --profile ${profile})"
-    # export AWS_SECRET_ACCESS_KEY="$(aws configure get aws_secret_access_key --profile ${profile})"
-    # export AWS_SESSION_TOKEN="$(aws configure get aws_session_token --profile ${profile})"
-    # export AWS_SECRET_KEY=${AWS_SECRET_ACCESS_KEY}
-
-    for var in $(env | grep AWS_ | sort); do
+    for var in $(env | grep ^AWS_ | sort); do
         echo "$var"
     done
 }
@@ -593,4 +722,5 @@ function aws-env {
 [[ ! -f ~/.nvm/nvm.sh ]] || source ~/.nvm/nvm.sh
 
 # Load saml2aws credentials if we have them
-[[ ! -x $(command -v saml2aws) ]] || eval $(saml2aws script 2>/dev/null || true)
+# Don't need this
+# [[ ! -x $(command -v saml2aws) ]] || eval $(saml2aws script 2>/dev/null || true)
