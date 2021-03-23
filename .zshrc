@@ -568,6 +568,9 @@ function _aws-env {
         return
     fi
 
+    # This doesn't get used in env mode
+    unset AWS_PROFILE
+
     # Run login (transparent)
     _aws-login
 
