@@ -11,6 +11,7 @@ $RUN nvm use v12
 
 # Install "globally"
 $RUN npm install -g commitizen
+$RUN npm install -g cz-conventional-changelog
 
 # Link the command from the nvm bin/ into our PATH so we don't have to screw
 # with nvm each time we want to use it

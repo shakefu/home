@@ -13,4 +13,4 @@
     cmd = "BASE=\"$BASE\" /usr/local/bin/icdiff --is-git-diff --line-numbers --no-bold --numlines 3 --color-map 'line-numbers:black' \"$LOCAL\" \"$REMOTE\""
 [core]
     editor = /usr/local/bin/vi
-	hooksPath = $HOME/.githooks
+    hooksPath = /Users/shakefu/.githooks
