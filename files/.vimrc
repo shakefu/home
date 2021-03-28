@@ -92,6 +92,7 @@ let g:ycm_autoclose_preview_window_after_insertion = 1
 " let g:ycm_key_list_select_completion = ['<TAB>', '<Down>', '<Enter>']
 
 " Powerline
+let g:powerline_pycmd = 'py3'
 " Enable Powerline
 set rtp+=~/.vim/bundle/powerline/powerline/bindings/vim
 " Always show Powerline

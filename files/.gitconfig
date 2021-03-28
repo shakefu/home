@@ -1,10 +1,10 @@
 [user]
-	name = Jacob Alheid
-	email = shakefu@gmail.com
+    name = Jacob Alheid
+    email = shakefu@gmail.com
 [push]
     default = simple
 [merge]
-	tool = opendiff
+    tool = meld
 [diff]
     tool = icdiff
 [difftool]
@@ -12,4 +12,5 @@
 [difftool "icdiff"]
     cmd = "BASE=\"$BASE\" /usr/local/bin/icdiff --is-git-diff --line-numbers --no-bold --numlines 3 --color-map 'line-numbers:black' \"$LOCAL\" \"$REMOTE\""
 [core]
-	editor = /usr/local/bin/vi
+    editor = /usr/local/bin/vi
+	hooksPath = $HOME/.githooks
