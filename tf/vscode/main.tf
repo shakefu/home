@@ -106,6 +106,14 @@ resource "aws_security_group" "vscode" {
     cidr_blocks = ["0.0.0.0/0"] # TODO: Close this down
   }
 
+  ingress {
+    description = "Foundry"
+    from_port   = 30000
+    to_port     = 30000
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] # TODO: Close this down
+  }
+
   egress {
     from_port   = 0
     to_port     = 0
@@ -166,7 +174,7 @@ resource "aws_eip_association" "eip_assoc" {
 
 locals {
   vols = [
-    { name = "shakefu", size = 16, device = "/dev/sdg" },
+    { name = "shakefu", size = 20, device = "/dev/sdg" },
   ]
   # vols = [
   #   ["etc", 1, "/dev/sdg"],
