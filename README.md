@@ -5,13 +5,21 @@ so I'm putting them under version control.
 
 ## Installing
 
-Currently the easiest install path is to clone this repository, and then run
-the `home.go` command to install everything.
+The easiest install is to download the release for your operating system
+and architecture and run it.
 
 ```bash
-$ git clone https://github.com/shakefu/home.git
-$ cd home
-$ go run home.go setup
+curl -fsSL https://github.com/shakefu/home/releases/download/v1.0.1/home-v1.0.1-darwin-amd64.tar.gz | tar xz > home
+./home setup
+```
+
+Alternatively, you can clone this repository, and then run the `home.go`
+command to install everything.
+
+```bash
+git clone https://github.com/shakefu/home.git
+cd home
+go run home.go setup
 ```
 
 #### Breadcrumbs
