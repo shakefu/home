@@ -22,6 +22,6 @@ jobs:
     - uses: wangyoucao577/go-release-action@v1.15
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        goversion: 1.16
+        goversion: https://golang.org/dl/go1.16.2.linux-amd64.tar.gz
         goos: ${{ matrix.goos }}
         goarch: ${{ matrix.goarch }}
