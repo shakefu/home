@@ -60,7 +60,7 @@ func main() {
 	name = filepath.Base(name)
 	oper := runtime.GOOS
 	arch := runtime.GOARCH
-	version := embeddedFile("VERSION")
+	version := string(embeddedFile("VERSION"))
 
 	// Get a safe temp directory to use for downloads, etc.
 	tmpdir, err = os.MkdirTemp("", name+"-")
