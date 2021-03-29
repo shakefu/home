@@ -722,8 +722,8 @@ function _aws-profile-old {
 [[ ! -f ~/.profile ]] || source ~/.profile
 
 # Load NVM if it exists
-[[ ! -f ~/.nvm/nvm.sh ]] || source ~/.nvm/nvm.sh
-
-# Load saml2aws credentials if we have them
-# Don't need this
-# [[ ! -x $(command -v saml2aws) ]] || eval $(saml2aws script 2>/dev/null || true)
+export NVM_DIR="$HOME/.nvm"
+# ... if it was installed with nvm-sh
+[[ ! -f "$NVM_DIR/nvm.sh" ]] || source "$NVM_DIR/nvm.sh"
+# ... if it was installed with brew
+[ -s "/usr/local/opt/nvm/nvm.sh" ] && . "/usr/local/opt/nvm/nvm.sh"
