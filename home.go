@@ -23,6 +23,7 @@ import (
 
 const shell = "dash"
 
+//go:embed VERSION
 //go:embed install
 //go:embed files
 //go:embed files/.*
@@ -59,6 +60,7 @@ func main() {
 	name = filepath.Base(name)
 	oper := runtime.GOOS
 	arch := runtime.GOARCH
+	version := embeddedFile("VERSION")
 
 	// Get a safe temp directory to use for downloads, etc.
 	tmpdir, err = os.MkdirTemp("", name+"-")
