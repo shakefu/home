@@ -77,12 +77,13 @@ dependencies. It can even be extended to set up a default environment for
 development.
 
 Usage:
-    %v [-h|--help] [-d|--debug] [--version] [--color=<color>] [--os=<os>] [--arch=<arch>] <command> [--dry-run] [--upgrade] [<names>...]
+    %v [-h|--help] [-d|--debug] [--version] [--color=<color>] [--os=<os>]
+	 [--arch=<arch>] <command> [--dry-run] [--upgrade] [<names>...]
 
 Options:
     --dry-run        don't make any changes
     --upgrade        upgrade installed if they exist
-	--color=<color>  color output auto, always or never [default: auto]
+    --color=<color>  color output auto, always or never [default: auto]
     --os=<os>        operating system [default: %v]
     --arch=<arch>    platform [default: %v]
     -d --debug       show debug output
