@@ -101,7 +101,7 @@ The subcommands are:
 	var args CliArgs
 
 	// Parse the CLI args and store them
-	parsed, _ := docopt.ParseArgs(usage, os.Args[1:], "v1.0.0")
+	parsed, _ := docopt.ParseArgs(usage, os.Args[1:], version)
 
 	// Force color settings
 	initColor(parsed["--color"].(string))
