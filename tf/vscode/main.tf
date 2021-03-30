@@ -149,7 +149,7 @@ resource "aws_spot_instance_request" "vscode" {
   wait_for_fulfillment = true
 
   key_name               = aws_key_pair.vscode.id
-  instance_type          = "z1d.xlarge"
+  instance_type          = "z1d.large"
   availability_zone      = var.az
   subnet_id              = sort(data.aws_subnet_ids.vscode.ids)[0]
   vpc_security_group_ids = [aws_security_group.vscode.id]
