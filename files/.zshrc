@@ -192,9 +192,13 @@ export LANG=en_US.UTF-8
 
 # Toggle editor based on SSH status
 if [[ -n $SSH_CONNECTION ]]; then
-  export EDITOR='vim'
+  # Default to vi for easy CLI usage
+  export EDITOR='vi'
 else
-  export EDITOR='mvim --remote-tab-silent'
+  # This causes issues when opening files automatically, e.g. with git or
+  # fotingo, so we fall back to just vi
+  # export EDITOR='mvim --remote-tab-silent'
+  export EDITOR="vi"
 fi
 
 ####################
@@ -711,6 +715,37 @@ function _aws-profile-old {
         echo "$var"
     done
 }
+
+# JIRA stuff ugh
+if [ -x "$(command -v fotingo)" ]; then
+    function devops {
+        local title="$1"; shift
+        local description="$1"; shift
+        local type="${3:-task}"
+        [ -n "$3" ] && shift
+        local labels="${4:-}"
+
+        [ -n "$title" ] || { echo "Title is required"; return 1; }
+        [ -n "$description" ] || { echo "Description is required"; return 1; }
+
+
+        local args
+        args=(
+            start
+            --project DEVOPS
+            --kind "$type"
+            --title "$title"
+            --description "$description"
+        )
+        [ -n "$labels" ] && args+=( --labels "$labels" )
+
+        fotingo ${args[@]}
+    }
+else
+    function devops {
+        echo "Error: missing dependency fotingo"
+    }
+fi
 
 ###########################
 # Sourcing external scripts
