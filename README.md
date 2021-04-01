@@ -31,9 +31,9 @@ go run home.go setup
   nice and convenient prompt completion
 - [zsh-syntax-highlighting](https://github.com/zsh-users/zsh-syntax-highlighting) -
   awesome colorized prompt syntax with error highlighting
-- [exa](https://the.exa.website/)
-- [thefuck](https://github.com/nvbn/thefuck)
-- [fd](https://github.com/sharkdp/fd)
+- [exa](https://the.exa.website/) - Better ls 
+- [thefuck](https://github.com/nvbn/thefuck) - Autofix commands
+- [fd](https://github.com/sharkdp/fd) - Better find
 - [Pathogen](https://github.com/tpope/vim-pathogen) - We would add this as a
   subtree but it conflicts with the existing .vim path
   - [src](https://raw.githubusercontent.com/tpope/vim-pathogen/master/autoload/pathogen.vim) -
@@ -49,3 +49,5 @@ go run home.go setup
 - [Tabmerge](https://github.com/vim-scripts/Tabmerge) - Merging tabs made easy
 - [Supertab](https://github.com/ervandew/supertab) - Awesome tab completion
 - [YAJS](https://github.com/othree/yajs.vim) - ES6 syntax highlighting and more
+- [SwitchResX](https://www.madrau.com/) - Allow Mac to use nonstandard resolutions
+- [MAS](https://github.com/mas-cli/mas) - Mac app store CLI
