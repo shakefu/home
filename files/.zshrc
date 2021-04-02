@@ -164,17 +164,18 @@ SAVEHIST=100000
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 # Append language specific paths in search order
 # Add golang's default install path
-export PATH="$PATH:/usr/local/go/bin"
+[ -d /usr/local/go/bin ] && export PATH="$PATH:/usr/local/go/bin"
 # Add golang's package install path
-export PATH="$PATH:$HOME/go/bin"
+[ -d "$HOME/go/bin" ] && export PATH="$PATH:$HOME/go/bin"
 # Add Python's site.USER_BASE bin
-export PATH="$PATH:$HOME/Library/Python/3.7/bin"
+[ -d /usr/local/opt/python/libexec/bin ] && export PATH="$PATH:$HOME/Library/Python/3.7/bin"
 # Add Homebrew unversioned Python binaries to PATH
-export PATH="/usr/local/opt/python/libexec/bin:$PATH"
+[ -d /usr/local/opt/python/libexec/bin ] && export PATH="/usr/local/opt/python/libexec/bin:$PATH"
 # Adding user local bin directory where things get installed in Ubuntu 20.10
-export PATH="$HOME/.local/bin:$PATH"
+[ -d "$HOME/.local/bin" ] && export PATH="$HOME/.local/bin:$PATH"
 # Adding user bin directory to PATH as top priority
-export PATH="$HOME/.bin:$PATH"
+[ -d "$HOME/.bin" ] && export PATH="$HOME/.bin:$PATH"
+[ -d /usr/local/opt/coreutils/libexec/gnubin ] && export PATH="/usr/local/opt/coreutils/libexec/gnubin:$PATH"
 
 ###########
 # Variables
@@ -578,13 +579,25 @@ function _aws-env {
     # Run login (transparent)
     _aws-login
 
+    # EZ role lookup
     local role="$(aws configure get role_arn --profile $target)"
+    if [[ -z "$role" ]]; then
+        role="$(aws sts get-caller-identity --profile $target | jq -r .Arn)"
+    fi
     if [[ -z "$role" ]]; then
         echo "Error: Role ARN not found."
         return 1
     fi
 
     _echo_blue "Role: $role"
+
+    # Can't assume from the default into itself, so we just export direct
+    if [[ "$profile" == "default" ]]; then
+        export AWS_ACCESS_KEY_ID="$(aws configure get aws_access_key_id)"
+        export AWS_SECRET_ACCESS_KEY="$(aws configure get aws_secret_access_key)"
+        export AWS_SESSION_TOKEN="$(aws configure get aws_session_token)"
+        return
+    fi
 
     # Export all AWS vars needed
     eval $(aws sts assume-role --profile "$profile" --role-arn "$role" --role-session-name "$target" | jq -r '.Credentials | "export AWS_ACCESS_KEY_ID=\(.AccessKeyId)\nexport AWS_SECRET_ACCESS_KEY=\(.SecretAccessKey)\nexport AWS_SESSION_TOKEN=\(.SessionToken)\n"')

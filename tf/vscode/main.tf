@@ -145,7 +145,7 @@ resource "aws_route53_record" "shakefu_net" {
 resource "aws_spot_instance_request" "vscode" {
   ami                  = data.aws_ami.ubuntu.id
   spot_price           = "0.15"
-  spot_type            = "one-time"
+  spot_type            = "persistent"
   wait_for_fulfillment = true
 
   key_name               = aws_key_pair.vscode.id
@@ -153,7 +153,8 @@ resource "aws_spot_instance_request" "vscode" {
   availability_zone      = var.az
   subnet_id              = sort(data.aws_subnet_ids.vscode.ids)[0]
   vpc_security_group_ids = [aws_security_group.vscode.id]
-  user_data              = file("userdata.sh")
+  # user_data              = join("\n", [file("userdata.txt"), file("userdata.sh"), "--//"])
+  user_data = file("userdata.sh")
 
   tags = {
     Name = "vscode"
