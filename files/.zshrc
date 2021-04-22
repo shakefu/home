@@ -423,7 +423,8 @@ function repo {
         cd "$dirname"
         return
     fi
-    dirname="$HOME/$($FD_FIND --hidden --base-directory "$HOME" --full-path --glob "**/*$1*/.git" | sed -e 's/\/\.git$//' | sort | head -1)"
+    local basedir="$HOME/git"
+    dirname="$basedir/$($FD_FIND --hidden --base-directory "$basedir" --full-path --glob "**/*$1*/.git" | sed -e 's/\/\.git$//' | sort | head -1)"
     if [[ -d "$dirname" ]]; then
         cd "$dirname"
         return
@@ -433,7 +434,8 @@ function repo {
     fi
 }
 function _repo {
-    local repos=( $($FD_FIND --hidden --base-directory "$HOME" "^\.git$" | sed -e 's/\/\.git$//' | grep -Ev '(^\.|/\.)') )
+    local basedir="$HOME/git"
+    local repos=( $($FD_FIND --hidden --base-directory "$basedir" "^\.git$" | sed -e 's/\/\.git$//' | grep -Ev '(^\.|/\.)') )
     compadd -M 'l:|=* r:|=*' ${repos[@]}
 }
 
