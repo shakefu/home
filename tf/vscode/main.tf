@@ -15,10 +15,24 @@ terraform {
 
 provider "aws" {
   region = var.region
+  access_key = var.aws_access_key
+  secret_key = var.aws_secret_key
 }
 
 ###########
 # Variables
+
+variable "aws_access_key" {
+  type = string
+  description = "AWS Access Key ID"
+  sensitive = true
+}
+
+variable "aws_secret_key" {
+  type = string
+  description = "AWS Secret Access Key"
+  sensitive = true
+}
 
 variable "region" {
   type        = string
@@ -145,7 +159,7 @@ resource "aws_route53_record" "shakefu_net" {
 resource "aws_spot_instance_request" "vscode" {
   ami                  = data.aws_ami.ubuntu.id
   spot_price           = "0.15"
-  spot_type            = "persistent"
+  spot_type            = "one-time"
   wait_for_fulfillment = true
 
   key_name               = aws_key_pair.vscode.id
