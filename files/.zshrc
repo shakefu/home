@@ -239,8 +239,8 @@ function _fzf_compgen_dir { $FD_FIND --type d --hidden --follow --exclude ".git"
 #########
 
 # General aliases
-alias beep='tput bel'
-alias bell="afplay \"/Applications/iMovie.app/Contents/Resources/iMovie '08 Sound Effects/Bell Buoy.mp3\""
+# alias beep='tput bel'
+alias bell="afplay \"/System/Library/Sounds/Submarine.aiff\""
 # Sane grep defaults
 alias grep='grep --binary-files=without-match --color=auto'
 # Kill the most recent backgrounded process
@@ -348,6 +348,41 @@ function ll {
     exa "${args[@]}"
 }
 
+# Notifier bell
+function beep {
+    local text="${*:-Beep!}"
+    if command -v "terminal-notifier" &>/dev/null; then
+        terminal-notifier -message "$text" -group "beep" -sound default >/dev/null
+    elif command -v "afplay" &>/dev/null; then
+        afplay "/System/Library/Sounds/Submarine.aiff"
+    else
+        tput bel
+    fi
+}
+
+# Notifier that checks command exit
+function notify {
+    local cmd="$@"
+    local msg=""
+
+    echo "notify: $cmd"
+    zsh -c "$cmd"
+    if [[ $? -eq 0 ]]; then
+        msg="✅ Success!"
+    else
+        msg="⛔ Failed!"
+    fi
+
+    echo -e "notify: $msg\n        $cmd"
+
+    if command -v "terminal-notifier" &>/dev/null; then
+        terminal-notifier -message "$cmd" -title "$msg" -group "${cmd%% *}" -sound default >/dev/null
+    else
+        echo "Finished!"
+        beep
+    fi
+}
+
 # Smart VIM if mvim is available
 function vim {
     if [[ -x $(command -v mvim ) ]]; then
@@ -362,6 +397,7 @@ function vim {
     fi
 }
 
+# Shorthand for git commit with a message
 function gcom {
     if [[ -z "$1" ]]; then
         git commit
@@ -370,6 +406,7 @@ function gcom {
     git commit -m $@
 }
 
+# Shorthand for adding files
 function gadd {
     local files="${@:-.}"
     git add $files
