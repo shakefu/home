@@ -5,6 +5,10 @@
     editor = /usr/local/bin/vi
     hooksPath = /Users/shakefu/.githooks
     pager = /usr/local/bin/less
+[advice]
+    detachedHead = false
+[pull]
+    ff = only
 [push]
     default = simple
 [merge]
@@ -54,5 +58,3 @@
 #     cmd = code --wait --new-window --diff "$LOCAL" "$REMOTE"
 # [mergetool "code"]
 #     cmd = code --wait --new-window "$MERGED"
-[pull]
-	ff = only
