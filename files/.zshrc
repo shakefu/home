@@ -438,17 +438,33 @@ function gpush {
     _echo_blue "Fetching $remote/$default_branch"
     git fetch --verbose --prune $(git remote) "$default_branch" || return $?
 
-    # Attempt to rebase onto the default automatically
+    # Attempt to push to the branch remote, safely
+    # This checks if we have an upstream already, and adds our args
+    local upstream=()
+    git rev-parse --abbrev-ref --symbolic-full-name @{u} &> /dev/null || upstream=( "--set-upstream" "$remote" "$current_branch" )
+
+    # If there's an upstream branch, we need to rebase onto it to avoid obliterating upstream changes
+    if [[ -n "$upstream" ]]; then
+        # Fetch the remote branch for rebasing
+        _echo_blue "Fetching $remote/$current_branch"
+        git fetch --verbose --prune $(git remote) "$current_branch" || return $?
+
+        # Attempt to rebase onto the remote branch (should be a no-op in most
+        # instances), but this will ensure we don't lose any changes from the remote
+        # when we force push later
+        _echo_blue "Rebasing $current_branch onto $remote/$current_branch"
+        git rebase --verbose --rerere-autoupdate --autostash "$remote/$current_branch"
+        local result=$?
+        [[ $result -eq 0 ]] || git rebase --verbose --abort
+        [[ $result -eq 0 ]] || return $result
+    fi
+
+    # Attempt to rebase onto the remote default automatically
     _echo_blue "Rebasing $current_branch onto $remote/$default_branch"
     git rebase --verbose --rerere-autoupdate --autostash "$remote/$default_branch"
     local result=$?
     [[ $result -eq 0 ]] || git rebase --verbose --abort
     [[ $result -eq 0 ]] || return $result
-
-    # Attempt to push to the branch remote, safely
-    # This checks if we have an upstream already, and adds our args
-    local upstream=()
-    git rev-parse --abbrev-ref --symbolic-full-name @{u} &> /dev/null || upstream=( "--set-upstream" "$remote" "$current_branch" )
 
     # Do the actual push, soft force for rebasing, optionally setting upstream
     _echo_blue "Pushing $current_branch to $remote"
