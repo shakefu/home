@@ -444,7 +444,7 @@ function gpush {
     git rev-parse --abbrev-ref --symbolic-full-name @{u} &> /dev/null || upstream=( "--set-upstream" "$remote" "$current_branch" )
 
     # If there's an upstream branch, we need to rebase onto it to avoid obliterating upstream changes
-    if [[ -n "$upstream" ]]; then
+    if [[ -z "$upstream" ]]; then
         # Fetch the remote branch for rebasing
         _echo_blue "Fetching $remote/$current_branch"
         git fetch --verbose --prune $(git remote) "$current_branch" || return $?
