@@ -434,17 +434,13 @@ function gpush {
 
     local remote_default_branch="remotes/$remote/$default_branch"
 
-    # Fetch the default branch for rebasing
-    _echo_blue "Fetching $remote/$default_branch"
-    git fetch --verbose --prune $(git remote) "$default_branch" || return $?
-
     # Attempt to push to the branch remote, safely
     # This checks if we have an upstream already, and adds our args
     local upstream=()
     git rev-parse --abbrev-ref --symbolic-full-name @{u} &> /dev/null || upstream=( "--set-upstream" "$remote" "$current_branch" )
 
     # If there's an upstream branch, we need to rebase onto it to avoid obliterating upstream changes
-    if [[ -z "$upstream" ]]; then
+    if [[ -z "$upstream" && "$current_branch" != "$default_branch" ]]; then
         # Fetch the remote branch for rebasing
         _echo_blue "Fetching $remote/$current_branch"
         git fetch --verbose --prune $(git remote) "$current_branch" || return $?
@@ -458,6 +454,10 @@ function gpush {
         [[ $result -eq 0 ]] || git rebase --verbose --abort
         [[ $result -eq 0 ]] || return $result
     fi
+
+    # Fetch the default branch for rebasing
+    _echo_blue "Fetching $remote/$default_branch"
+    git fetch --verbose --prune $(git remote) "$default_branch" || return $?
 
     # Attempt to rebase onto the remote default automatically
     _echo_blue "Rebasing $current_branch onto $remote/$default_branch"
