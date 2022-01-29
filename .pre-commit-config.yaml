@@ -1,0 +1,6 @@
+repos: []
+  # This breaks badly on zsh, and there's no zsh support in shellcheck, so
+  # - repo: https://github.com/jumanjihouse/pre-commit-hooks
+  #   rev: 2.1.5 # or specific git tag
+  #   hooks:
+  #     - id: shellcheck

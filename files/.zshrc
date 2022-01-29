@@ -1,3 +1,4 @@
+# shellcheck shell=zsh
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
@@ -432,15 +433,17 @@ function gpush {
     # Fallback to "main"
     [[ -n "$default_branch" ]] || default_branch="main"
 
-    local remote_default_branch="remotes/$remote/$default_branch"
-
     # Attempt to push to the branch remote, safely
     # This checks if we have an upstream already, and adds our args
     local upstream=()
     git rev-parse --abbrev-ref --symbolic-full-name @{u} &> /dev/null || upstream=( "--set-upstream" "$remote" "$current_branch" )
 
-    # If there's an upstream branch, we need to rebase onto it to avoid obliterating upstream changes
-    if [[ -z "$upstream" && "$current_branch" != "$default_branch" ]]; then
+    # If there's an upstream branch, we need to rebase onto it to avoid
+    # obliterating upstream changes
+    #
+    # This causes rebase conflicts if we squashed a bunch of commits before
+    # pushing which is super annoying, so it's disabled.
+    if [[ false && -z "$upstream" && "$current_branch" != "$default_branch" ]]; then
         # Fetch the remote branch for rebasing
         _echo_blue "Fetching $remote/$current_branch"
         git fetch --verbose --prune $(git remote) "$current_branch" || return $?
@@ -448,11 +451,7 @@ function gpush {
         # Attempt to rebase onto the remote branch (should be a no-op in most
         # instances), but this will ensure we don't lose any changes from the remote
         # when we force push later
-        _echo_blue "Rebasing $current_branch onto $remote/$current_branch"
-        git rebase --verbose --rerere-autoupdate --autostash "$remote/$current_branch"
-        local result=$?
-        [[ $result -eq 0 ]] || git rebase --verbose --abort
-        [[ $result -eq 0 ]] || return $result
+        _grebase "$remote/$current_branch" || return $?
     fi
 
     # Fetch the default branch for rebasing
@@ -460,11 +459,7 @@ function gpush {
     git fetch --verbose --prune $(git remote) "$default_branch" || return $?
 
     # Attempt to rebase onto the remote default automatically
-    _echo_blue "Rebasing $current_branch onto $remote/$default_branch"
-    git rebase --verbose --rerere-autoupdate --autostash "$remote/$default_branch"
-    local result=$?
-    [[ $result -eq 0 ]] || git rebase --verbose --abort
-    [[ $result -eq 0 ]] || return $result
+    _grebase "$remote/$default_branch" || return $?
 
     # Do the actual push, soft force for rebasing, optionally setting upstream
     _echo_blue "Pushing $current_branch to $remote"
@@ -476,6 +471,78 @@ function _gpush {
     compadd -M 'l:|=* r:|=*' ${branches[@]}
 }
 compdef _gpush gpush
+
+# Helper rebase for DRYing up rebases
+function _grebase {
+    local target_branch="$1"
+    # Get the current branch name
+    local current_branch=$(git rev-parse --abbrev-ref HEAD)
+
+    # Attempt to rebase onto the remote default automatically
+    _echo_blue "Rebasing $current_branch onto $target_branch"
+    git rebase --verbose --rerere-autoupdate --autostash --allow-empty "$target_branch"
+    local result=$?
+    [[ $result -eq 0 ]] || git rebase --verbose --abort
+    [[ $result -eq 0 ]] || return $result
+}
+
+# Interactive rebase and squash with guard rails to limit the chance of
+# overwriting remote changes
+function gsquash {
+    # Handle manual arguments
+    if [[ -n "$@" ]]; then
+        git push $@
+        return $?
+    fi
+
+    # Automate our push flow
+
+    # Get the remote name (usually "origin")
+    local remote=$(git remote)
+    # Get the current branch name
+    local current_branch=$(git rev-parse --abbrev-ref HEAD)
+
+    # Find the default branch so we can rebase
+    local default_branch=$(git remote show $(git remote -v | grep push | awk '{print $2}') | grep 'HEAD branch' | awk '{print $3}')
+    # Fallback to "main"
+    [[ -n "$default_branch" ]] || default_branch="main"
+
+    # Attempt to push to the branch remote, safely
+    # This checks if we have an upstream already, and adds our args
+    local no_upstream
+    git rev-parse --abbrev-ref --symbolic-full-name @{u} &> /dev/null || no_upstream="true"
+
+    # If there's an upstream branch, we need to rebase onto it to avoid
+    # obliterating upstream changes
+    #
+    # This causes rebase conflicts if we squashed a bunch of commits before
+    # pushing which is super annoying, but we can't do anything about it
+    if [[ -z "$no_upstream" && "$current_branch" != "$default_branch" ]]; then
+        # Fetch the remote branch for rebasing
+        _echo_blue "Fetching $remote/$current_branch"
+        git fetch --verbose --prune $(git remote) "$current_branch" || return $?
+
+        # Attempt to rebase onto the remote branch (should be a no-op in most
+        # instances), but this will ensure we don't lose any changes from the remote
+        # when we force push later
+        _grebase "$remote/$current_branch" || return $?
+    fi
+
+    # Fetch the default branch for rebasing
+    _echo_blue "Fetching $remote/$default_branch"
+    git fetch --verbose --prune $(git remote) "$default_branch" || return $?
+
+    # Attempt to rebase onto the remote default automatically
+    _grebase "$remote/$default_branch" || return $?
+
+    # Interactive rebase to squash
+    git rebase --verbose --rerere-autoupdate --autostash --allow-empty --interactive "$remote/$default_branch" || return $?
+
+    # Do the actual push, soft force for rebasing, optionally setting upstream
+    _echo_blue "Pushing $current_branch to $remote"
+    git push --force-with-lease --verbose ${upstream[@]} || return $?
+
+}
 
 # Switch to repostory based on short name, with tab completion
 function repo {
