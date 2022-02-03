@@ -438,22 +438,6 @@ function gpush {
     local upstream=()
     git rev-parse --abbrev-ref --symbolic-full-name @{u} &> /dev/null || upstream=( "--set-upstream" "$remote" "$current_branch" )
 
-    # If there's an upstream branch, we need to rebase onto it to avoid
-    # obliterating upstream changes
-    #
-    # This causes rebase conflicts if we squashed a bunch of commits before
-    # pushing which is super annoying, so it's disabled.
-    if [[ false && -z "$upstream" && "$current_branch" != "$default_branch" ]]; then
-        # Fetch the remote branch for rebasing
-        _echo_blue "Fetching $remote/$current_branch"
-        git fetch --verbose --prune $(git remote) "$current_branch" || return $?
-
-        # Attempt to rebase onto the remote branch (should be a no-op in most
-        # instances), but this will ensure we don't lose any changes from the remote
-        # when we force push later
-        _grebase "$remote/$current_branch" || return $?
-    fi
-
     # Fetch the default branch for rebasing
     _echo_blue "Fetching $remote/$default_branch"
     git fetch --verbose --prune $(git remote) "$default_branch" || return $?
