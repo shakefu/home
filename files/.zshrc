@@ -111,7 +111,7 @@ plugins=(
     docker-compose
     # dotenv  # This is kind of noisy and I'm not sure I want it
     emoji-clock
-    exa
+    # exa  # This is borken somehow?
     fzf
     git
     # gitfast  # More up to date version of git?
