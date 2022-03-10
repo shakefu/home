@@ -310,10 +310,11 @@ _echo_blue () { printf "\033[1;34m%s\033[0m\n" "$*"; }
 
 # Really specific usage of `exa` that I like
 function ll {
-    local ignore="*/.git/*|.git|.terraform|.DS_Store|.idea|.vs_code|.git/"
+    # local ignore="*/.git/*|.git|.terraform|.DS_Store|.idea|.vs_code|.git/|*/node_modules/*|node_modules"
+    local ignore=".git|.terraform|.DS_Store|.idea|.vs_code|node_modules"
     local args=(
         --tree
-        --ignore-glob \'$ignore\'
+        --ignore-glob $ignore
         --all
         --group-directories-first
         --long
@@ -575,7 +576,8 @@ function gr {
         --exclude-dir='external' --exclude-dir='vendor' \
         --exclude='terraform.tfstate*' --exclude='*.min.*' \
         --exclude='*.js.map' --exclude='*.css.map' \
-        --exclude='yarn.lock' --exclude='*.log' "$pattern" $args
+        --exclude='yarn.lock' --exclude='*.log' --exclude-dir='dist' \
+        "$pattern" $args
 }
 
 # Python grep
@@ -759,6 +761,14 @@ else
     }
 fi
 
+###########################################
+# Loading external scripts for dependencies
+#
+# THis has to be loaded before the devops alias because otherwise it won't find
+# fotingo on the path
+
+# Load nodenv
+if command -v nodenv &>/dev/null; then eval "$(nodenv init - )"; fi
 
 ##############
 # JIRA related
@@ -809,3 +819,10 @@ export NVM_DIR="$HOME/.nvm"
 [[ ! -f "$NVM_DIR/nvm.sh" ]] || source "$NVM_DIR/nvm.sh"
 # ... if it was installed with brew
 [ -s "/usr/local/opt/nvm/nvm.sh" ] && . "/usr/local/opt/nvm/nvm.sh"
+
+# Load pyenv
+if ! command -v pyenv &>/dev/null; then
+    eval "$(pyenv init --path)";
+    eval "$(pyenv init -)";
+    eval "$(pyenv init virtualenv-init)";
+fi
