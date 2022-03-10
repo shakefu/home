@@ -555,6 +555,15 @@ function _repo {
 
 compdef _repo repo
 
+# Print the default branch name
+function gdefault {
+    # Find the default branch so we can rebase
+    local default_branch=$(git remote show $(git remote -v | grep push | awk '{print $2}') | grep 'HEAD branch' | awk '{print $3}')
+    # Fallback to "main"
+    [[ -n "$default_branch" ]] || default_branch="main"
+    echo "$default_branch"
+}
+
 # Grep all
 unalias gr  # Override zsh plugin alias
 function gr {
