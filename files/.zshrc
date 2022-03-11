@@ -779,6 +779,9 @@ fi
 # Load nodenv
 if command -v nodenv &>/dev/null; then eval "$(nodenv init - )"; fi
 
+# Load goenv
+if command -v goenv &>/dev/null; then eval "$(goenv init - )"; fi
+
 ##############
 # JIRA related
 #
@@ -821,13 +824,6 @@ fi
 
 # Load in the profile baybee
 [[ ! -f ~/.profile ]] || source ~/.profile
-
-# Load NVM if it exists
-export NVM_DIR="$HOME/.nvm"
-# ... if it was installed with nvm-sh
-[[ ! -f "$NVM_DIR/nvm.sh" ]] || source "$NVM_DIR/nvm.sh"
-# ... if it was installed with brew
-[ -s "/usr/local/opt/nvm/nvm.sh" ] && . "/usr/local/opt/nvm/nvm.sh"
 
 # Load pyenv
 if ! command -v pyenv &>/dev/null; then
