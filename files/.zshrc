@@ -1,4 +1,8 @@
 # shellcheck shell=zsh
+
+# Add homebrew env required for some inits to work
+eval "$(/opt/homebrew/bin/brew shellenv)"
+
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
@@ -103,10 +107,11 @@ plugins=(
     ansible
     brew
     colorize
-    copydir
+    # copydir  # Deprecated in favor of copypath
     copyfile
+    copypath
     dash
-    django
+    # django  # Unused
     docker
     docker-compose
     # dotenv  # This is kind of noisy and I'm not sure I want it
