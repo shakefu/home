@@ -1,0 +1,11 @@
+#!/bin/dash -e
+# Install "globally"
+$RUN npm install -g commitizen
+$RUN npm install -g cz-conventional-changelog
+
+# Link the command from the nvm bin/ into our PATH so we don't have to screw
+# with nvm each time we want to use it
+if which cz >/dev/null; then
+    $RUN mkdir -p "$HOME/.bin"
+    $RUN ln -sf "$(which cz)" "$HOME/.bin/"
+fi

@@ -1,0 +1,5 @@
+#!/bin/dash -e
+# brew is special and needs sudo
+$RUN sudo --non-interactive --validate || $RUN sudo --validate
+$RUN curl -o "$TMP" -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh
+$RUN /bin/bash "$TMP"

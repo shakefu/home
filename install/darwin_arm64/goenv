@@ -1,0 +1,10 @@
+#!/bin/dash -e
+# Install or upgrade
+$RUN brew "$( { [ -z "$UPGRADE" ] && echo "install"; } || echo "upgrade" )" "$NAME"
+
+# Install go 1.17 by default
+if command -v goenv &>/dev/null; then
+	eval "$(goenv init -)"
+	goenv install 1.17.6
+	goenv global 1.17.6
+fi
