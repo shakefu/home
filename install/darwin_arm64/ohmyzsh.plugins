@@ -13,7 +13,7 @@ safe_clone () {
 }
 
 # exa completion is just a single file
-$RUN curl --create-dirs -o "${TMP}/plugins/exa/_exa" -fsSL "https://raw.githubusercontent.com/ogham/exa/master/completions/completions.zsh"
+$RUN curl --create-dirs -o "${TMP}/plugins/exa/_exa" -fsSL "https://raw.githubusercontent.com/ogham/exa/master/completions/zsh/_exa"
 
 # Clone plugin repositories
 safe_clone "https://github.com/zpm-zsh/ls.git" "plugins/ls"

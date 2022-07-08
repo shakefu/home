@@ -110,13 +110,13 @@ plugins=(
     # copydir  # Deprecated in favor of copypath
     copyfile
     copypath
-    dash
+    # dash  # Unused
     # django  # Unused
     docker
     docker-compose
     # dotenv  # This is kind of noisy and I'm not sure I want it
     emoji-clock
-    # exa  # This is borken somehow?
+    exa  # exa completions (custom)
     fzf
     git
     # gitfast  # More up to date version of git?
@@ -124,9 +124,9 @@ plugins=(
     git-extras
     # git-prompt  # Adds right-hand prompt with branch
     last-working-dir
-    ls
+    ls  # substitute exa for ls (custom)
     pip
-    rust
+    # rust  # Unused
     ssh-agent
     # sudo  # Conflicts with thefuck, which is better
     terraform
