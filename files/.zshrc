@@ -781,11 +781,31 @@ fi
 # THis has to be loaded before the devops alias because otherwise it won't find
 # fotingo on the path
 
-# Load nodenv
-if command -v nodenv &>/dev/null; then eval "$(nodenv init - )"; fi
-
 # Load goenv
 if command -v goenv &>/dev/null; then eval "$(goenv init - )"; fi
+
+# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
+# Load in the profile baybee
+[[ ! -f ~/.profile ]] || source ~/.profile
+
+# Load pyenv
+if ! command -v pyenv &>/dev/null; then
+    eval "$(pyenv init --path)"
+    eval "$(pyenv init -)"
+    eval "$(pyenv init virtualenv-init)"
+fi
+
+# Make sure nodenv is fully configured
+if ! command -v nodenv &>/dev/null; then
+    export PATH="$HOME/.nodenv/bin:$PATH"
+    eval "$(nodenv init -)"
+fi
+
+# Configure tfenv because it don't play nice with M1
+export TFENV_ARCH=amd64
+export TFENV_AUTO_INSTALL=true
 
 ##############
 # JIRA related
@@ -819,20 +839,4 @@ else
     function devops {
         echo "Error: missing dependency fotingo"
     }
-fi
-
-###########################
-# Sourcing external scripts
-
-# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
-
-# Load in the profile baybee
-[[ ! -f ~/.profile ]] || source ~/.profile
-
-# Load pyenv
-if ! command -v pyenv &>/dev/null; then
-    eval "$(pyenv init --path)";
-    eval "$(pyenv init -)";
-    eval "$(pyenv init virtualenv-init)";
 fi
