@@ -8,5 +8,5 @@ require (
 	github.com/kataras/golog v0.1.7
 	github.com/logrusorgru/aurora v2.0.3+incompatible
 	github.com/mattn/go-isatty v0.0.12
-	golang.org/x/sys v0.0.0-20210324051608-47abb6519492 // indirect
+	golang.org/x/sys v0.1.0 // indirect
 )
