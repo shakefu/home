@@ -1,0 +1,28 @@
+#!/bin/dash -e
+# Custom plugins for oh-my-zsh
+# Set our default dir
+ZSH_CUSTOM="${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}"
+TMP="$TMP/zsh-custom"
+
+# Helper to clone into tmp directory
+safe_clone () {
+    local uri="$1"
+    local path="$2"
+    $RUN mkdir -p "$TMP/$path"
+    $RUN git clone --depth=1 --recurse-submodules --shallow-submodules "$uri" "$TMP/$path"
+}
+
+# exa completion is just a single file
+$RUN curl --create-dirs -o "${TMP}/plugins/exa/_exa" -fsSL "https://raw.githubusercontent.com/ogham/exa/master/completions/zsh/_exa"
+
+# Clone plugin repositories
+safe_clone "https://github.com/zpm-zsh/ls.git" "plugins/ls"
+safe_clone "https://github.com/romkatv/powerlevel10k.git" "themes/powerlevel10k"
+safe_clone "https://github.com/zsh-users/zsh-autosuggestions" "plugins/zsh-autosuggestions"
+safe_clone "https://github.com/zsh-users/zsh-syntax-highlighting.git" "plugins/zsh-syntax-highlighting"
+
+mv -f "$ZSH_CUSTOM" "/tmp/old-zsh-custom"
+mv -f "$TMP" "$ZSH_CUSTOM"
+
+# Make the dummy executable for install checking
+$RUN /bin/dash -c "mkdir -p $HOME/.bin && ln -sf /bin/dash $HOME/.bin/$NAME"

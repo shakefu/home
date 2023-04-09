@@ -1,0 +1,3 @@
+#!/bin/dash -e
+# Install or upgrade
+$RUN brew "$( { [ -z "$UPGRADE" ] && echo "install"; } || echo "upgrade" )" kubernetes-cli
