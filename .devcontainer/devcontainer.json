@@ -3,7 +3,7 @@
 {
 	"name": "shakefu/home",
 	// Not used while we have a build spec
-	"image": "mcr.microsoft.com/devcontainers/base:debian"
+	"image": "mcr.microsoft.com/devcontainers/universal:latest"
 
 	// "build": {
 	// 	"dockerfile": "Dockerfile"
