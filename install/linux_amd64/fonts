@@ -2,20 +2,19 @@
 
 # Install Powerline fonts
 
-# Places to check for fonts
-font_dirs="/System/Library/Fonts /Library/Fonts $HOME/Library/Fonts"
-
-# shellcheck disable=SC2086
-existing=$(find $font_dirs -name "*Powerline*.ttf" )
-
-# Found some fonts, exit if we're not upgrading
-if [ -n "$existing" ] && [ -z "$UPGRADE" ]; then
-    exit 0
-fi
-
 # Clone the powerline repo
-$RUN git clone https://github.com/powerline/fonts.git --depth=1 "$TMP"
+$RUN git clone https://github.com/powerline/fonts.git --depth=1 "$TMP/powerline"
 # Install the fonts
-$RUN "$TMP/install.sh"
-# Make the dummy executable for install checking
+$RUN "$TMP/powerline/install.sh"
+
+
+# Install NerdFonts
+
+# Clone the nerd-fonts repo
+$RUN git clone --filter=blob:none --sparse https://github.com/ryanoasis/nerd-fonts.git "$TMP/nerd-fonts"
+# Install the fonts
+$RUN "$TMP/nerd-fonts/install.sh"
+
+
+# Make the dummy 'fonts' executable for install checking
 $RUN /bin/dash -c "mkdir -p $HOME/.bin && ln -sf /bin/dash $HOME/.bin/$NAME"
