@@ -1,2 +1,0 @@
-#!/bin/dash -e
-$RUN pip3 install -U "git+https://github.com/jeffkaufman/icdiff.git"

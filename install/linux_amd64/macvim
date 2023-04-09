@@ -1,4 +1,0 @@
-#!/bin/dash -e
-# Install or upgrade
-$RUN brew "$( { [ -z "$UPGRADE" ] && echo "install"; } || echo "upgrade" )" "$NAME"
-$RUN ln -sf "$(command -v mvim)" "$HOME/.bin/macvim"
