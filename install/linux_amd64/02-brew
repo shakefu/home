@@ -3,3 +3,27 @@
 $RUN sudo --non-interactive --validate || $RUN sudo --validate
 $RUN curl -o "$TMP" -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh
 $RUN /bin/bash "$TMP"
+
+# Linux homebrew gets installed in a fucking weird place, so we symlink back
+# where it belongs
+# This doesn't work because homebrew tries to be clever about finding its own
+# install location, but it's not that smart.
+# $RUN sudo ln -sf /home/linuxbrew/.linuxbrew/Homebrew/bin/brew /usr/local/bin/brew
+
+# This will ensure we have the correct path in /etc/profile which should get
+# picked up by dash hopefully
+if ! grep 'linuxbrew' /etc/profile; then
+    $RUN echo 'PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"' | sudo tee -a /etc/profile
+fi
+
+# Linux homebrew does not have permissions for its lock files in this dir, so we
+# give it to them after ensuring its existence
+$RUN sudo mkdir -p /usr/local/var/homebrew
+
+# Forceably take ownership of /usr/local its mine now (this takes forever)
+# $RUN sudo chown -R "$(whoami)" /usr/local
+# $RUN sudo chmod -R u+w /usr/local
+
+# Forceably take ownership of stuff brew needs
+$RUN sudo chown -R "$(whoami)" /usr/local/bin /usr/local/etc /usr/local/include /usr/local/lib /usr/local/sbin /usr/local/share /usr/local/share/locale /usr/local/share/man /usr/local/share/zsh /usr/local/share/zsh/site-functions
+$RUN chmod u+w /usr/local/bin /usr/local/etc /usr/local/include /usr/local/lib /usr/local/sbin /usr/local/share /usr/local/share/locale /usr/local/share/man /usr/local/share/zsh /usr/local/share/zsh/site-functions

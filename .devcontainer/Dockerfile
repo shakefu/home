@@ -29,8 +29,14 @@ RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg \
 ARG GITHUB_TOKEN
 
 # Download latest shakefu/home
+# home-*-linux-amd64.tar.gz
 RUN export GH_TOKEN="${GITHUB_TOKEN}" && \
     export RELEASE_GLOB="home-*-linux-amd64.tar.gz" && \
     gh release download --repo shakefu/home --pattern "$RELEASE_GLOB" && \
-    tar -xzf "$RELEASE_GLOB" && \
-    rm "$RELEASE_GLOB"
+    pwd && \
+    ls -lah && \
+    tar -xzf $RELEASE_GLOB && \
+    rm $RELEASE_GLOB
+
+# Install home
+RUN ./home setup
