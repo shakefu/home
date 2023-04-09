@@ -4,7 +4,7 @@
 VIM_BUNDLE="$HOME/.vim/bundle"
 
 $RUN mkdir -p "$VIM_BUNDLE"
-cd "$VIM_BUNDLE"
+$RUN cd "$VIM_BUNDLE"
 
 # Helper to clone into tmp directory
 safe_clone () {
