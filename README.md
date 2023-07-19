@@ -93,10 +93,10 @@ func CliCopyFiles(args *CliArgs)
 func CliInstall(args *CliArgs, names ...string)
 ```
 
-Run all the embedded install scripts or exit. This will run all the install scripts, or a specified list of script names. If there is an error with any script it will exit this process.
+CliInstall runs all the embedded install scripts or exit. This will run all the install scripts, or a specified list of script names. If there is an error with any script it will exit this process.
 
 <a name="CliStatus"></a>
-## func [CliStatus](<https://github.com/shakefu/home/blob/main/home.go#L327>)
+## func [CliStatus](<https://github.com/shakefu/home/blob/main/home.go#L333>)
 
 ```go
 func CliStatus(args *CliArgs, names ...string)
@@ -105,7 +105,7 @@ func CliStatus(args *CliArgs, names ...string)
 
 
 <a name="Run"></a>
-## func [Run](<https://github.com/shakefu/home/blob/main/home.go#L392>)
+## func [Run](<https://github.com/shakefu/home/blob/main/home.go#L398>)
 
 ```go
 func Run(command string) int
@@ -114,7 +114,7 @@ func Run(command string) int
 Run invokes a subprocess command from a string using shell splitting.
 
 <a name="RunCommand"></a>
-## func [RunCommand](<https://github.com/shakefu/home/blob/main/home.go#L401>)
+## func [RunCommand](<https://github.com/shakefu/home/blob/main/home.go#L407>)
 
 ```go
 func RunCommand(argv []string) int
@@ -123,7 +123,7 @@ func RunCommand(argv []string) int
 RunCommand a subprocess command from a tokenized array of string arguments.
 
 <a name="Targets"></a>
-## func [Targets](<https://github.com/shakefu/home/blob/main/home.go#L334>)
+## func [Targets](<https://github.com/shakefu/home/blob/main/home.go#L340>)
 
 ```go
 func Targets(args *CliArgs, names *[]string) (map[string]bool, []string)
@@ -152,7 +152,7 @@ type CliArgs struct {
 ```
 
 <a name="Script"></a>
-## type [Script](<https://github.com/shakefu/home/blob/main/home.go#L433-L436>)
+## type [Script](<https://github.com/shakefu/home/blob/main/home.go#L439-L442>)
 
 
 
@@ -163,7 +163,7 @@ type Script struct {
 ```
 
 <a name="Script.Run"></a>
-### func \(\*Script\) [Run](<https://github.com/shakefu/home/blob/main/home.go#L454>)
+### func \(\*Script\) [Run](<https://github.com/shakefu/home/blob/main/home.go#L460>)
 
 ```go
 func (script *Script) Run(args ...string) (int, error)
@@ -172,7 +172,7 @@ func (script *Script) Run(args ...string) (int, error)
 
 
 <a name="Script.RunOrExit"></a>
-### func \(\*Script\) [RunOrExit](<https://github.com/shakefu/home/blob/main/home.go#L438>)
+### func \(\*Script\) [RunOrExit](<https://github.com/shakefu/home/blob/main/home.go#L444>)
 
 ```go
 func (script *Script) RunOrExit(args ...string) int

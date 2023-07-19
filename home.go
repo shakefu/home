@@ -170,7 +170,7 @@ func initColor(color string) {
 	}
 }
 
-// Run all the embedded install scripts or exit.
+// CliInstall runs all the embedded install scripts or exit.
 // This will run all the install scripts, or a specified list of script names.
 // If there is an error with any script it will exit this process.
 func CliInstall(args *CliArgs, names ...string) {
@@ -257,6 +257,7 @@ func CliCopyFiles(args *CliArgs) {
 
 	// Get the home directory
 	home, _ := os.UserHomeDir()
+	log.Debug("home:", home)
 	// This has to match the embedded path
 	base := "files"
 
@@ -290,9 +291,14 @@ func CliCopyFiles(args *CliArgs) {
 			fmt.Println(ansi.Black("dry-run:"), "cp", "\"<embed>/"+name+"\"", "\""+target+"\"")
 		} else {
 			err := func() error {
-				// It's our file, we'll write if we want to
-				if err := os.Chmod(target, 0o600); err != nil {
-					return fmt.Errorf("could not chmod target: %w", err)
+				// Check if the file exists
+				if _, err := os.Stat(target); err == nil {
+					// It's our file, we'll write if we want to
+					if err := os.Chmod(target, 0o600); err != nil {
+						// This is not a fatal error, we want to continue
+						// log.Debug("Did not set file permissions: ", err)
+						return fmt.Errorf("could not chmod target: %w", err)
+					}
 				}
 
 				// Read the embedded file
@@ -456,7 +462,7 @@ func (script *Script) Run(args ...string) (int, error) {
 	data := embeddedFile(script.name)
 
 	// Set the script arguments
-	argv := []string{"-s", "-"}
+	argv := []string{"-l", "-s", "-"}
 	argv = append(argv, args...)
 
 	// And a shell to run it in

@@ -1,0 +1,9 @@
+.devcontainer/
+.git/
+.github/
+.gitignore
+.pre-commit-config.yaml
+LICENSE
+README.md
+TODO.md
+tf/

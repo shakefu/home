@@ -25,6 +25,15 @@ RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg \
     rm -rf /usr/share/keyrings/githubcli-archive-keyring.gpg && \
     rm /etc/apt/sources.list.d/github-cli.list
 
+# Install Go with GO_VERSION
+# TODO: This is incompatible with a multi-arch build
+ARG GO_VERSION=1.20.5
+RUN curl -fsSL https://golang.org/dl/go${GO_VERSION}.linux-amd64.tar.gz \
+        -o go${GO_VERSION}.linux-amd64.tar.gz && \
+    tar -C /usr/local -xzf go${GO_VERSION}.linux-amd64.tar.gz && \
+    rm go${GO_VERSION}.linux-amd64.tar.gz && \
+    ln -s /usr/local/go/bin/* /usr/local/bin/
+
 # Do the install in user-space
 RUN useradd \
     --create-home \
@@ -41,16 +50,20 @@ ARG GITHUB_TOKEN
 
 # Download latest shakefu/home
 # home-*-linux-amd64.tar.gz
-RUN export GH_TOKEN="${GITHUB_TOKEN}" && \
-    export RELEASE_GLOB="home-*-linux-amd64.tar.gz" && \
-    gh release download --repo shakefu/home --pattern "$RELEASE_GLOB" && \
-    pwd && \
-    ls -lah && \
-    tar -xzf $RELEASE_GLOB && \
-    rm $RELEASE_GLOB
+# RUN export GH_TOKEN="${GITHUB_TOKEN}" && \
+#     export RELEASE_GLOB="home-*-linux-amd64.tar.gz" && \
+#     gh release download --repo shakefu/home --pattern "$RELEASE_GLOB" && \
+#     pwd && \
+#     ls -lah && \
+#     tar -xzf $RELEASE_GLOB && \
+#     rm $RELEASE_GLOB
+
+# Build from source
+COPY . .
+RUN go build --buildvcs=false .
 
 # Install home
-RUN ./home setup
+RUN ./home setup --debug
 
 # Revert to our default user directory
 WORKDIR /workspaces/home
