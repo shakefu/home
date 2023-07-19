@@ -26,6 +26,13 @@ RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg \
     rm /etc/apt/sources.list.d/github-cli.list
 
 # Do the install in user-space
+RUN useradd \
+    --create-home \
+    --shell /bin/zsh \
+    --uid 1000 \
+    --gid 1000 \
+    --non-unique \
+    codespace
 USER codespace
 WORKDIR /tmp/shakefu/home
 

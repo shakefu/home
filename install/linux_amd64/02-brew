@@ -14,6 +14,8 @@ $RUN /bin/bash "$TMP"
 # picked up by dash hopefully
 if ! grep 'linuxbrew' /etc/profile; then
     $RUN echo 'PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"' | sudo tee -a /etc/profile
+    (echo; echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"') >> "$HOME/.profile"
+    eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 fi
 
 # Linux homebrew does not have permissions for its lock files in this dir, so we
