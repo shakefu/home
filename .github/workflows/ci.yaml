@@ -22,8 +22,6 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           context: .
-          # Darwin not supported by the base image currently
-          # platforms: linux/amd64,linux/arm64,darwin/amd64,darwin/arm64
           platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ github.repository }}:build-${{ github.run_id }}.${{ github.run_number }}.${{ github.run_attempt }}
