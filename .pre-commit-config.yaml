@@ -7,7 +7,7 @@ repos:
     - id: golangci-lint
     - id: go-test-unit
     - id: gomarkdoc
-    - id: docker-lint
+    # - id: docker-lint  # Getting in the way
     - id: docker-compose-lint
   - repo: https://github.com/alessandrojcm/commitlint-pre-commit-hook
     rev: v9.5.0

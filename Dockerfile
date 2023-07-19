@@ -7,7 +7,7 @@ WORKDIR /root
 
 # Install required dependencies
 RUN apt-get update -yqq && \
-    apt-get install -yqq \
+    apt-get install -yqq --no-install-recommends \
         curl \
         git && \
     apt-get clean -yqq && \
