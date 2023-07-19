@@ -28,8 +28,11 @@ const shell = "dash"
 //go:embed files
 //go:embed files/.*
 var embedded embed.FS
-var tmpdir = "/tmp"
-var ansi aurora.Aurora
+
+var (
+	tmpdir = "/tmp"
+	ansi   aurora.Aurora
+)
 
 type CliArgs struct {
 	// Options
@@ -140,7 +143,8 @@ The subcommands are:
 		CliStatus(&args)
 	}
 
-	os.Exit(0)
+	// This explicit call to Exit shouldn't be needed, remove later
+	// os.Exit(0)
 }
 
 // Set the logging and color libs to output color in line with the desired flags
@@ -275,7 +279,7 @@ func CliCopyFiles(args *CliArgs) {
 			if args.DryRun {
 				fmt.Println(ansi.Black("dry-run:"), "mkdir -p", "\""+dir+"\"")
 			} else {
-				if err := os.MkdirAll(dir, 0755); err != nil {
+				if err := os.MkdirAll(dir, 0o755); err != nil {
 					log.Fatal(err)
 				}
 			}
@@ -285,25 +289,36 @@ func CliCopyFiles(args *CliArgs) {
 		if args.DryRun {
 			fmt.Println(ansi.Black("dry-run:"), "cp", "\"<embed>/"+name+"\"", "\""+target+"\"")
 		} else {
-			func() {
+			err := func() error {
 				// It's our file, we'll write if we want to
-				os.Chmod(target, 0600)
+				if err := os.Chmod(target, 0o600); err != nil {
+					return fmt.Errorf("could not chmod target: %w", err)
+				}
+
 				// Read the embedded file
 				data, _ := embedded.ReadFile(name)
 				// Write it back out
-				if err := os.WriteFile(target, data, 0600); err != nil {
+				if err := os.WriteFile(target, data, 0o600); err != nil {
 					log.Fatal(err)
 				}
 				if strings.Contains(name, ".githooks") {
 					// TODO: Figure out a better way to not make this a hack
 					// This is a hack so the githooks are executable
-					os.Chmod(target, 0500)
+					if err := os.Chmod(target, 0o500); err != nil {
+						return fmt.Errorf("could not chmod .githooks: %w", err)
+					}
 				} else {
 					// Make the files generated here read-only as a reminder to not
 					// edit them directly
-					os.Chmod(target, 0400)
+					if err := os.Chmod(target, 0o400); err != nil {
+						return fmt.Errorf("could not chmod target: %w", err)
+					}
 				}
+				return nil
 			}()
+			if err != nil {
+				log.Fatal(err)
+			}
 		}
 	}
 	log.Info("Done.")
@@ -315,7 +330,7 @@ func CliStatus(args *CliArgs, names ...string) {
 	// Check all the filesystem hashes against our embedded
 }
 
-// Return a map and a deduplicated slice of all the names given.
+// Targets returns a map and a deduplicated slice of all the names given.
 func Targets(args *CliArgs, names *[]string) (map[string]bool, []string) {
 	targets := map[string](bool){}
 	// Default to argument provided names
@@ -373,6 +388,7 @@ func getFileNames(base string, paths *[]string) {
 	}
 }
 
+// Run invokes a subprocess command from a string using shell splitting.
 func Run(command string) int {
 	argv, err := shlex.Split(command)
 	if err != nil {
@@ -381,9 +397,10 @@ func Run(command string) int {
 	return RunCommand(argv)
 }
 
+// RunCommand a subprocess command from a tokenized array of string arguments.
 func RunCommand(argv []string) int {
 	exit, err := func() (int, error) {
-		cmd := exec.Command(argv[0], argv[1:]...)
+		cmd := exec.Command(argv[0], argv[1:]...) //nolint:gosec
 
 		// Always directly output to our calling tty
 		cmd.Stdout = os.Stdout
@@ -391,7 +408,7 @@ func RunCommand(argv []string) int {
 
 		// Start the subprocess
 		if err := cmd.Start(); err != nil {
-			return -1, err
+			return -1, fmt.Errorf("subprocess failed to start: %w", err)
 		}
 
 		// Get the error code from the subprocess if it exists
@@ -456,18 +473,21 @@ func (script *Script) Run(args ...string) (int, error) {
 	// Grab the pipe to the subprocess stdin
 	stdin, err := cmd.StdinPipe()
 	if err != nil {
-		return -1, err
+		return -1, fmt.Errorf("could not get stdin pipe: %w", err)
 	}
 
 	// Start the subprocess
 	if err := cmd.Start(); err != nil {
-		return -1, err
+		return -1, fmt.Errorf("failed to start subprocess: %w", err)
 	}
 
 	// Write the script to stdin and close the pipe when finished
 	go func() {
 		defer stdin.Close()
-		io.WriteString(stdin, string(data))
+		_, err := io.WriteString(stdin, string(data))
+		if err != nil {
+			fmt.Printf("%v", fmt.Errorf("could not write to stdin: %w", err))
+		}
 	}()
 
 	// Get the error code from the subprocess if it exists
