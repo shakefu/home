@@ -9,7 +9,8 @@ WORKDIR /root
 RUN apt-get update -yqq && \
     apt-get install -yqq --no-install-recommends \
         curl \
-        git && \
+        git \
+        zsh && \
     apt-get clean -yqq && \
     rm -rf /var/lib/apt/lists/*
 
