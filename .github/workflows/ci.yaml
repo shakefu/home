@@ -22,6 +22,6 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           context: .
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
           push: true
           tags: ${{ github.repository }}:build-${{ github.run_id }}.${{ github.run_number }}.${{ github.run_attempt }}

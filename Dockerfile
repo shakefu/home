@@ -25,6 +25,10 @@ RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg \
     rm -rf /usr/share/keyrings/githubcli-archive-keyring.gpg && \
     rm /etc/apt/sources.list.d/github-cli.list
 
+# Do the install in user-space
+USER codespace
+WORKDIR /tmp/shakefu/home
+
 # A GitHub token is required to use the gh cli tool
 ARG GITHUB_TOKEN
 
@@ -40,3 +44,6 @@ RUN export GH_TOKEN="${GITHUB_TOKEN}" && \
 
 # Install home
 RUN ./home setup
+
+# Revert to our default user directory
+WORKDIR /workspaces/home
