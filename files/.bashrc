@@ -578,7 +578,8 @@ function tabname {
 
 export WORKON_HOME=$HOME/.virtualenvs
 export PROJECT_HOME=$HOME/tmp
-source /usr/local/bin/virtualenvwrapper.sh
+_venvwrapper="/usr/local/bin/virtualenvwrapper.sh"
+[[ ! -f "$_venvwrapper" ]] || source $_venvwrapper
 # source /Users/jacobalheid/Library/Python/3.7/bin/virtualenvwrapper.sh
 
 ##########
