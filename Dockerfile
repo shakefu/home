@@ -70,9 +70,7 @@ COPY .devcontainer/extensions.sh ./extensions.sh
 RUN chmod 777 extensions.sh
 # Switch to codespace user to install extensions correctly
 USER codespace
-RUN pwd && ls -lah
-RUN ./extensions.sh && \
-    rm extensions.sh
+RUN /tmp/shakefu/extensions.sh
 
 # Build home tool from source
 WORKDIR /tmp/shakefu/home
