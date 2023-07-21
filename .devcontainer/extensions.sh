@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-EXTENSIONS=<<EOF
+EXTENSIONS=(
 4ops.terraform
 aaron-bond.better-comments
 bierner.markdown-preview-github-styles
@@ -62,9 +62,11 @@ vscode-icons-team.vscode-icons
 vscodevim.vim
 windmilleng.vscode-go-autotest
 zeshuaro.vscode-python-poetry
-EOF
+)
 
-for name in $(echo "$EXTENSIONS"); do
+echo "Installing extensions..."
+for name in "${EXTENSIONS[@]}"; do
     echo "Installing $name ..."
     code --install-extension "$name"
 done
+echo "Done!"
