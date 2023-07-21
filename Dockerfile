@@ -67,9 +67,11 @@ USER codespace
 
 # Install vscode extensions
 WORKDIR /tmp/shakefu
-COPY .devcontainer/extensions.sh /tmp/shakefu
+COPY .devcontainer/extensions.sh ./extensions.sh
 # TODO: Remove chmod once executable bit is set
-RUN chmod +x /tmp/shakefu/extensions.sh && /tmp/shakefu/extensions.sh && rm /tmp/shakefu/extensions.sh
+RUN chmod +x extensions.sh
+RUN ./extensions.sh && \
+    rm extensions.sh
 
 # Build home tool from source
 WORKDIR /tmp/shakefu/home
