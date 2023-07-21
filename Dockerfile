@@ -59,7 +59,8 @@ RUN useradd \
     codespace
 
 # Set the shell to zsh
-RUN sudo chsh "1000" --shell "/usr/bin/zsh"
+RUN chsh --shell "/usr/bin/zsh" vscode
+RUN chsh --shell "/usr/bin/zsh" codespace
 
 # Switch to that user
 USER codespace
