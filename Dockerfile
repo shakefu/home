@@ -62,14 +62,14 @@ RUN useradd \
 RUN chsh --shell "/usr/bin/zsh" vscode
 RUN chsh --shell "/usr/bin/zsh" codespace
 
-# Switch to that user
-USER codespace
 
 # Install vscode extensions
 WORKDIR /tmp/shakefu
 COPY .devcontainer/extensions.sh ./extensions.sh
 # TODO: Remove chmod once executable bit is set
-RUN chmod +x extensions.sh
+RUN chmod 777 extensions.sh
+# Switch to codespace user to install extensions correctly
+USER codespace
 RUN ./extensions.sh && \
     rm extensions.sh
 
