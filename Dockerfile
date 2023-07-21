@@ -74,8 +74,10 @@ RUN /tmp/shakefu/extensions.sh
 
 # Build home tool from source
 WORKDIR /tmp/shakefu/home
+COPY files/ ./files/
+COPY install/ ./install/
 # TODO: Use SemVer instead of this
-COPY files/ install/ go.mod go.sum home.go VERSION .
+COPY go.mod go.sum home.go VERSION .
 RUN go build --buildvcs=false .
 
 # Install home
