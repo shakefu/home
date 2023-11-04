@@ -4,7 +4,7 @@
 	"name": "shakefu/home",
 	// Not used while we have a build spec
 	// "image": "mcr.microsoft.com/devcontainers/universal:latest"
-	"image": "shakefu/home:build-5619613068.17.1"
+	"image": "shakefu/home:build-6752584781.21.1"
 
 	// "build": {
 	// 	"dockerfile": "Dockerfile"
