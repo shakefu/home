@@ -52,14 +52,14 @@ RUN curl -fsSL https://golang.org/dl/go${GO_VERSION}.linux-amd64.tar.gz \
     ln -s /usr/local/go/bin/* /usr/local/bin/
 
 
-# Create a codespace user with uid 1000
+# Create a vscode user with uid 1000 (this user may already exist)
 RUN useradd \
     --create-home \
     --shell /bin/zsh \
     --uid 1000 \
     --gid 1000 \
     --non-unique \
-    "${USER}"
+    "${USER}" || true
 
 # Set the shell to zsh
 RUN chsh --shell "/usr/bin/zsh" "${USER}"
