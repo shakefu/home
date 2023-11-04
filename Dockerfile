@@ -3,6 +3,8 @@
 # TODO: This is incompatible with a multi-arch build
 FROM mcr.microsoft.com/devcontainers/base:bullseye AS base
 
+ARG USER=vscode
+
 # Do work in /tmp since it's not persisted
 WORKDIR /tmp
 
@@ -49,6 +51,7 @@ RUN curl -fsSL https://golang.org/dl/go${GO_VERSION}.linux-amd64.tar.gz \
     rm go${GO_VERSION}.linux-amd64.tar.gz && \
     ln -s /usr/local/go/bin/* /usr/local/bin/
 
+
 # Create a codespace user with uid 1000
 RUN useradd \
     --create-home \
@@ -56,28 +59,27 @@ RUN useradd \
     --uid 1000 \
     --gid 1000 \
     --non-unique \
-    codespace
+    "${USER}"
 
 # Set the shell to zsh
-RUN chsh --shell "/usr/bin/zsh" vscode
-RUN chsh --shell "/usr/bin/zsh" codespace
-
+RUN chsh --shell "/usr/bin/zsh" "${USER}"
 
 # Install vscode extensions
 WORKDIR /tmp/shakefu
 COPY .devcontainer/extensions.sh ./extensions.sh
-# TODO: Remove chmod once executable bit is set
-RUN chmod 777 extensions.sh
-# Switch to codespace user to install extensions correctly
-USER codespace
+# Switch to user to install extensions correctly
+USER ${USER}
 RUN /tmp/shakefu/extensions.sh
+
+# Create SSH directory for user
+RUN cd ~ && mkdir -p .ssh
 
 # Build home tool from source
 WORKDIR /tmp/shakefu/home
 COPY files/ ./files/
 COPY install/ ./install/
 # TODO: Use SemVer instead of this
-COPY go.mod go.sum home.go VERSION .
+COPY go.mod go.sum home.go VERSION ./
 RUN go build --buildvcs=false .
 
 # Install home
@@ -89,8 +91,10 @@ WORKDIR /workspaces/home
 # Final output image
 FROM scratch AS final
 
+ARG USER=vscode
+
 # Copy over the whole filesystem in one whack
 COPY --from=base / /
 
 # Set the user
-USER codespace
+USER ${USER}
