@@ -8,6 +8,9 @@ ARG USER=vscode
 # Do work in /tmp since it's not persisted
 WORKDIR /tmp
 
+# Don't ask questions
+ENV DEBIAN_FRONTEND=noninteractive
+
 # Install required system dependencies
 RUN apt-get update -yqq && \
     apt-get install -yqq --no-install-recommends \
@@ -31,28 +34,28 @@ RUN mkdir -p /etc/apt/keyrings
 RUN curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor -o /etc/apt/keyrings/packages.microsoft.gpg && \
     echo "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" > /etc/apt/sources.list.d/vscode.list && \
     apt-get update -yqq && \
-    apt-get install code && \
+    apt-get install -yqq code && \
     rm -rf /var/lib/apt/lists/*
 
 # Kubectl apt repository
 RUN curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.28/deb/Release.key | gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg && \
     echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.28/deb/ /' > /etc/apt/sources.list.d/kubernetes.list && \
     apt-get update -yqq && \
-    apt-get install kubectl && \
+    apt-get install -yqq kubectl && \
     rm -rf /var/lib/apt/lists/*
 
 # Docker apt repository
 RUN	curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker-apt-keyring.gpg  && \
     echo "deb [signed-by=/etc/apt/keyrings/docker-apt-keyring.gpg] https://download.docker.com/linux/ubuntu jammy stable" > /etc/apt/sources.list.d/docker.list && \
     apt-get update -yqq && \
-    apt-get install docker-ce && \
+    apt-get install -yqq docker-ce && \
     rm -rf /var/lib/apt/lists/*
 
 # Terraform apt repository
 RUN curl -fsSL https://apt.releases.hashicorp.com/gpg | gpg --dearmor -o /etc/apt/keyrings/hashicorp-apt-keyring.gpg && \
     echo "deb [signed-by=/etc/apt/keyrings/hashicorp-apt-keyring.gpg] https://apt.releases.hashicorp.com jammy main" > /etc/apt/sources.list.d/hashicorp.list && \
     apt-get update -yqq && \
-    apt-get install terraform && \
+    apt-get install -yqq terraform && \
     rm -rf /var/lib/apt/lists/*
 
 # A GitHub token is required to use the gh cli tool
