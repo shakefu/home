@@ -7,7 +7,8 @@ COPY install/ ./install/
 # TODO: Use SemVer instead of this
 COPY go.mod go.sum home.go VERSION ./
 RUN go build --buildvcs=false .
-RUN cp home /build/home
+RUN mkdir -p /build && \
+    cp home /build/home
 
 # Default Dockerfile for Go development containers.
 # This is based on debian:bullseye-slim and installs the latest Go release.
