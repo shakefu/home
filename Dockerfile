@@ -1,3 +1,14 @@
+# Build home tool from source
+FROM golang:1.20 AS build-home
+
+WORKDIR /tmp/shakefu/home
+COPY files/ ./files/
+COPY install/ ./install/
+# TODO: Use SemVer instead of this
+COPY go.mod go.sum home.go VERSION ./
+RUN go build --buildvcs=false .
+RUN cp home /build/home
+
 # Default Dockerfile for Go development containers.
 # This is based on debian:bullseye-slim and installs the latest Go release.
 # TODO: This is incompatible with a multi-arch build
@@ -62,8 +73,6 @@ ARG GITHUB_TOKEN
 #     tar -xzf $RELEASE_GLOB && \
 #     rm $RELEASE_GLOB
 
-
-
 # Create a vscode user with uid 1000 (this user may already exist)
 RUN useradd \
     --create-home \
@@ -105,16 +114,10 @@ RUN /tmp/shakefu/extensions.sh
 # Create SSH directory for user
 RUN cd ~ && mkdir -p .ssh
 
-# Build home tool from source
-WORKDIR /tmp/shakefu/home
-COPY files/ ./files/
-COPY install/ ./install/
-# TODO: Use SemVer instead of this
-COPY go.mod go.sum home.go VERSION ./
-RUN go build --buildvcs=false .
-
-# Install home
-RUN ./home setup --debug
+# Get the built home binary
+COPY --from=build-home /build/home /usr/local/bin/home
+# Run our setup
+RUN home setup --debug
 
 # Revert to our default user directory
 WORKDIR /workspaces/home
@@ -128,6 +131,7 @@ ENTRYPOINT [ "/usr/local/share/docker-init.sh" ]
 CMD [ "sleep", "infinity" ]
 
 # Final output image
+# This breaks buildx caching on GHA so we'll skip it for now
 # FROM scratch AS final
 
 # ARG USER=vscode
