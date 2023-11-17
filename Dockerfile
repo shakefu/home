@@ -77,7 +77,7 @@ RUN useradd \
 RUN chsh --shell "/usr/bin/zsh" "${USER}"
 
 # Install Docker CE CLI
-RUN apt-get update --yqq && \
+RUN apt-get update -yqq && \
     apt-get install -yqq apt-transport-https ca-certificates curl gnupg2 lsb-release && \
     curl -fsSL https://download.docker.com/linux/$(lsb_release -is | tr '[:upper:]' '[:lower:]')/gpg | apt-key add - 2>/dev/null && \
     echo "deb [arch=amd64] https://download.docker.com/linux/$(lsb_release -is | tr '[:upper:]' '[:lower:]') $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list && \

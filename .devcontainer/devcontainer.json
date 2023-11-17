@@ -8,6 +8,7 @@
 
 	// Mounting in the host docker socket for docker-in-docker
 	"mounts": [ "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind" ],
+
 	// Needed to support non-root user
 	"overrideCommand": false,
 
