@@ -25,9 +25,16 @@ jobs:
           github-token: ${{ secrets.GHA_TOKEN }}
           dry-run: true
       - name:
-        run:
-
-
+        id: set-release-version
+        run: |
+          version="${{ steps.semantic-release.outputs.new-release-version }}"
+          if [[ -n "$version" ]]; then
+            echo "New version: $version"
+            echo "release-version=$version" >> $GITHUB_OUTPUTS
+          else
+            echo "No new version"
+            echo "release-version=latest" >> $GITHUB_OUTPUTS
+          fi
       - uses: docker/build-push-action@v5
         with:
           build-args: GITHUB_TOKEN=${{ secrets.GHA_TOKEN }}
@@ -38,4 +45,4 @@ jobs:
           push: true
           tags: |
             ${{ github.repository }}:build-${{ github.run_id }}.${{ github.run_number }}.${{ github.run_attempt }}
-            ${{ github.repository }}:${{ steps.semantic-release.outputs.new-release-version }}
+            ${{ github.repository }}:${{ steps.set-release-version.outputs.release-version }}
