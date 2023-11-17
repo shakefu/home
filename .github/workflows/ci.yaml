@@ -22,11 +22,11 @@ jobs:
       - uses: open-turo/actions-release/semantic-release@v3
         id: semantic-release
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.GHA_TOKEN }}
           dry-run: true
       - uses: docker/build-push-action@v5
         with:
-          build-args: GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
+          build-args: GITHUB_TOKEN=${{ secrets.GHA_TOKEN }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
           context: .

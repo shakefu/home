@@ -13,4 +13,4 @@ jobs:
         uses: actions/checkout@v3
       - uses: open-turo/actions-release/semantic-release@v3
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: ${{ secrets.GHA_TOKEN }}
