@@ -1,7 +1,8 @@
 # shellcheck shell=zsh
 
 # Add homebrew env required for some inits to work
-eval "$(/opt/homebrew/bin/brew shellenv)"
+# This is the Mac default install
+[[ ! -x /opt/homebrew/bin ]] || eval "$(/opt/homebrew/bin/brew shellenv)"
 
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
@@ -166,6 +167,16 @@ SAVEHIST=100000
 # PATH
 
 
+_paths=(
+    "$HOME/.bin"
+    "$HOME/.local/bin"
+    "$HOME/go/bin"
+    "$HOME/.pyenv/bin"
+    "$HOME/.nodenv/bin"
+    "/usr/local/bin"
+    "/usr/local/go/bin"
+)
+
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 # Append language specific paths in search order
@@ -200,7 +211,8 @@ export LANG=en_US.UTF-8
 # Toggle editor based on SSH status
 if [[ -n $SSH_CONNECTION ]]; then
   # Default to vi for easy CLI usage
-  export EDITOR='vi'
+  # export EDITOR='vi'
+  export EDITOR="code"
 else
   # This causes issues when opening files automatically, e.g. with git or
   # fotingo, so we fall back to just vi
@@ -211,12 +223,14 @@ fi
 ####################
 # Python Virtualenvs
 
+# Deprecated in favor of poetry venv management
+
 # Use the default directory, explicitly
-export WORKON_HOME=$HOME/.virtualenvs
+# export WORKON_HOME=$HOME/.virtualenvs
 # Anything that is done with mkproject ends up in tmp
-export PROJECT_HOME=$HOME/tmp
+#export PROJECT_HOME=$HOME/tmp
 # Lazy load virtualenvwrapper commands for quicker shells
-[ ! -x "$(command -v virtualenvwrapper.sh)" ] || \. "$(which virtualenvwrapper_lazy.sh)"
+# [ ! -x "$(command -v virtualenvwrapper.sh)" ] || \. "$(which virtualenvwrapper_lazy.sh)"
 # Don't need this, script is on our path
 # export VIRTUALENVWRAPPER_SCRIPT=/usr/local/bin/virtualenvwrapper.sh
 
@@ -781,8 +795,6 @@ fi
 # THis has to be loaded before the devops alias because otherwise it won't find
 # fotingo on the path
 
-# Load goenv
-if command -v goenv &>/dev/null; then eval "$(goenv init - )"; fi
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
@@ -790,53 +802,24 @@ if command -v goenv &>/dev/null; then eval "$(goenv init - )"; fi
 # Load in the profile baybee
 [[ ! -f ~/.profile ]] || source ~/.profile
 
+# Load goenv
+if command -v goenv &>/dev/null; then eval "$(goenv init - )"; fi
+
 # Load pyenv
-if ! command -v pyenv &>/dev/null; then
-    eval "$(pyenv init --path)"
-    eval "$(pyenv init -)"
-    eval "$(pyenv init virtualenv-init)"
-fi
+if command -v pyenv &>/dev/null; then eval "$(pyenv init - )"; fi
+# if ! command -v pyenv &>/dev/null; then
+#     eval "$(pyenv init --path)"
+#     eval "$(pyenv init -)"
+#     eval "$(pyenv init virtualenv-init)"
+# fi
 
-# Make sure nodenv is fully configured
-if ! command -v nodenv &>/dev/null; then
-    export PATH="$HOME/.nodenv/bin:$PATH"
-    eval "$(nodenv init -)"
-fi
+# Load nodenv
+if command -v nodenv &>/dev/null; then eval "$(nodenv init - )"; fi
+# if ! command -v nodenv &>/dev/null; then
+#     export PATH="$HOME/.nodenv/bin:$PATH"
+#     eval "$(nodenv init -)"
+# fi
 
-# Configure tfenv because it don't play nice with M1
+# Configure tfenv because it don't play nice with Mac aarch64
 export TFENV_ARCH=amd64
 export TFENV_AUTO_INSTALL=true
-
-##############
-# JIRA related
-#
-# Helpers for managing JIRA tickets
-if [ -x "$(command -v fotingo)" ]; then
-    function devops {
-        local title="$1"; shift
-        local description="$1"; shift
-        local type="${3:-task}"
-        [ -n "$3" ] && shift
-        local labels="${4:-}"
-
-        [ -n "$title" ] || { echo "Title is required"; return 1; }
-        [ -n "$description" ] || { echo "Description is required"; return 1; }
-
-
-        local args
-        args=(
-            start
-            --project DEVOPS
-            --kind "$type"
-            --title "$title"
-            --description "$description"
-        )
-        [ -n "$labels" ] && args+=( --labels "$labels" )
-
-        fotingo ${args[@]}
-    }
-else
-    function devops {
-        echo "Error: missing dependency fotingo"
-    }
-fi

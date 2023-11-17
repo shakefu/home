@@ -1,0 +1,6 @@
+#!/bin/dash -e
+# Install or upgrade
+$RUN brew "$( { [ -z "$UPGRADE" ] && echo "install"; } || echo "upgrade" )" "$NAME"
+# Enable dash to use goenv
+$RUN echo "GOENV_ROOT=$(goenv root)" | sudo tee -a /etc/profile
+$RUN echo "eval \"\$(goenv init -)\"" | sudo tee -a /etc/profile

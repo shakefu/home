@@ -37,27 +37,6 @@ RUN curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor
     apt-get install -yqq code && \
     rm -rf /var/lib/apt/lists/*
 
-# Kubectl apt repository
-RUN curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.28/deb/Release.key | gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg && \
-    echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.28/deb/ /' > /etc/apt/sources.list.d/kubernetes.list && \
-    apt-get update -yqq && \
-    apt-get install -yqq kubectl && \
-    rm -rf /var/lib/apt/lists/*
-
-# Docker apt repository
-RUN	curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker-apt-keyring.gpg  && \
-    echo "deb [signed-by=/etc/apt/keyrings/docker-apt-keyring.gpg] https://download.docker.com/linux/ubuntu jammy stable" > /etc/apt/sources.list.d/docker.list && \
-    apt-get update -yqq && \
-    apt-get install -yqq docker-ce && \
-    rm -rf /var/lib/apt/lists/*
-
-# Terraform apt repository
-RUN curl -fsSL https://apt.releases.hashicorp.com/gpg | gpg --dearmor -o /etc/apt/keyrings/hashicorp-apt-keyring.gpg && \
-    echo "deb [signed-by=/etc/apt/keyrings/hashicorp-apt-keyring.gpg] https://apt.releases.hashicorp.com jammy main" > /etc/apt/sources.list.d/hashicorp.list && \
-    apt-get update -yqq && \
-    apt-get install -yqq terraform && \
-    rm -rf /var/lib/apt/lists/*
-
 # A GitHub token is required to use the gh cli tool
 ARG GITHUB_TOKEN
 
@@ -83,14 +62,6 @@ ARG GITHUB_TOKEN
 #     tar -xzf $RELEASE_GLOB && \
 #     rm $RELEASE_GLOB
 
-# Install Go with GO_VERSION
-# TODO: This is incompatible with a multi-arch build
-ARG GO_VERSION=1.20.5
-RUN curl -fsSL https://golang.org/dl/go${GO_VERSION}.linux-amd64.tar.gz \
-        -o go${GO_VERSION}.linux-amd64.tar.gz && \
-    tar -C /usr/local -xzf go${GO_VERSION}.linux-amd64.tar.gz && \
-    rm go${GO_VERSION}.linux-amd64.tar.gz && \
-    ln -s /usr/local/go/bin/* /usr/local/bin/
 
 
 # Create a vscode user with uid 1000 (this user may already exist)
@@ -104,6 +75,25 @@ RUN useradd \
 
 # Set the shell to zsh
 RUN chsh --shell "/usr/bin/zsh" "${USER}"
+
+# Install Docker CE CLI
+RUN apt-get update \
+    apt-get install -y apt-transport-https ca-certificates curl gnupg2 lsb-release && \
+    curl -fsSL https://download.docker.com/linux/$(lsb_release -is | tr '[:upper:]' '[:lower:]')/gpg | apt-key add - 2>/dev/null && \
+    echo "deb [arch=amd64] https://download.docker.com/linux/$(lsb_release -is | tr '[:upper:]' '[:lower:]') $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list && \
+    apt-get update && \
+    apt-get install -y docker-ce-cli
+
+# Create docker-init script which configures user group permissions
+RUN echo -e "#!/bin/sh\n\
+    sudoIf() { if [ \"\$(id -u)\" -ne 0 ]; then sudo \"\$@\"; else \"\$@\"; fi }\n\
+    SOCKET_GID=\$(stat -c '%g' /var/run/docker.sock) \n\
+    if [ \"${SOCKET_GID}\" != '0' ]; then\n\
+        if [ \"\$(cat /etc/group | grep :\${SOCKET_GID}:)\" = '' ]; then sudoIf groupadd --gid \${SOCKET_GID} docker-host; fi \n\
+        if [ \"\$(id ${USER} | grep -E \"groups=.*(=|,)\${SOCKET_GID}\(\")\" = '' ]; then sudoIf usermod -aG \${SOCKET_GID} ${USER}; fi\n\
+    fi\n\
+    exec \"\$@\"" > /usr/local/share/docker-init.sh \
+    && chmod +x /usr/local/share/docker-init.sh
 
 # Install vscode extensions
 WORKDIR /tmp/shakefu
@@ -129,13 +119,21 @@ RUN ./home setup --debug
 # Revert to our default user directory
 WORKDIR /workspaces/home
 
-# Final output image
-FROM scratch AS final
+# VS Code overrides ENTRYPOINT and CMD when executing `docker run` by default.
+# Setting the ENTRYPOINT to docker-init.sh will configure non-root access to
+# the Docker socket if "overrideCommand": false is set in devcontainer.json.
+# The script will also execute CMD if you need to alter startup behaviors.
+# ref: https://github.com/microsoft/vscode-dev-containers/tree/main/containers/docker-from-docker#enabling-non-root-access-to-docker-in-the-container
+ENTRYPOINT [ "/usr/local/share/docker-init.sh" ]
+CMD [ "sleep", "infinity" ]
 
-ARG USER=vscode
+# Final output image
+# FROM scratch AS final
+
+# ARG USER=vscode
 
 # Copy over the whole filesystem in one whack
-COPY --from=base / /
+# COPY --from=base / /
 
 # Set the user
-USER ${USER}
+# USER ${USER}
