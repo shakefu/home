@@ -166,7 +166,6 @@ SAVEHIST=100000
 ######
 # PATH
 
-
 _paths=(
     "$HOME/.bin"
     "$HOME/.local/bin"
@@ -180,10 +179,23 @@ _paths=(
 )
 
 # Load all paths if they haven't already
-for path in "${_paths[@]}"; do
-    [[ -d "$path" ]] || continue
-    [[ ":$PATH:" == *":$path:"* ]] || export PATH="$path:$PATH"
+# TODO: Remove debugging
+for name in "${_paths[@]}"; do
+    # echo "Checking $name"
+    [[ -d "$name" ]] || continue
+    # echo "Found $name"
+    # echo "\":$PATH:\" = *\":$name:\"*"
+    if [[ ":$PATH:" = *":$name:"* ]]; then
+        # echo "Path $name already in PATH, skipping"
+    else
+        # echo "Adding $name to PATH"
+        # echo "PATH=$PATH"
+        # echo "PATH=$name:$PATH"
+        export PATH="$name:$PATH"
+    fi
+    # echo "New path: $PATH"
 done
+# echo "Final path: $PATH"
 
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
@@ -561,26 +573,75 @@ function gsquash {
 
 }
 
+function _repo_clone {
+    local url="$1"
+    local name="${2:-$(basename "$url" .git)}"
+    local repodir
+    if [[ -d "/workspaces" ]]; then
+        # Handle codespaces
+        repodir="/workspaces"
+    else
+        # Normal config
+        repodir="$HOME/git"
+    fi
+    local dirname="$repodir/$name"
+    if [[ -d "$dirname" ]]; then
+        echo "Error: directory already exists: $dirname"
+        return 1
+    fi
+    git clone "$url" "$dirname"
+    local result=$?
+    if [[ $result -ne 0 ]]; then
+        echo "Error: could not clone repository"
+        return $result
+    fi
+    cd "$dirname"
+}
+
 # Switch to repostory based on short name, with tab completion
 function repo {
+    if [[ "$1" = http* ]]; then
+        echo "'$1' looks like a repository URL. Cloning..."
+        _repo_clone "$1"
+        return $?
+    fi
+
     local dirname
     dirname="$HOME/$1"
     if [[ -d "$dirname" ]]; then
         cd "$dirname"
         return
     fi
+
+    # Handle OS X style $HOME/git checkout directory
     local basedir="$HOME/git"
     dirname="$basedir/$($FD_FIND --hidden --base-directory "$basedir" --full-path --glob "**/*$1*/.git" | sed -e 's/[/]\.git[/]*$//' | sort | head -1)"
     if [[ -d "$dirname" ]]; then
         cd "$dirname"
         return
-    else
-        echo "Could not find matching repo for: $1"
-        return 1
+    elif [[ -d "/workspaces" ]]; then
+        # Handle codespaces
+        basedir="/workspaces"
+        dirname="$basedir/$($FD_FIND --hidden --base-directory "$basedir" --full-path --glob "**/*$1*/.git" | sed -e 's/[/]\.git[/]*$//' | sort | head -1)"
+        if [[ -d "$dirname" ]]; then
+            cd "$dirname"
+            return
+        fi
     fi
+
+    echo "Could not find matching repo for: $1"
+    return 1
 }
+
 function _repo {
-    local basedir="$HOME/git"
+    local basedir
+    if [[ -d "/workspaces" ]]; then
+        # Handle codespaces
+        basedir="/workspaces"
+    else
+        # Normal config
+        basedir="$HOME/git"
+    fi
     local repos=( $($FD_FIND --hidden --base-directory "$basedir" "^\.git[/]*$" | sed -e 's/[/]*\.git[/]*$//' | grep -Ev '(^\.|/\.)') )
     compadd -M 'l:|=* r:|=*' ${repos[@]}
 }
