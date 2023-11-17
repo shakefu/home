@@ -4,7 +4,7 @@
 	"name": "shakefu/home",
 	// Not used while we have a build spec
 	// "image": "mcr.microsoft.com/devcontainers/universal:latest"
-	"image": "shakefu/home:build-6752584781.21.1",
+	"image": "shakefu/home:build-6909284059.32.1",
 
 	// Mounting in the host docker socket for docker-in-docker
 	"mounts": [ "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind" ],
