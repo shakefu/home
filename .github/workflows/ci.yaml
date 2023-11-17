@@ -32,6 +32,6 @@ jobs:
           context: .
           platforms: linux/amd64
           push: true
-          tags:
-            - ${{ github.repository }}:build-${{ github.run_id }}.${{ github.run_number }}.${{ github.run_attempt }}
-            - ${{ github.repository }}:${{ steps.semantic-release.outputs.new-release-version }}
+          tags: |
+            ${{ github.repository }}:build-${{ github.run_id }}.${{ github.run_number }}.${{ github.run_attempt }}
+            ${{ github.repository }}:${{ steps.semantic-release.outputs.new-release-version }}
