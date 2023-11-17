@@ -170,29 +170,37 @@ SAVEHIST=100000
 _paths=(
     "$HOME/.bin"
     "$HOME/.local/bin"
-    "$HOME/go/bin"
+    "$HOME/.goenv/bin"
     "$HOME/.pyenv/bin"
     "$HOME/.nodenv/bin"
+    "$HOME/go/bin"
     "/usr/local/bin"
+    "/usr/local/share/bin"
     "/usr/local/go/bin"
 )
+
+# Load all paths if they haven't already
+for path in "${_paths[@]}"; do
+    [[ -d "$path" ]] || continue
+    [[ ":$PATH:" == *":$path:"* ]] || export PATH="$path:$PATH"
+done
 
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 # Append language specific paths in search order
 # Add golang's default install path
-[ -d /usr/local/go/bin ] && export PATH="$PATH:/usr/local/go/bin"
+# [ -d /usr/local/go/bin ] && export PATH="$PATH:/usr/local/go/bin"
 # Add golang's package install path
-[ -d "$HOME/go/bin" ] && export PATH="$PATH:$HOME/go/bin"
+# [ -d "$HOME/go/bin" ] && export PATH="$PATH:$HOME/go/bin"
 # Add Python's site.USER_BASE bin
-[ -d /usr/local/opt/python/libexec/bin ] && export PATH="$PATH:$HOME/Library/Python/3.7/bin"
+# [ -d /usr/local/opt/python/libexec/bin ] && export PATH="$PATH:$HOME/Library/Python/3.7/bin"
 # Add Homebrew unversioned Python binaries to PATH
-[ -d /usr/local/opt/python/libexec/bin ] && export PATH="/usr/local/opt/python/libexec/bin:$PATH"
+# [ -d /usr/local/opt/python/libexec/bin ] && export PATH="/usr/local/opt/python/libexec/bin:$PATH"
 # Adding user local bin directory where things get installed in Ubuntu 20.10
-[ -d "$HOME/.local/bin" ] && export PATH="$HOME/.local/bin:$PATH"
+# [ -d "$HOME/.local/bin" ] && export PATH="$HOME/.local/bin:$PATH"
 # Adding user bin directory to PATH as top priority
-[ -d "$HOME/.bin" ] && export PATH="$HOME/.bin:$PATH"
-[ -d /usr/local/opt/coreutils/libexec/gnubin ] && export PATH="/usr/local/opt/coreutils/libexec/gnubin:$PATH"
+# [ -d "$HOME/.bin" ] && export PATH="$HOME/.bin:$PATH"
+# [ -d /usr/local/opt/coreutils/libexec/gnubin ] && export PATH="/usr/local/opt/coreutils/libexec/gnubin:$PATH"
 
 ###########
 # Variables
