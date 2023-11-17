@@ -24,16 +24,16 @@ jobs:
         with:
           github-token: ${{ secrets.GHA_TOKEN }}
           dry-run: true
-      - name:
+      - name: Set release version
         id: set-release-version
         run: |
           version="${{ steps.semantic-release.outputs.new-release-version }}"
           if [[ -n "$version" ]]; then
             echo "New version: $version"
-            echo "release-version=$version" >> $GITHUB_OUTPUTS
+            echo "release-version=$version" >> "$GITHUB_OUTPUT"
           else
             echo "No new version"
-            echo "release-version=latest" >> $GITHUB_OUTPUTS
+            echo "release-version=latest" >> "$GITHUB_OUTPUT"
           fi
       - uses: docker/build-push-action@v5
         with:
