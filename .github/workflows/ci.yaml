@@ -24,6 +24,10 @@ jobs:
         with:
           github-token: ${{ secrets.GHA_TOKEN }}
           dry-run: true
+      - name:
+        run:
+
+
       - uses: docker/build-push-action@v5
         with:
           build-args: GITHUB_TOKEN=${{ secrets.GHA_TOKEN }}

@@ -1,13 +1,21 @@
 name: Release
 
+# on:
+#   push:
+#     branches: [main]
+
 on:
-  push:
+  workflow_run:
+    workflows: ["CI"]
     branches: [main]
+    types:
+      - completed
 
 jobs:
   semantic-release:
     name: Semantic release
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
