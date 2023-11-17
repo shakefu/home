@@ -19,7 +19,12 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - uses: docker/build-push-action@v4
+      - uses: open-turo/actions-release/semantic-release@v3
+        id: semantic-release
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          dry-run: true
+      - uses: docker/build-push-action@v5
         with:
           build-args: GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
           cache-from: type=gha
@@ -27,4 +32,6 @@ jobs:
           context: .
           platforms: linux/amd64
           push: true
-          tags: ${{ github.repository }}:build-${{ github.run_id }}.${{ github.run_number }}.${{ github.run_attempt }}
+          tags:
+            - ${{ github.repository }}:build-${{ github.run_id }}.${{ github.run_number }}.${{ github.run_attempt }}
+            - ${{ github.repository }}:${{ steps.semantic-release.outputs.new-release-version }}
