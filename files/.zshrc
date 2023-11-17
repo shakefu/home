@@ -295,17 +295,22 @@ alias gdiff='git diff'
 # alias gcheck='git checkout'  # Fights tab completion with gch
 alias gch='git checkout'
 
+# Helper
+_unalias () {
+    unalias "$@" &>/dev/null || true
+}
+
 # Remove git plugin aliases that I don't like
-unalias gbr     # git branch --remote
-unalias gsta	# git stash save
-unalias gstaa	# git stash apply
-unalias gstc	# git stash clear
-unalias gstd	# git stash drop
-unalias gstl	# git stash list
-unalias gstp	# git stash pop
-unalias gsts	# git stash show --text
-unalias gstu	# git stash --include-untracked
-unalias gstall	# git stash --all
+_unalias gbr     # git branch --remote
+_unalias gsta	# git stash save
+_unalias gstaa	# git stash apply
+_unalias gstc	# git stash clear
+_unalias gstd	# git stash drop
+_unalias gstl	# git stash list
+_unalias gstp	# git stash pop
+_unalias gsts	# git stash show --text
+_unalias gstu	# git stash --include-untracked
+_unalias gstall	# git stash --all
 
 # Remap some of them
 alias gbr='git branch'
@@ -313,11 +318,11 @@ alias gsta='git diff --staged'
 
 # Remove other zsh aliases we don't want
 # These conflict with the ls plugin
-unalias l
-unalias la
-unalias ll
-unalias ls
-unalias lsa
+_unalias l
+_unalias la
+_unalias ll
+_unalias ls
+_unalias lsa
 
 ###########
 # Functions
