@@ -27,26 +27,14 @@ jobs:
           extension-matching: disable
           rename-to: hadolint
           chmod: 0755
-      - run: |
-          # Why the fuck is hadolint not an executable? Fuck
-          # shellcheck disable=all
-          echo $PATH
-          ls -lah /opt/hostedtoolcache/hadolint/hadolint/latest/linux-x64/hadolint
-          ls -lah /opt/hostedtoolcache/hadolint/hadolint/latest/linux-x64
-          ls -lah /opt/hostedtoolcache/hadolint/hadolint/latest/
-          which hadolint
-          hadolint --help
-      # Fucking shellcheck uses a .xz compression so nothing fucking works to
-      # extract it in GHA. Fuck you shellcheck
+      # shellcheck uses a .xz compression so it's incompatible
       # - name: Install shellcheck
       #   uses: jaxxstorm/action-install-gh-release@v1.10.0
       #   with:
       #     repo: koalaman/shellcheck
       - name: Install shellcheck
         run: sudo apt-get install shellcheck
-      # Fucking golangci-lint zips their binary directly without a parent
-      # directory, so the action can't handle it, and it can't be go installed
-      # cause its stupid ass templating crap.
+      # golangci-lint zips their binary directly without a parent directory
       # - name: Install golangci-lint
       #   uses: jaxxstorm/action-install-gh-release@v1.10.0
       #   with:
