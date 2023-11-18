@@ -34,13 +34,17 @@ jobs:
       - name: Install shellcheck
         run: sudo apt-get install shellcheck
       # Fucking golangci-lint zips their binary directly without a parent
-      # directory, so the action can't handle it
+      # directory, so the action can't handle it, and it can't be go installed
+      # cause its stupid ass templating crap.
       # - name: Install golangci-lint
       #   uses: jaxxstorm/action-install-gh-release@v1.10.0
       #   with:
       #     repo: golangci/golangci-lint
+      # - name: Install golangci-lint
+      #   run: go install github.com/golangci/golangci-lint@latest
       - name: Install golangci-lint
-        run: go install github.com/golangci/golangci-lint@latest
+        # ref: https://golangci-lint.run/usage/install/#other-ci
+        run: curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b "$(go env GOPATH)/bin" v1.55.2
       - uses: pre-commit/action@release
 
   docker-build-and-push:
