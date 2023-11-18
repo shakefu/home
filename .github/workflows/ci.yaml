@@ -26,9 +26,12 @@ jobs:
           repo: hadolint/hadolint
           extension-matching: disable
           rename-to: hadolint
+          chmod: 0755
       - run: |
+          # Why the fuck is hadolint not an executable? Fuck
           # shellcheck disable=all
           echo $PATH
+          ls -lah /opt/hostedtoolcache/hadolint/hadolint/latest/linux-x64/hadolint
           ls -lah /opt/hostedtoolcache/hadolint/hadolint/latest/linux-x64
           ls -lah /opt/hostedtoolcache/hadolint/hadolint/latest/
           which hadolint
