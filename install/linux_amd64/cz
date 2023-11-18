@@ -1,16 +1,3 @@
 #!/bin/dash -e
-if ! command -v npm &>/dev/null; then
-    $RUN echo "Could not find NPM."
-    $RUN exit 1
-fi
-
-# Install "globally"
-$RUN npm install -g commitizen
-$RUN npm install -g cz-conventional-changelog
-
-# Link the command from the nvm bin/ into our PATH so we don't have to screw
-# with nvm each time we want to use it
-if which cz >/dev/null; then
-    $RUN mkdir -p "$HOME/.bin"
-    $RUN ln -sf "$(which cz)" "$HOME/.bin/"
-fi
+# Install or upgrade
+$RUN brew "$( { [ -z "$UPGRADE" ] && echo "install"; } || echo "upgrade" )" "commitizen"
