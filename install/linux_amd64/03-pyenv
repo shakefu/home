@@ -7,7 +7,8 @@ $RUN echo "eval \"\$(pyenv init -)\"" | sudo tee -a /etc/profile
 
 # This saves us the time of compiling Python on codespace startup
 $RUN echo "Installing global Python version"
-$RUN eval "$(pyenv init -)"
-$RUN pyenv install 3.11.6
-$RUN pyenv global 3.11.6
-$RUN python -m pip install -U pip
+$RUN brew "$( { [ -z "$UPGRADE" ] && echo "install"; } || echo "upgrade" )" "python@3.11"
+# $RUN eval "$(pyenv init -)"
+# $RUN pyenv install 3.11.6
+# $RUN pyenv global 3.11.6
+# $RUN python -m pip install -U pip
