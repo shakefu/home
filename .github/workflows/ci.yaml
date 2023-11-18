@@ -20,26 +20,18 @@ jobs:
         uses: jaxxstorm/action-install-gh-release@v1.10.0
         with:
           repo: rhysd/actionlint
-          cache: enable
-          tag: v1.6.26
       - name: Install hadolint
         uses: jaxxstorm/action-install-gh-release@v1.10.0
         with:
           repo: hadolint/hadolint
-          cache: enable
-          tag: v2.12.0
       - name: Install shellcheck
         uses: jaxxstorm/action-install-gh-release@v1.10.0
         with:
           repo: koalaman/shellcheck
-          cache: enable
-          tag: v0.9.0
       - name: Install golangci-lint
         uses: jaxxstorm/action-install-gh-release@v1.10.0
         with:
           repo: golangci/golangci-lint
-          cache: enable
-          tag: v1.55.2
       - uses: pre-commit/action@release
 
   docker-build-and-push:
