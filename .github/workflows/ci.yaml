@@ -26,6 +26,11 @@ jobs:
           repo: hadolint/hadolint
           extension-matching: disable
           rename-to: hadolint
+      - run: |
+          # shellcheck disable=all
+          echo $PATH
+          which hadolint
+          hadolint --help
       # Fucking shellcheck uses a .xz compression so nothing fucking works to
       # extract it in GHA. Fuck you shellcheck
       # - name: Install shellcheck
