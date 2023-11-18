@@ -24,6 +24,7 @@ jobs:
         uses: jaxxstorm/action-install-gh-release@v1.10.0
         with:
           repo: hadolint/hadolint
+          extension-matching: disable
       - name: Install shellcheck
         uses: jaxxstorm/action-install-gh-release@v1.10.0
         with:
