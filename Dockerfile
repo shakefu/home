@@ -37,8 +37,19 @@ RUN apt-get update -yqq && \
 
 # Dependencies that pre-commit uses
 RUN apt-get update -yqq && apt-get install -yqq \
-    shellcheck \
-    && rm -rf /var/lib/apt/lists/*
+    shellcheck && \
+    shfmt && \
+    apt-get clean -yqq && \
+    rm -rf /var/lib/apt/lists/*
+
+# Dependencies for building Python
+RUN apt-get update -yqq && apt-get install -yqq \
+    libffi-dev \
+    libncurses-dev \
+    libssl-dev \
+    openssl && \
+    apt-get clean -yqq && \
+    rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p /etc/apt/keyrings
 
@@ -49,31 +60,25 @@ RUN curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor
     apt-get install -yqq code && \
     rm -rf /var/lib/apt/lists/*
 
-# A GitHub token is required to use the gh cli tool
-ARG GITHUB_TOKEN
-
 # Install gh cli tool
-# RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg \
-#         -o /usr/share/keyrings/githubcli-archive-keyring.gpg && \
-#     chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg && \
-#     echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" > /etc/apt/sources.list.d/github-cli.list && \
-#     apt-get update -yqq && \
-#     apt-get install -yqq gh && \
-#     apt-get clean -yqq && \
-#     rm -rf /var/lib/apt/lists/* && \
-#     rm -rf /usr/share/keyrings/githubcli-archive-keyring.gpg && \
-#     rm /etc/apt/sources.list.d/github-cli.list
+RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg \
+        -o /usr/share/keyrings/githubcli-archive-keyring.gpg && \
+    chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg && \
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" > /etc/apt/sources.list.d/github-cli.list && \
+    apt-get update -yqq && \
+    apt-get install -yqq gh && \
+    apt-get clean -yqq && \
+    rm -rf /var/lib/apt/lists/*
 
-# Download latest shakefu/home
-# home-*-linux-amd64.tar.gz
-# RUN export GH_TOKEN="${GITHUB_TOKEN}" && \
-#     export RELEASE_GLOB="home-*-linux-amd64.tar.gz" && \
-#     gh release download --repo shakefu/home --pattern "$RELEASE_GLOB" && \
-#     pwd && \
-#     ls -lah && \
-#     tar -xzf $RELEASE_GLOB && \
-#     rm $RELEASE_GLOB
+# Install Docker CE CLI
+RUN apt-get update -yqq && \
+    apt-get install -yqq apt-transport-https ca-certificates curl gnupg2 lsb-release && \
+    curl -fsSL https://download.docker.com/linux/$(lsb_release -is | tr '[:upper:]' '[:lower:]')/gpg | apt-key add - 2>/dev/null && \
+    echo "deb [arch=amd64] https://download.docker.com/linux/$(lsb_release -is | tr '[:upper:]' '[:lower:]') $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list && \
+    apt-get update -yqq && \
+    apt-get install -yqq docker-ce-cli
 
+# We have to ensure this user exists before we setup Docker
 # Create a vscode user with uid 1000 (this user may already exist)
 RUN useradd \
     --create-home \
@@ -85,14 +90,6 @@ RUN useradd \
 
 # Set the shell to zsh
 RUN chsh --shell "/usr/bin/zsh" "${USER}"
-
-# Install Docker CE CLI
-RUN apt-get update -yqq && \
-    apt-get install -yqq apt-transport-https ca-certificates curl gnupg2 lsb-release && \
-    curl -fsSL https://download.docker.com/linux/$(lsb_release -is | tr '[:upper:]' '[:lower:]')/gpg | apt-key add - 2>/dev/null && \
-    echo "deb [arch=amd64] https://download.docker.com/linux/$(lsb_release -is | tr '[:upper:]' '[:lower:]') $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list && \
-    apt-get update -yqq && \
-    apt-get install -yqq docker-ce-cli
 
 # Create docker-init script which configures user group permissions
 RUN echo -e "#!/bin/sh\n\
@@ -134,11 +131,8 @@ CMD [ "sleep", "infinity" ]
 # Final output image
 # This breaks buildx caching on GHA so we'll skip it for now
 # FROM scratch AS final
-
 # ARG USER=vscode
-
 # Copy over the whole filesystem in one whack
 # COPY --from=base / /
-
 # Set the user
 # USER ${USER}
