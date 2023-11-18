@@ -5,11 +5,6 @@ $RUN brew "$( { [ -z "$UPGRADE" ] && echo "install"; } || echo "upgrade" )" "$NA
 $RUN echo "PYENV_ROOT=$(pyenv root)" | sudo tee -a /etc/profile
 $RUN echo "eval \"\$(pyenv init -)\"" | sudo tee -a /etc/profile
 
-# These deps help us compile Python with pyenv
-$RUN echo "Installing Python system library dependencies"
-$RUN brew install --only-dependencies python@3.11
-$RUN brew install libffi ncurses openssl
-
 # This saves us the time of compiling Python on codespace startup
 $RUN echo "Installing global Python version"
 $RUN eval "$(pyenv init -)"

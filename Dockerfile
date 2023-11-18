@@ -37,16 +37,24 @@ RUN apt-get update -yqq && \
 
 # Dependencies that pre-commit uses
 RUN apt-get update -yqq && apt-get install -yqq \
-    shellcheck && \
+    shellcheck \
+    && \
     apt-get clean -yqq && \
     rm -rf /var/lib/apt/lists/*
 
 # Dependencies for building Python
-RUN apt-get update -yqq && apt-get install -yqq \
+RUN apt-get update -yqq && apt-get install -yqq --no-install-recommends \
+    bzip2 libbz2-dev \
     libffi-dev \
     libncurses-dev \
+    libreadline-dev \
     libssl-dev \
-    openssl && \
+    lzma liblzma-dev
+    ncurses-dev \
+    openssl \
+    sqlite3 libsqlite3-dev \
+    tk-dev \
+    && \
     apt-get clean -yqq && \
     rm -rf /var/lib/apt/lists/*
 
