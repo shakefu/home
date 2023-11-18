@@ -37,7 +37,7 @@ RUN apt-get update -yqq && \
 
 # Dependencies that pre-commit uses
 RUN apt-get update -yqq && apt-get install -yqq \
-    shellcheck && \
+    shellcheck \
     shfmt && \
     apt-get clean -yqq && \
     rm -rf /var/lib/apt/lists/*
