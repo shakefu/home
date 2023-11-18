@@ -20,8 +20,8 @@ jobs:
       - name: Install linters
         run: |
           brew install \
-            actionlint
-            hadolint
+            actionlint \
+            hadolint \
             shellcheck
       # - name: Install actionlint
       #   uses: jaxxstorm/action-install-gh-release@v1.10.0
