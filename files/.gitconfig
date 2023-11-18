@@ -2,9 +2,9 @@
     name = Jacob Alheid
     email = shakefu@gmail.com
 [core]
-    editor = /usr/local/bin/vi
-    hooksPath = /Users/shakefu/.githooks
-    pager = /usr/local/bin/less
+    editor = code --wait
+    hooksPath = ~/.githooks
+    pager = delta
 [advice]
     detachedHead = false
 [pull]
@@ -12,14 +12,10 @@
 [push]
     default = simple
 [merge]
-    tool = meld
-    # tool = code
+    tool = code
 [diff]
     colorMoved = default
     tool = diff
-#   tool = delta
-#   tool = icdiff
-#   tool = code
 [pager]
     diff = delta
     log = delta
@@ -42,19 +38,5 @@
     line-numbers-right-style = black
     line-numbers-minus-style = red
     line-numbers-plus-style = green
-
-########
-# Unused
-# [difftool]
-#     prompt = false
-# [difftool "diff"]
-#     cmd = diff "$LOCAL" "$REMOTE"
-# [difftool "delta"]
-#     cmd = delta "$LOCAL" "$REMOTE"
-# [difftool "icdiff"]
-#     cmd = "BASE=\"$BASE\" /usr/local/bin/icdiff --is-git-diff --line-numbers --no-bold --truncate --tabsize 4 --numlines 2 --color-map 'line-numbers:black' \"$LOCAL\" \"$REMOTE\""
-# [difftool "code"]
-#     # Unfortunately this is too slow, and opens each diff separately
-#     cmd = code --wait --new-window --diff "$LOCAL" "$REMOTE"
-# [mergetool "code"]
-#     cmd = code --wait --new-window "$MERGED"
+[mergetool "code"]
+    cmd = code --wait --merge $REMOTE $LOCAL $BASE $MERGED

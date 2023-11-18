@@ -1,13 +1,8 @@
 #!/bin/dash -e
-# Make sure nvm is loaded
-export NVM_DIR="$HOME/.nvm"
-
-[ -f "/usr/local/opt/nvm/nvm.sh" ] || exit 0
-. "/usr/local/opt/nvm/nvm.sh"
-
-# Install and use node.js 12
-$RUN nvm install v12
-$RUN nvm use v12
+if ! command -v npm &>/dev/null; then
+    $RUN echo "Could not find NPM."
+    $RUN exit 1
+fi
 
 # Install "globally"
 $RUN npm install -g commitizen

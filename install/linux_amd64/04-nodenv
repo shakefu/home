@@ -4,3 +4,9 @@ $RUN brew "$( { [ -z "$UPGRADE" ] && echo "install"; } || echo "upgrade" )" "$NA
 # Enable dash to use nodenv
 $RUN echo "NODENV_ROOT=$(nodenv root)" | sudo tee -a /etc/profile
 $RUN echo "eval \"\$(nodenv init -)\"" | sudo tee -a /etc/profile
+
+$RUN echo "Installing global Node.js version"
+$RUN eval "$(nodenv init -)"
+$RUN nodenv install 18.18.2
+$RUN nodenv install 20.9.0
+$RUN nodenv global 20.9.0

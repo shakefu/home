@@ -4,3 +4,9 @@ $RUN brew "$( { [ -z "$UPGRADE" ] && echo "install"; } || echo "upgrade" )" "$NA
 # Enable dash to use goenv
 $RUN echo "GOENV_ROOT=$(goenv root)" | sudo tee -a /etc/profile
 $RUN echo "eval \"\$(goenv init -)\"" | sudo tee -a /etc/profile
+
+$RUN echo "Installing global Golang version"
+$RUN eval "$(goenv init -)"
+$RUN goenv install 1.21.4
+$RUN goenv install 1.20.11
+$RUN goenv global 1.20.11
