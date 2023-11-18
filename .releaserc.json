@@ -5,8 +5,7 @@
     {
       "name": "(f|b|c)/*",
       "channel": "next",
-      "prerelease":
-        "beta-${(/^[a-zA-Z]+-[0-9]+/.exec(name.substr(2)) || [name.replace(/[_/.]/g, '-')])[0]}-${Date.now()}"
+      "prerelease": "beta-${(/^[a-zA-Z]+-[0-9]+/.exec(name.substr(2)) || [name.replace(/[_/.]/g, '-')])[0]}-${Date.now()}"
     }
   ],
   "plugins": [
@@ -19,7 +18,11 @@
           "types": [
             { "type": "build", "section": "Build System", "hidden": false },
             { "type": "chore", "section": "Miscellaneous", "hidden": false },
-            { "type": "ci", "section": "Continuous Integration", "hidden": false },
+            {
+              "type": "ci",
+              "section": "Continuous Integration",
+              "hidden": false
+            },
             { "type": "docs", "section": "Documentation", "hidden": false },
             { "type": "feat", "section": "Features", "hidden": false },
             { "type": "fix", "section": "Bug Fixes", "hidden": false },
@@ -28,7 +31,11 @@
               "section": "Performance Improvements",
               "hidden": false
             },
-            { "type": "refactor", "section": "Code Refactoring", "hidden": false },
+            {
+              "type": "refactor",
+              "section": "Code Refactoring",
+              "hidden": false
+            },
             { "type": "style", "section": "Styles", "hidden": false },
             { "type": "test", "section": "Tests", "hidden": false }
           ]

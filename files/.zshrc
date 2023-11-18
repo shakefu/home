@@ -187,6 +187,7 @@ for name in "${_paths[@]}"; do
     # echo "\":$PATH:\" = *\":$name:\"*"
     if [[ ":$PATH:" = *":$name:"* ]]; then
         # echo "Path $name already in PATH, skipping"
+        true
     else
         # echo "Adding $name to PATH"
         # echo "PATH=$PATH"

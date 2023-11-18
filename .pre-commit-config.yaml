@@ -24,11 +24,23 @@ repos:
     rev: 3.0.0
     hooks:
       - id: shellcheck
+        exclude: "^files/(.zshrc|.p10k.zsh)$"
       # - id: shfmt
   - repo: https://github.com/hadolint/hadolint
     rev: v2.12.0
     hooks:
       - id: hadolint
+        args:
+          [
+            --ignore,
+            DL3008,
+            --ignore,
+            DL3059,
+            --ignore,
+            SC3037,
+            --ignore,
+            DL4006,
+          ]
   - repo: https://github.com/golangci/golangci-lint
     rev: v1.55.2
     hooks:

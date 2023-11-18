@@ -36,7 +36,7 @@ RUN apt-get update -yqq && \
     rm -rf /var/lib/apt/lists/*
 
 # Dependencies that pre-commit uses
-RUN apt-get update -yqq && apt-get install -yqq \
+RUN apt-get update -yqq && apt-get install -yqq --no-install-recommends \
     shellcheck \
     && \
     apt-get clean -yqq && \
@@ -49,7 +49,7 @@ RUN apt-get update -yqq && apt-get install -yqq --no-install-recommends \
     libncurses-dev \
     libreadline-dev \
     libssl-dev \
-    lzma liblzma-dev
+    lzma liblzma-dev \
     ncurses-dev \
     openssl \
     sqlite3 libsqlite3-dev \
@@ -64,7 +64,9 @@ RUN mkdir -p /etc/apt/keyrings
 RUN curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor -o /etc/apt/keyrings/packages.microsoft.gpg && \
     echo "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" > /etc/apt/sources.list.d/vscode.list && \
     apt-get update -yqq && \
-    apt-get install -yqq code && \
+    apt-get install -yqq --no-install-recommends code \
+    && \
+    apt-get clean -yqq && \
     rm -rf /var/lib/apt/lists/*
 
 # Install gh cli tool
@@ -73,17 +75,20 @@ RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg \
     chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg && \
     echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" > /etc/apt/sources.list.d/github-cli.list && \
     apt-get update -yqq && \
-    apt-get install -yqq gh && \
+    apt-get install -yqq --no-install-recommends gh \
     apt-get clean -yqq && \
     rm -rf /var/lib/apt/lists/*
 
 # Install Docker CE CLI
 RUN apt-get update -yqq && \
-    apt-get install -yqq apt-transport-https ca-certificates curl gnupg2 lsb-release && \
-    curl -fsSL https://download.docker.com/linux/$(lsb_release -is | tr '[:upper:]' '[:lower:]')/gpg | apt-key add - 2>/dev/null && \
+    apt-get install -yqq --no-install-recommends apt-transport-https ca-certificates curl gnupg2 lsb-release && \
+    curl -fsSL "https://download.docker.com/linux/$(lsb_release -is | tr '[:upper:]' '[:lower:]')/gpg" | apt-key add - 2>/dev/null && \
     echo "deb [arch=amd64] https://download.docker.com/linux/$(lsb_release -is | tr '[:upper:]' '[:lower:]') $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list && \
     apt-get update -yqq && \
-    apt-get install -yqq docker-ce-cli
+    apt-get install -yqq --no-install-recommends docker-ce-cli \
+    && \
+    apt-get clean -yqq && \
+    rm -rf /var/lib/apt/lists/*
 
 # We have to ensure this user exists before we setup Docker
 # Create a vscode user with uid 1000 (this user may already exist)
@@ -117,7 +122,7 @@ USER ${USER}
 RUN /tmp/shakefu/extensions.sh
 
 # Create SSH directory for user
-RUN cd ~ && mkdir -p .ssh
+RUN mkdir -p /home/${USER}/.ssh
 
 # Get the built home binary
 COPY --from=build-home /build/home /usr/local/bin/home
