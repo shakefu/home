@@ -33,10 +33,14 @@ jobs:
       #     repo: koalaman/shellcheck
       - name: Install shellcheck
         run: sudo apt-get install shellcheck
+      # Fucking golangci-lint zips their binary directly without a parent
+      # directory, so the action can't handle it
+      # - name: Install golangci-lint
+      #   uses: jaxxstorm/action-install-gh-release@v1.10.0
+      #   with:
+      #     repo: golangci/golangci-lint
       - name: Install golangci-lint
-        uses: jaxxstorm/action-install-gh-release@v1.10.0
-        with:
-          repo: golangci/golangci-lint
+        run: go install github.com/golangci/golangci-lint@latest
       - uses: pre-commit/action@release
 
   docker-build-and-push:
