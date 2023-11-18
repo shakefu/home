@@ -19,6 +19,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - uses: open-turo/actions-release/semantic-release@v3
+      - uses: open-turo/actions-release/semantic-release@v4
         with:
           github-token: ${{ secrets.GHA_TOKEN }}
