@@ -11,7 +11,7 @@ $RUN brew install --only-dependencies python@3.11
 $RUN brew install libffi ncurses openssl
 
 # This saves us the time of compiling Python on codespace startup
-$RUN echo "Installing global Python version""
+$RUN echo "Installing global Python version"
 $RUN eval "$(pyenv init -)"
 $RUN pyenv install 3.11.6
 $RUN pyenv global 3.11.6
