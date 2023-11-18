@@ -1,7 +1,11 @@
 #!/bin/sh
+# This hook runs the commitizen script when you commit to prompt you to create
+# conventional commit messages
+
 # Exit quietly if cz doesn't exist
 [ -x "$(command -v cz)" ] || exit 0
 # Prevent issues when rebasing
 [ "$1"  = ".git/COMMIT_EDITMSG" ] && [ "$2" = "message" ] && exit 0
 # Run the commitizen script
+# shellcheck disable=SC2015
 exec < /dev/tty && cz --hook || true
