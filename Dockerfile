@@ -115,12 +115,13 @@ RUN echo -e "#!/bin/sh\n\
     exec \"\$@\"" > /usr/local/share/docker-init.sh \
     && chmod +x /usr/local/share/docker-init.sh
 
+# These are super slow and don't seem to speed up the Codespaces startup
 # Install vscode extensions
-WORKDIR /tmp/shakefu
-COPY .devcontainer/extensions.sh ./extensions.sh
+# WORKDIR /tmp/shakefu
+# COPY .devcontainer/extensions.sh ./extensions.sh
 # Switch to user to install extensions correctly
-USER ${USER}
-RUN /tmp/shakefu/extensions.sh
+# USER ${USER}
+# RUN /tmp/shakefu/extensions.sh
 
 # Create SSH directory for user
 RUN mkdir -p /home/${USER}/.ssh
