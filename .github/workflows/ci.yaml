@@ -25,10 +25,14 @@ jobs:
         with:
           repo: hadolint/hadolint
           extension-matching: disable
+      # Fucking shellcheck uses a .xz compression so nothing fucking works to
+      # extract it in GHA. Fuck you shellcheck
+      # - name: Install shellcheck
+      #   uses: jaxxstorm/action-install-gh-release@v1.10.0
+      #   with:
+      #     repo: koalaman/shellcheck
       - name: Install shellcheck
-        uses: jaxxstorm/action-install-gh-release@v1.10.0
-        with:
-          repo: koalaman/shellcheck
+        run: sudo apt-get install shellcheck
       - name: Install golangci-lint
         uses: jaxxstorm/action-install-gh-release@v1.10.0
         with:
