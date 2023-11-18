@@ -29,6 +29,8 @@ jobs:
       - run: |
           # shellcheck disable=all
           echo $PATH
+          ls -lah /opt/hostedtoolcache/hadolint/hadolint/latest/linux-x64
+          ls -lah /opt/hostedtoolcache/hadolint/hadolint/latest/
           which hadolint
           hadolint --help
       # Fucking shellcheck uses a .xz compression so nothing fucking works to
