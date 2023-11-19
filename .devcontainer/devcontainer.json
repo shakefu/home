@@ -5,7 +5,7 @@
   "name": "shakefu/home",
 
   // Home image
-  "image": "shakefu/home:1.7.0",
+  "image": "shakefu/home:1.8.0",
 
   // Mounting in the host docker socket for docker-in-docker
   "mounts": [
