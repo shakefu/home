@@ -1,11 +1,12 @@
 #!/bin/dash -e
 # Install or upgrade
 $RUN brew "$( { [ -z "$UPGRADE" ] && echo "install"; } || echo "upgrade" )" "$NAME"
+# Enable dash to use nodenv
+$RUN echo "NODENV_ROOT=$(nodenv root)" | sudo tee -a /etc/profile
+$RUN echo "eval \"\$(nodenv init -)\"" | sudo tee -a /etc/profile
 
-# Install node16 by default
-if command -v nodenv &>/dev/null; then
-	eval "$(nodenv init -)"
-	eval "$(nodenv init --path)"
-	nodenv install 16.13.2
-	nodenv global 16.13.2
-fi
+$RUN echo "Installing global Node.js version"
+$RUN eval "$(nodenv init -)"
+$RUN nodenv install 18.18.2
+$RUN nodenv install 20.9.0
+$RUN nodenv global 20.9.0

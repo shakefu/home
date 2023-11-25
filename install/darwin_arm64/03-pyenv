@@ -1,0 +1,14 @@
+#!/bin/dash -e
+# Install or upgrade
+$RUN brew "$( { [ -z "$UPGRADE" ] && echo "install"; } || echo "upgrade" )" "$NAME"
+# Enable dash to use pyenv
+$RUN echo "PYENV_ROOT=$(pyenv root)" | sudo tee -a /etc/profile
+$RUN echo "eval \"\$(pyenv init -)\"" | sudo tee -a /etc/profile
+
+# This saves us the time of compiling Python on codespace startup
+$RUN echo "Installing global Python version"
+$RUN brew "$( { [ -z "$UPGRADE" ] && echo "install"; } || echo "upgrade" )" "python@3.11"
+# $RUN eval "$(pyenv init -)"
+# $RUN pyenv install 3.11.6
+# $RUN pyenv global 3.11.6
+# $RUN python -m pip install -U pip

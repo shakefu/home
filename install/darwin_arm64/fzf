@@ -3,4 +3,4 @@
 $RUN brew "$( { [ -z "$UPGRADE" ] && echo "install"; } || echo "upgrade" )" "$NAME"
 # To install useful key bindings and fuzzy completion:
 # shellcheck disable=SC2046
-$RUN $(brew --prefix)/opt/fzf/install
+$RUN $($RUN brew --prefix)/opt/fzf/install

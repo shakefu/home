@@ -22,7 +22,7 @@ os.environ.pop('__PYVENV_LAUNCHER__', None)
 os.environ["PRE_COMMIT_ALLOW_NO_CONFIG"] = "1"
 
 # start templated
-INSTALL_PYTHON = '/usr/local/bin/python3'
+INSTALL_PYTHON = which('python3') or which('python') or '/usr/local/bin/python3'
 ARGS = [
     'hook-impl',
     '--config=.pre-commit-config.yaml',

@@ -2,7 +2,7 @@
 
 # Add homebrew env required for some inits to work
 # This is the Mac default install
-[[ ! -x /opt/homebrew/bin ]] || eval "$(/opt/homebrew/bin/brew shellenv)"
+[[ ! -x /opt/homebrew/bin/brew ]] || eval "$(/opt/homebrew/bin/brew shellenv)"
 
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
@@ -105,7 +105,7 @@ setopt NO_HIST_BEEP
 
 # zsh plugins
 plugins=(
-    ansible
+    # ansible
     brew
     colorize
     # copydir  # Deprecated in favor of copypath
@@ -123,19 +123,19 @@ plugins=(
     # gitfast  # More up to date version of git?
     git-auto-fetch
     git-extras
-    # git-prompt  # Adds right-hand prompt with branch
+    git-prompt  # Adds right-hand prompt with branch
     last-working-dir
     ls  # substitute exa for ls (custom)
     pip
     # rust  # Unused
     ssh-agent
     # sudo  # Conflicts with thefuck, which is better
-    terraform
+    # terraform
     thefuck
     themes
     # timer  # Dupes p10k behavior
     virtualenv
-    virtualenvwrapper
+    # virtualenvwrapper
     zsh-autosuggestions  # https://github.com/zsh-users/zsh-autosuggestions
     zsh-syntax-highlighting
 )
@@ -166,16 +166,19 @@ SAVEHIST=100000
 ######
 # PATH
 
+# These paths are added in reverse order, so lower paths have higher priority
 _paths=(
-    "$HOME/.bin"
-    "$HOME/.local/bin"
-    "$HOME/.goenv/bin"
-    "$HOME/.pyenv/bin"
-    "$HOME/.nodenv/bin"
-    "$HOME/go/bin"
     "/usr/local/bin"
     "/usr/local/share/bin"
+    "$(brew --prefix python)/libexec/bin"
+    "/usr/local/opt/coreutils/libexec/gnubin"
     "/usr/local/go/bin"
+    "$HOME/go/bin"
+    "$HOME/.pyenv/bin"
+    "$HOME/.nodenv/bin"
+    "$HOME/.goenv/bin"
+    "$HOME/.local/bin"
+    "$HOME/.bin"
 )
 
 # Load all paths if they haven't already
@@ -198,21 +201,7 @@ for name in "${_paths[@]}"; do
 done
 # echo "Final path: $PATH"
 
-# If you come from bash you might have to change your $PATH.
-# export PATH=$HOME/bin:/usr/local/bin:$PATH
-# Append language specific paths in search order
-# Add golang's default install path
-# [ -d /usr/local/go/bin ] && export PATH="$PATH:/usr/local/go/bin"
-# Add golang's package install path
-# [ -d "$HOME/go/bin" ] && export PATH="$PATH:$HOME/go/bin"
-# Add Python's site.USER_BASE bin
-# [ -d /usr/local/opt/python/libexec/bin ] && export PATH="$PATH:$HOME/Library/Python/3.7/bin"
-# Add Homebrew unversioned Python binaries to PATH
-# [ -d /usr/local/opt/python/libexec/bin ] && export PATH="/usr/local/opt/python/libexec/bin:$PATH"
-# Adding user local bin directory where things get installed in Ubuntu 20.10
-# [ -d "$HOME/.local/bin" ] && export PATH="$HOME/.local/bin:$PATH"
-# Adding user bin directory to PATH as top priority
-# [ -d "$HOME/.bin" ] && export PATH="$HOME/.bin:$PATH"
+
 # [ -d /usr/local/opt/coreutils/libexec/gnubin ] && export PATH="/usr/local/opt/coreutils/libexec/gnubin:$PATH"
 
 ###########
@@ -241,19 +230,6 @@ else
   export EDITOR="vi"
 fi
 
-####################
-# Python Virtualenvs
-
-# Deprecated in favor of poetry venv management
-
-# Use the default directory, explicitly
-# export WORKON_HOME=$HOME/.virtualenvs
-# Anything that is done with mkproject ends up in tmp
-#export PROJECT_HOME=$HOME/tmp
-# Lazy load virtualenvwrapper commands for quicker shells
-# [ ! -x "$(command -v virtualenvwrapper.sh)" ] || \. "$(which virtualenvwrapper_lazy.sh)"
-# Don't need this, script is on our path
-# export VIRTUALENVWRAPPER_SCRIPT=/usr/local/bin/virtualenvwrapper.sh
 
 #################################
 # FD cross platform compatability
@@ -281,21 +257,14 @@ function _fzf_compgen_dir { $FD_FIND --type d --hidden --follow --exclude ".git"
 
 # General aliases
 # alias beep='tput bel'
+# TODO: Make this non-mac specific
 alias bell="afplay \"/System/Library/Sounds/Submarine.aiff\""
 # Sane grep defaults
 alias grep='grep --binary-files=without-match --color=auto'
 # Kill the most recent backgrounded process
 alias kbg='kill %%;fg'
-# ls with good formatting
-# alias ls='ls -Gp'
 # Strip coloring
 alias nocolor='sed -E "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]//g"'
-# Use MacVim GUI
-# alias vim='mvim --remote-tab-silent'
-# Use colorized versions of less and more
-# Commented out because these fight with `delta` which is a nice git pager
-# alias less='cless'
-# alias more='cless'
 # Nice tree output
 alias tree='tree --noreport --matchdirs -a -C -x -I ".git" -L 2'
 
@@ -306,14 +275,8 @@ alias dc='docker-compose'
 alias gpull='git pull --no-edit --prune --all --verbose'
 alias gundo='git reset --soft "HEAD^"'
 alias gunstage='git reset --'
-# This stomps on using delta as the diff pager
-# alias gstaged='git difftool --staged'
-# alias gdiff='git difftool'
 alias gstaged='git diff --staged'
 alias gdiff='git diff'
-# alias gcom='git commit -m'  # Moved to function
-# alias gadd='git add'  # Moved to function
-# alias gcheck='git checkout'  # Fights tab completion with gch
 alias gch='git checkout'
 
 # Helper
@@ -455,8 +418,11 @@ function gcom {
 
 # Shorthand for adding files
 function gadd {
-    local files="${@:-.}"
-    git add $files
+    local files=$@
+    if [[ -z "$files" ]]; then
+        files=( "." )
+    fi
+    git add ${files[@]}
 }
 
 # Clean rebasing of branches with pull
@@ -719,150 +685,6 @@ function tabname {
   printf "\e]1;$1\a"
 }
 
-#############
-# AWS Helpers
-#
-# Helpers for logging into AWS and managing profiles
-
-if [[ -x $(command -v turo) ]]; then
-    function turo() {
-        case $* in
-            *"--help"* ) command turo "$@" ;;
-            aws\ set-profile\ * ) eval $(command turo "$@") ;;
-            k8s\ login\ * ) eval $(command turo "$@") ;;
-            * ) command turo "$@" ;;
-        esac
-    }
-fi
-
-function _aws-login {
-    # Check if saml2aws has been installed, and configured
-    if [[ ! -x "$(command -v saml2aws)" ]]; then
-        echo "Error: saml2aws not installed"
-        return 1
-    fi
-
-    if [[ ! -f "$HOME/.saml2aws" ]]; then
-        # Configure saml2aws to set default profile (instead of saml profile)
-        saml2aws configure --session-duration 28800 --profile default
-    fi
-
-    # Use saml2aws to do login process (preferably without prompting)
-    local args=()
-    args+=( $(aws sts get-caller-identity &>/dev/null || echo "--force") )
-    args+=( $(pass saml2aws &>/dev/null && echo "--skip-prompt") )
-
-    _echo_blue "Refreshing credentials"  # "(${args[@]})"
-
-    saml2aws login "${args[@]}"
-    local result=$?
-    if [[ $result -ne 0 ]]; then
-        echo "Error: could not authenticate"
-        return $result
-    fi
-}
-
-function _aws-profile {
-    local profile="${1:-default}"
-
-    # Run login (transparent)
-    _aws-login
-
-    # Check principal
-    local principal="$(aws --profile $profile sts get-caller-identity 2>/dev/null | jq .Arn)"
-    if [[ -z "$principal" ]]; then
-        echo "Error: Principal ARN not found."
-        return 1
-    fi
-
-    # Export AWS_PROFILE for delegated auth
-    export AWS_PROFILE="$profile"
-
-    # Maybe export region?
-    export AWS_DEFAULT_REGION="us-east-1"
-
-    _echo_blue "Set profile to '$profile'"
-}
-
-function _aws-env {
-    # Maybe export region?
-    local target="$1"
-    local profile="${2:-default}"
-
-    # If no arguments, print current env
-    if [[ -z "$target" ]]; then
-        _aws-print-env
-        return
-    fi
-
-    # This doesn't get used in env mode
-    unset AWS_PROFILE
-
-    # Run login (transparent)
-    _aws-login
-
-    # EZ role lookup
-    local role="$(aws configure get role_arn --profile $target)"
-    if [[ -z "$role" ]]; then
-        role="$(aws sts get-caller-identity --profile $target | jq -r .Arn)"
-    fi
-    if [[ -z "$role" ]]; then
-        echo "Error: Role ARN not found."
-        return 1
-    fi
-
-    _echo_blue "Role: $role"
-
-    # Can't assume from the default into itself, so we just export direct
-    if [[ "$profile" == "default" ]]; then
-        export AWS_ACCESS_KEY_ID="$(aws configure get aws_access_key_id)"
-        export AWS_SECRET_ACCESS_KEY="$(aws configure get aws_secret_access_key)"
-        export AWS_SESSION_TOKEN="$(aws configure get aws_session_token)"
-        return
-    fi
-
-    # Export all AWS vars needed
-    eval $(aws sts assume-role --profile "$profile" --role-arn "$role" --role-session-name "$target" | jq -r '.Credentials | "export AWS_ACCESS_KEY_ID=\(.AccessKeyId)\nexport AWS_SECRET_ACCESS_KEY=\(.SecretAccessKey)\nexport AWS_SESSION_TOKEN=\(.SessionToken)\n"')
-}
-
-function _aws-clear {
-    # Clear all AWS related env vars
-    _echo_blue "Clearing environment"
-
-    for name in $(env | grep '^AWS_' | cut -d '=' -f 1); do
-        echo "  unset $name"
-        unset $name
-    done
-    return
-}
-
-function _aws-print-env {
-    # Print all AWS related env vars (maybe)
-    for var in $(env | grep ^AWS_ | sort); do
-        echo "$var"
-    done
-}
-
-# If aws-cli is installed, we augment
-if whence -p aws >/dev/null; then
-    function _aws {
-        "$(whence -p aws)" "$@"
-        return $?
-    }
-    function aws {
-        if [ "$1" = "login" ]; then shift; _aws-login "$@"; return $?; fi
-        if [ "$1" = "profile" ]; then shift; _aws-profile "$@"; return $?; fi
-        if [ "$1" = "env" ]; then shift; _aws-env "$@"; return $?; fi
-        if [ "$1" = "clear" ]; then shift; _aws-clear "$@"; return $?; fi
-        _aws "$@"
-        return $?
-    }
-else
-    function _aws {
-        echo 'Error: aws-cli is not installed'
-        return 1
-    }
-fi
 
 ###########################################
 # Loading external scripts for dependencies
@@ -882,19 +704,10 @@ if command -v goenv &>/dev/null; then eval "$(goenv init - )"; fi
 
 # Load pyenv
 if command -v pyenv &>/dev/null; then eval "$(pyenv init - )"; fi
-# if ! command -v pyenv &>/dev/null; then
-#     eval "$(pyenv init --path)"
-#     eval "$(pyenv init -)"
-#     eval "$(pyenv init virtualenv-init)"
-# fi
 
 # Load nodenv
 if command -v nodenv &>/dev/null; then eval "$(nodenv init - )"; fi
-# if ! command -v nodenv &>/dev/null; then
-#     export PATH="$HOME/.nodenv/bin:$PATH"
-#     eval "$(nodenv init -)"
-# fi
 
 # Configure tfenv because it don't play nice with Mac aarch64
-export TFENV_ARCH=amd64
-export TFENV_AUTO_INSTALL=true
+# export TFENV_ARCH=amd64
+# export TFENV_AUTO_INSTALL=true
