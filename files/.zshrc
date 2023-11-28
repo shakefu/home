@@ -177,6 +177,9 @@ _paths=(
     "/usr/local/share/bin"
 )
 
+# VSCode its CLI on the path on darwin_arm64
+_paths+=( "/Applications/Visual Studio Code.app/Contents/Resources/app/bin" )
+
 # Add brew paths
 _paths+=( "$(brew --prefix python 2>/dev/null || echo "")/libexec/bin" )
 _paths+=( "$(brew --prefix coreutils 2>/dev/null || echo "")/libexec/gnubin" )
