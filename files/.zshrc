@@ -180,6 +180,13 @@ _paths=(
 # Add brew paths
 _paths+=( "$(brew --prefix python 2>/dev/null || echo "")/libexec/bin" )
 _paths+=( "$(brew --prefix coreutils 2>/dev/null || echo "")/libexec/gnubin" )
+_paths+=( "$(brew --prefix findutils 2>/dev/null || echo "")/libexec/gnubin" )
+_paths+=( "$(brew --prefix gnu-indent 2>/dev/null || echo "")/libexec/gnubin" )
+_paths+=( "$(brew --prefix gnu-sed 2>/dev/null || echo "")/libexec/gnubin" )
+_paths+=( "$(brew --prefix gnutls 2>/dev/null || echo "")/libexec/gnubin" )
+_paths+=( "$(brew --prefix grep 2>/dev/null || echo "")/libexec/gnubin" )
+_paths+=( "$(brew --prefix gnu-tar 2>/dev/null || echo "")/libexec/gnubin" )
+_paths+=( "$(brew --prefix gawk 2>/dev/null || echo "")/libexec/gnubin" )
 
 # Add remaining priority paths
 _paths+=(
