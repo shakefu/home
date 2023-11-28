@@ -1,0 +1,17 @@
+#!/bin/dash -e
+pkgs="coreutils
+findutils
+gnu-indent
+gnu-sed
+gnutls
+grep
+gnu-tar
+gawk"
+
+for name in $pkgs; do
+    # Install or upgrade
+    $RUN brew "$( { [ -z "$UPGRADE" ] && echo "install"; } || echo "upgrade" )" "$name"
+done
+
+# Make the dummy executable for install checking
+$RUN /bin/dash -c "mkdir -p $HOME/.bin && ln -sf /bin/dash $HOME/.bin/$NAME"
