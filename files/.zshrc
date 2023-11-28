@@ -1,7 +1,12 @@
 # shellcheck shell=zsh
 
-# Add homebrew env required for some inits to work
-# This is the Mac default install
+#########################
+# Homebrew initialization
+#
+# This sets a bunch of environment variables and prepends the homebrew bin to
+# the PATH, so we want it before all our other paths.
+
+# This is the Mac default install on Apple Silicon
 [[ ! -x /opt/homebrew/bin/brew ]] || eval "$(/opt/homebrew/bin/brew shellenv)"
 
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
@@ -170,8 +175,14 @@ SAVEHIST=100000
 _paths=(
     "/usr/local/bin"
     "/usr/local/share/bin"
-    "$(brew --prefix python)/libexec/bin"
-    "/usr/local/opt/coreutils/libexec/gnubin"
+)
+
+# Add brew paths
+_paths+=( "$(brew --prefix python 2>/dev/null || echo "")/libexec/bin" )
+_paths+=( "$(brew --prefix coreutils 2>/dev/null || echo "")/libexec/gnubin" )
+
+# Add remaining priority paths
+_paths+=(
     "/usr/local/go/bin"
     "$HOME/go/bin"
     "$HOME/.pyenv/bin"
@@ -185,25 +196,17 @@ _paths=(
 # Load all paths if they haven't already
 # TODO: Remove debugging
 for name in "${_paths[@]}"; do
-    # echo "Checking $name"
+    # Make sure the path exists
     [[ -d "$name" ]] || continue
-    # echo "Found $name"
-    # echo "\":$PATH:\" = *\":$name:\"*"
+    # Only add it if we don't already have it
     if [[ ":$PATH:" = *":$name:"* ]]; then
-        # echo "Path $name already in PATH, skipping"
         true
     else
-        # echo "Adding $name to PATH"
-        # echo "PATH=$PATH"
-        # echo "PATH=$name:$PATH"
+        # Add the path, because it's missing
         export PATH="$name:$PATH"
     fi
-    # echo "New path: $PATH"
 done
-# echo "Final path: $PATH"
 
-
-# [ -d /usr/local/opt/coreutils/libexec/gnubin ] && export PATH="/usr/local/opt/coreutils/libexec/gnubin:$PATH"
 
 ###########
 # Variables
