@@ -176,6 +176,7 @@ _paths=(
     "$HOME/go/bin"
     "$HOME/.pyenv/bin"
     "$HOME/.nodenv/bin"
+    "$HOME/.goenv/shims"
     "$HOME/.goenv/bin"
     "$HOME/.local/bin"
     "$HOME/.bin"
