@@ -66,7 +66,7 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - uses: open-turo/actions-release/semantic-release@v4
+      - uses: open-turo/actions-release/semantic-release@v5
         id: semantic-release
         with:
           github-token: ${{ secrets.GHA_TOKEN }}
