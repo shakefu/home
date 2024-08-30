@@ -1,3 +1,3 @@
 #!/bin/dash -e
-$RUN pip3 install --user -U "$NAME"
+$RUN pip3 install --break-system-packages --user -U "$NAME"
 $RUN /bin/dash -c "mkdir -p $HOME/.bin && ln -sf /bin/dash $HOME/.bin/$NAME"
