@@ -1,2 +1,2 @@
 #!/bin/dash -e
-$RUN pip3 install -U "$NAME"
+$RUN pip3 install --user -U "$NAME"
