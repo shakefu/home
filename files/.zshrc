@@ -92,8 +92,8 @@ setopt NO_HIST_BEEP
 ##########################
 # Completion compatability
 
-# Put the _exa completion script in "${ZSH_CUSTOM}/completions" instead
-# fpath=(${ZSH_CUSTOM}/completions ${ZSH_CUSTOM}/plugins/exa $fpath)
+# Put the _eza completion script in "${ZSH_CUSTOM}/completions" instead
+# fpath=(${ZSH_CUSTOM}/completions ${ZSH_CUSTOM}/plugins/eza $fpath)
 
 # export FPATH="$FPATH:/usr/local/etc/bash_completion.d/"
 # ZSH_DISABLE_COMPFIX="true"
@@ -105,8 +105,8 @@ setopt NO_HIST_BEEP
 # # Load bashcompinit for some old bash completions
 # autoload bashcompinit && bashcompinit
 #
-# # Load exa completions
-# [[ -r /usr/local/etc/bash_completion.d/exa ]] && source /usr/local/etc/bash_completion.d/exa
+# # Load eza completions
+# [[ -r /usr/local/etc/bash_completion.d/eza ]] && source /usr/local/etc/bash_completion.d/eza
 
 # zsh plugins
 plugins=(
@@ -122,7 +122,7 @@ plugins=(
     docker-compose
     # dotenv  # This is kind of noisy and I'm not sure I want it
     emoji-clock
-    exa  # exa completions (custom)
+    eza  # eza completions (custom)
     fzf
     git
     # gitfast  # More up to date version of git?
@@ -130,7 +130,7 @@ plugins=(
     git-extras
     git-prompt  # Adds right-hand prompt with branch
     last-working-dir
-    ls  # substitute exa for ls (custom)
+    ls  # substitute eza for ls (custom)
     pip
     # rust  # Unused
     ssh-agent
@@ -330,7 +330,7 @@ _unalias lsa
 # TODO: Relocate this if we start using it all over
 _echo_blue () { printf "\033[1;34m%s\033[0m\n" "$*"; }
 
-# Really specific usage of `exa` that I like
+# Really specific usage of `eza` that I like
 function ll {
     # local ignore="*/.git/*|.git|.terraform|.DS_Store|.idea|.vs_code|.git/|*/node_modules/*|node_modules"
     local ignore=".git|.terraform|.DS_Store|.idea|.vs_code|node_modules"
@@ -369,7 +369,7 @@ function ll {
     [[ -n "$level" ]] || args+=( --level 2 )
 
     # Long list command
-    exa "${args[@]}"
+    eza "${args[@]}"
 }
 
 # Notifier bell

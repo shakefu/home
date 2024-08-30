@@ -12,8 +12,8 @@ safe_clone () {
     $RUN git clone --depth=1 --recurse-submodules --shallow-submodules "$uri" "$TMP/$path"
 }
 
-# exa completion is just a single file
-$RUN curl --create-dirs -o "${TMP}/plugins/exa/_exa" -fsSL "https://raw.githubusercontent.com/ogham/exa/master/completions/zsh/_exa"
+# eza completion is just a single file
+$RUN curl --create-dirs -o "${TMP}/plugins/eza/_eza" -fsSL "https://raw.githubusercontent.com/eza-community/eza/main/completions/zsh/_eza"
 
 # Clone plugin repositories
 safe_clone "https://github.com/zpm-zsh/ls.git" "plugins/ls"

@@ -12,8 +12,8 @@ safe_clone () {
     $RUN git clone --depth=1 --recurse-submodules --shallow-submodules "$uri" "$TMP/$path"
 }
 
-# exa completion is just a single file
-$RUN curl --create-dirs -o "${TMP}/plugins/exa/_exa" -fsSL "https://raw.githubusercontent.com/ogham/exa/master/completions/zsh/_exa"
+# eza completion is just a single file
+$RUN curl --create-dirs -o "${TMP}/plugins/eza/_eza" -fsSL "https://raw.githubusercontent.com/eza-community/eza/main/completions/zsh/_eza"
 
 # Clone plugin repositories
 safe_clone "https://github.com/zpm-zsh/ls.git" "plugins/ls"
@@ -21,8 +21,14 @@ safe_clone "https://github.com/romkatv/powerlevel10k.git" "themes/powerlevel10k"
 safe_clone "https://github.com/zsh-users/zsh-autosuggestions" "plugins/zsh-autosuggestions"
 safe_clone "https://github.com/zsh-users/zsh-syntax-highlighting.git" "plugins/zsh-syntax-highlighting"
 
-mv -f "$ZSH_CUSTOM" "/tmp/old-zsh-custom"
-mv -f "$TMP" "$ZSH_CUSTOM"
+if [ -d "$ZSH_CUSTOM" ]; then
+    # Backup the old custom directory
+    mv -f "$ZSH_CUSTOM" "/tmp/old-zsh-custom"
+fi
+if [ -d "$TMP" ]; then
+    # Move the new custom directory into place
+    mv -f "$TMP" "$ZSH_CUSTOM"
+fi
 
 # Make the dummy executable for install checking
 $RUN /bin/dash -c "mkdir -p $HOME/.bin && ln -sf /bin/dash $HOME/.bin/$NAME"
