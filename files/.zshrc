@@ -283,7 +283,7 @@ alias nocolor='sed -E "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]//g"'
 alias tree='tree --noreport --matchdirs -a -C -x -I ".git" -L 2'
 
 # Docker aliases
-alias dc='docker-compose'
+alias dc='docker compose'
 
 # Git aliases
 alias gpull='git pull --no-edit --prune --all --verbose'
@@ -432,11 +432,11 @@ function gcom {
 
 # Shorthand for adding files
 function gadd {
-    local files=$@
-    if [[ -z "$files" ]]; then
-        files=( "." )
+    if [[ -z "$@" ]]; then
+        git add .
+    else
+        git add $*
     fi
-    git add ${files[@]}
 }
 
 # Clean rebasing of branches with pull
