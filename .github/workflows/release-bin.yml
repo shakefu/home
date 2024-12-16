@@ -22,7 +22,7 @@ jobs:
         # - "386"
     steps:
       - uses: actions/checkout@v4
-      - uses: wangyoucao577/go-release-action@v1.52
+      - uses: wangyoucao577/go-release-action@v1.53
         with:
           github_token: ${{ secrets.GHA_TOKEN }}
           goversion: https://golang.org/dl/go1.20.2.linux-amd64.tar.gz
