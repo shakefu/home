@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# Pre-commit commit-msg hook
+
+INSTALL_PYTHON="$(which python3)"
+# ARGS=(hook-impl --config=.pre-commit-config.yaml --hook-type=commit-msg)
+
+FILENAME="$1"
+shift
+ARGS=(run --config=.pre-commit-config.yaml --hook-stage=commit-msg --commit-msg-filename="$FILENAME" -- "$@")
+
+# HERE="$(cd "$(dirname "$0")" && pwd)"
+# ARGS+=(--hook-dir "$HERE" -- "$@")
+
+if [ -x "$INSTALL_PYTHON" ]; then
+    exec "$INSTALL_PYTHON" -mpre_commit "${ARGS[@]}"
+elif command -v pre-commit > /dev/null; then
+    exec pre-commit "${ARGS[@]}"
+else
+    echo '`pre-commit` not found.  Did you forget to activate your virtualenv?' 1>&2
+    exit 1
+fi
