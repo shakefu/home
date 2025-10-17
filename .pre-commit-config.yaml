@@ -41,7 +41,14 @@ repos:
             --ignore,
             DL4006,
           ]
-  - repo: https://github.com/golangci/golangci-lint
-    rev: v1.55.2
+  # Use go vet from the default hooks instead
+  - repo: https://github.com/tekwizely/pre-commit-golang
+    rev: v1.0.0-rc.2
     hooks:
-      - id: golangci-lint-full
+      - id: go-mod-tidy
+      - id: go-vet
+      - id: go-fmt
+  # - repo: https://github.com/golangci/golangci-lint
+  #   rev: v1.55.2
+  #   hooks:
+  #     - id: golangci-lint-full
