@@ -2,7 +2,8 @@
     name = Jacob Alheid
     email = shakefu@gmail.com
 [core]
-    editor = code --wait
+    # editor = code --wait
+    editor = cursor --wait
     hooksPath = ~/.githooks
     pager = delta
 [advice]
@@ -12,7 +13,8 @@
 [push]
     default = simple
 [merge]
-    tool = code
+    # tool = code
+    tool = cursor
 [diff]
     colorMoved = default
     tool = diff
@@ -40,3 +42,5 @@
     line-numbers-plus-style = green
 [mergetool "code"]
     cmd = code --wait --merge $REMOTE $LOCAL $BASE $MERGED
+[mergetool "cursor"]
+    cmd = cursor --wait --merge $REMOTE $LOCAL $BASE $MERGED
