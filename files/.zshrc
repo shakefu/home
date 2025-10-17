@@ -9,11 +9,15 @@
 # This is the Mac default install on Apple Silicon
 [[ ! -x /opt/homebrew/bin/brew ]] || eval "$(/opt/homebrew/bin/brew shellenv)"
 
-# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
-# Initialization code that may require console input (password prompts, [y/n]
-# confirmations, etc.) must go above this block; everything else may go below.
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+if [[ -n "$CURSOR_AGENT" ]]; then
+    echo "Cursor agent detected, skipping p10k instant prompt"
+else
+    # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
+    # Initialization code that may require console input (password prompts, [y/n]
+    # confirmations, etc.) must go above this block; everything else may go below.
+    if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+    source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+    fi
 fi
 
 # Path to your oh-my-zsh installation.
@@ -21,9 +25,13 @@ export ZSH="$HOME/.oh-my-zsh"
 
 # zsh/oh-my-zsh settings
 
-# Use default theme (for now)
-# ZSH_THEME="robbyrussell"
-ZSH_THEME="powerlevel10k/powerlevel10k"
+if [[ -n "$CURSOR_AGENT" ]]; then
+    echo "Cursor agent detected, skipping p10k theme"
+else
+    # Use default theme (for now)
+    # ZSH_THEME="robbyrussell"
+    ZSH_THEME="powerlevel10k/powerlevel10k"
+fi
 
 ###############
 # Custom prompt
@@ -181,6 +189,7 @@ _paths=(
 _paths+=( "/Applications/Visual Studio Code.app/Contents/Resources/app/bin" )
 
 # Add brew paths
+_paths+=( "$(brew --prefix rustup 2>/dev/null || echo "")/bin" )
 _paths+=( "$(brew --prefix python 2>/dev/null || echo "")/libexec/bin" )
 _paths+=( "$(brew --prefix coreutils 2>/dev/null || echo "")/libexec/gnubin" )
 _paths+=( "$(brew --prefix findutils 2>/dev/null || echo "")/libexec/gnubin" )
@@ -344,6 +353,7 @@ function ll {
         --modified
         --header
         --icons
+        --git-ignore
     )
     local list_home
     local level
@@ -657,9 +667,10 @@ function gr {
         --exclude-dir='coverage' --exclude-dir='.nyc_output' \
         --exclude-dir='.terraform' --exclude-dir='.eggs' \
         --exclude-dir='external' --exclude-dir='vendor' \
+        --exclude-dir='.venv' --exclude-dir='dist' \
         --exclude='terraform.tfstate*' --exclude='*.min.*' \
         --exclude='*.js.map' --exclude='*.css.map' \
-        --exclude='yarn.lock' --exclude='*.log' --exclude-dir='dist' \
+        --exclude='yarn.lock' --exclude='*.log' \
         "$pattern" $args
 }
 
@@ -675,7 +686,8 @@ function pyg {
     fi
     grep -nR --exclude-dir node_modules --exclude-dir .eggs \
         --exclude-dir __pycache__ \
-        --include *py "$pattern" $args
+        --exclude-dir .venv \
+        --include '*py' "$pattern" $args
 }
 
 # JS and HTML grep
@@ -699,16 +711,35 @@ function tabname {
   printf "\e]1;$1\a"
 }
 
+# Redefine ls for -la, -1 arguments which are used by LLMs all the time
+functions -c ls exa_ls
+unfunction ls
+
+function ls {
+    if [ "$1" = "-la" ]; then
+        /bin/ls "$@"
+        return $?
+    elif [ "$1" = "-1" ]; then
+        /bin/ls "$@"
+        return $?
+    fi
+
+    exa_ls "$@"
+}
+
+
 
 ###########################################
 # Loading external scripts for dependencies
 #
-# THis has to be loaded before the devops alias because otherwise it won't find
-# fotingo on the path
 
-
-# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+# Only load p10k if we're not running in a Cursor agent
+if [[ -n "$CURSOR_AGENT" ]]; then
+    echo "Cursor agent detected, skipping p10k"
+else
+    # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+    [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+fi
 
 # Load in the profile baybee
 [[ ! -f ~/.profile ]] || source ~/.profile
@@ -725,3 +756,11 @@ if command -v nodenv &>/dev/null; then eval "$(nodenv init - )"; fi
 # Configure tfenv because it don't play nice with Mac aarch64
 # export TFENV_ARCH=amd64
 # export TFENV_AUTO_INSTALL=true
+
+# pnpm
+export PNPM_HOME="/Users/shakefu/Library/pnpm"
+case ":$PATH:" in
+  *":$PNPM_HOME:"*) ;;
+  *) export PATH="$PNPM_HOME:$PATH" ;;
+esac
+# pnpm end
