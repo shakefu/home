@@ -1,0 +1,4 @@
+#!/bin/dash -e
+# Install or upgrade
+$RUN brew "$( { [ -z "$UPGRADE" ] && echo "install"; } || echo "upgrade" )" "$NAME"
+$RUN /bin/dash -c "mkdir -p $HOME/.bin && ln -sf /bin/dash $HOME/.bin/$NAME"
