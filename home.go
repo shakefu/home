@@ -178,6 +178,7 @@ func CliInstall(args *CliArgs, names ...string) {
 	targets, names = Targets(args, &names)
 	log := golog.Child(fmt.Sprint(ansi.Blue("[install]")))
 	log.Infof("Installing %s...", strings.Join(names, ", "))
+	log.Infof("Dry run: %v", args.DryRun)
 
 	// Get our target directory for the platform
 	target := fmt.Sprintf("install/%v_%v", args.Os, args.Arch)
@@ -235,7 +236,9 @@ func CliInstall(args *CliArgs, names ...string) {
 		}
 		// Set the dry run flag
 		if args.DryRun {
-			script.env = append(script.env, "RUN=echo "+fmt.Sprint(ansi.Black("dry-run:")))
+			dryRun := fmt.Sprintf("RUN=echo %s", ansi.Black("dry-run:"))
+			log.Infof("Dry run: %s", dryRun)
+			script.env = append(script.env, dryRun)
 		}
 		// Run our install script
 		fmt.Println(ansi.Blue(verb), ansi.Blue(name))
@@ -490,6 +493,7 @@ func (script *Script) Run(args ...string) (int, error) {
 	// Write the script to stdin and close the pipe when finished
 	go func() {
 		defer stdin.Close()
+		golog.Child(fmt.Sprint(ansi.Blue("[script]"))).Debugf("Writing to stdin: %s", string(data))
 		_, err := io.WriteString(stdin, string(data))
 		if err != nil {
 			fmt.Printf("%v", fmt.Errorf("could not write to stdin: %w", err))
