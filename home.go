@@ -239,6 +239,7 @@ func CliInstall(args *CliArgs, names ...string) {
 			dryRun := fmt.Sprintf("RUN=echo %s", ansi.Black("dry-run:"))
 			log.Infof("Dry run: %s", dryRun)
 			script.env = append(script.env, dryRun)
+			script.env = append(script.env, "DRY_RUN=true")
 		}
 		// Run our install script
 		fmt.Println(ansi.Blue(verb), ansi.Blue(name))
