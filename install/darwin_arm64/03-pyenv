@@ -2,8 +2,12 @@
 # Install or upgrade
 $RUN brew "$( { [ -z "$UPGRADE" ] && echo "install"; } || echo "upgrade" )" "$NAME"
 # Enable dash to use pyenv
-$RUN echo "PYENV_ROOT=$(pyenv root)" | sudo tee -a /etc/profile
-$RUN echo "eval \"\$(pyenv init -)\"" | sudo tee -a /etc/profile
+if [ -z "$DRY_RUN" ]; then
+    if ! grep 'pyenv' /etc/profile >/dev/null 2>&1; then
+        echo "PYENV_ROOT=\$(pyenv root)" | sudo tee -a /etc/profile
+        echo "[ ! command -v pyenv >/dev/null 2>&1 ] || eval \"\$(pyenv init -)\"" | sudo tee -a /etc/profile
+    fi
+fi
 
 # This saves us the time of compiling Python on codespace startup
 $RUN echo "Installing global Python version"

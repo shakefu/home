@@ -5,6 +5,8 @@ $RUN curl -o "$TMP" -fsSL https://raw.githubusercontent.com/Homebrew/install/HEA
 $RUN /bin/bash "$TMP"
 
 # Ensure brew is in PATH in dash shell
-if ! $RUN grep 'brew' /etc/profile; then
-    $RUN echo "export PATH=\"$($RUN brew --prefix)/bin:\$PATH\"" | $RUN sudo tee -a "/etc/profile"
+if [ -z "$DRY_RUN" ]; then
+    if ! grep 'brew' /etc/profile >/dev/null 2>&1; then
+        echo "export PATH=\"$(brew --prefix)/bin:\$PATH\"" | sudo tee -a "/etc/profile"
+    fi
 fi

@@ -12,17 +12,21 @@ $RUN /bin/bash "$TMP"
 
 # This will ensure we have the correct path in /etc/profile which should get
 # picked up by dash hopefully
-if ! grep 'linuxbrew' /etc/profile; then
-    $RUN echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' | sudo tee -a /etc/profile
-    # $RUN echo 'PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"' | sudo tee -a /etc/profile
-    # $RUN echo "Running brew profile stuff"
-    # /home/linuxbrew/.linuxbrew/bin/brew shellenv
-    # (echo; echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"') >> "$HOME/.profile"
-    # (echo; echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"') >> "$HOME/.dashrc"
-    # (echo; echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"') | sudo tee -a "/etc/dashrc"
-    # eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-    echo "Done"
-    dash -c 'env | sort'
+if [ -z "$DRY_RUN" ]; then
+    if ! grep 'linuxbrew' /etc/profile >/dev/null 2>&1; then
+        # shellcheck disable=SC2016
+        echo '[ ! command -v brew >/dev/null 2>&1 ] || eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"' \
+            | sudo tee -a /etc/profile
+        # $RUN echo 'PATH="/home/linuxbrew/.linuxbrew/bin:$PATH"' | sudo tee -a /etc/profile
+        # $RUN echo "Running brew profile stuff"
+        # /home/linuxbrew/.linuxbrew/bin/brew shellenv
+        # (echo; echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"') >> "$HOME/.profile"
+        # (echo; echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"') >> "$HOME/.dashrc"
+        # (echo; echo 'eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"') | sudo tee -a "/etc/dashrc"
+        # eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+        echo "Done"
+        # dash -c 'env | sort'
+    fi
 fi
 
 # Linux homebrew does not have permissions for its lock files in this dir, so we

@@ -2,8 +2,12 @@
 # Install or upgrade
 $RUN brew "$( { [ -z "$UPGRADE" ] && echo "install"; } || echo "upgrade" )" "$NAME"
 # Enable dash to use goenv
-$RUN echo "GOENV_ROOT=$(goenv root)" | sudo tee -a /etc/profile
-$RUN echo "eval \"\$(goenv init -)\"" | sudo tee -a /etc/profile
+if [ -z "$DRY_RUN" ]; then
+    if ! grep 'goenv' /etc/profile >/dev/null 2>&1; then
+        echo "GOENV_ROOT=\$(goenv root)" | sudo tee -a /etc/profile
+        echo "[ ! command -v goenv >/dev/null 2>&1 ] || eval \"\$(goenv init -)\"" | sudo tee -a /etc/profile
+    fi
+fi
 
 $RUN echo "Installing global Golang version"
 $RUN eval "$(goenv init -)"
