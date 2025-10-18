@@ -11,11 +11,11 @@ repos:
       - id: prettier
         stages: [commit]
   - repo: https://github.com/alessandrojcm/commitlint-pre-commit-hook
-    rev: v9.9.0
+    rev: v9.22.0
     hooks:
       - id: commitlint
         stages: [commit-msg]
-        additional_dependencies: ["@open-turo/commitlint-config-conventional"]
+        additional_dependencies: ["@commitlint/config-conventional"]
   - repo: https://github.com/rhysd/actionlint
     rev: v1.6.17
     hooks:
