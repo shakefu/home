@@ -6,4 +6,5 @@
 command -v prek >/dev/null 2>&1 || exit 0
 
 # Run commit-msg hooks via prek
-exec prek run --hook-stage commit-msg
+# $1 is the path to the commit message file
+exec prek run --hook-stage commit-msg --commit-msg-filename "$1"
