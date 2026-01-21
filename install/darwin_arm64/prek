@@ -1,0 +1,2 @@
+#!/bin/dash -e
+$RUN brew "$( { [ -z "$UPGRADE" ] && echo "install"; } || echo "upgrade" )" "$NAME"
