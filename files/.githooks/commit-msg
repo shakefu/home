@@ -1,21 +1,9 @@
-#!/usr/bin/env bash
-# Pre-commit commit-msg hook
+#!/bin/sh
+# Global commit-msg hook using prek
+# https://github.com/j178/prek
 
-INSTALL_PYTHON="$(which python3)"
-# ARGS=(hook-impl --config=.pre-commit-config.yaml --hook-type=commit-msg)
+# Exit quietly if prek isn't installed
+command -v prek >/dev/null 2>&1 || exit 0
 
-FILENAME="$1"
-shift
-ARGS=(run --config=.pre-commit-config.yaml --hook-stage=commit-msg --commit-msg-filename="$FILENAME" -- "$@")
-
-# HERE="$(cd "$(dirname "$0")" && pwd)"
-# ARGS+=(--hook-dir "$HERE" -- "$@")
-
-if [ -x "$INSTALL_PYTHON" ]; then
-    exec "$INSTALL_PYTHON" -mpre_commit "${ARGS[@]}"
-elif command -v pre-commit > /dev/null; then
-    exec pre-commit "${ARGS[@]}"
-else
-    echo '`pre-commit` not found.  Did you forget to activate your virtualenv?' 1>&2
-    exit 1
-fi
+# Run commit-msg hooks via prek
+exec prek run --hook-stage commit-msg
