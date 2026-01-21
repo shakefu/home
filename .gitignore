@@ -9,3 +9,6 @@ build/
 .codanna
 .codannaignore
 .fastembed_cache
+
+# Built binary
+home
