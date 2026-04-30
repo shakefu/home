@@ -4,7 +4,7 @@
 [core]
     # editor = code --wait
     editor = cursor --wait
-    hooksPath = ~/.githooks
+    # hooksPath = ~/.githooks
     pager = delta
 [advice]
     detachedHead = false
