@@ -204,6 +204,7 @@ _paths+=( "$(brew --prefix gawk 2>/dev/null || echo "")/libexec/gnubin" )
 _paths+=(
     "/usr/local/go/bin"
     "$HOME/go/bin"
+    "$HOME/.cargo/bin"
     "$HOME/.pyenv/bin"
     "$HOME/.nodenv/bin"
     "$HOME/.goenv/shims"
@@ -353,7 +354,7 @@ function ll {
         --modified
         --header
         --icons
-        --git-ignore
+        # --git-ignore
     )
     local list_home
     local level
@@ -662,7 +663,7 @@ function gr {
         args="."
     fi
     [[ -z "$DEBUG" ]] || echo "args: $args"
-    grep -nR --exclude-dir='node_modules' --exclude-dir='.git' \
+    grep -nRE --exclude-dir='node_modules' --exclude-dir='.git' \
         --exclude-dir='build' --exclude-dir='bower_components' \
         --exclude-dir='coverage' --exclude-dir='.nyc_output' \
         --exclude-dir='.terraform' --exclude-dir='.eggs' \
@@ -671,6 +672,8 @@ function gr {
         --exclude='terraform.tfstate*' --exclude='*.min.*' \
         --exclude='*.js.map' --exclude='*.css.map' \
         --exclude='yarn.lock' --exclude='*.log' \
+        --exclude-dir '.next' --exclude-dir '__generated__' \
+        --exclude-dir '.codanna' --exclude-dir '.fastembed_cache' \
         "$pattern" $args
 }
 
@@ -764,3 +767,4 @@ case ":$PATH:" in
   *) export PATH="$PNPM_HOME:$PATH" ;;
 esac
 # pnpm end
+
