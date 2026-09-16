@@ -21,7 +21,7 @@ import (
 	"github.com/mattn/go-isatty"
 )
 
-const shell = "dash"
+const shell = "bash"
 
 //go:embed VERSION
 //go:embed install
@@ -121,8 +121,8 @@ The subcommands are:
 	golog.Debugf("args = %+v", args)
 
 	// Sanity check so scripts can run
-	if !commandExists("dash") {
-		golog.Fatal("Error: Missing 'dash' shell")
+	if !commandExists("bash") {
+		golog.Fatal("Error: Missing 'bash' shell")
 	}
 
 	cmd := args.Command
