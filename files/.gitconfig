@@ -3,7 +3,8 @@
     email = shakefu@gmail.com
 [core]
     # editor = code --wait
-    editor = cursor --wait
+    # editor = cursor --wait
+    editor = vim
     # hooksPath = ~/.githooks
     pager = delta
 [advice]
@@ -14,10 +15,11 @@
     default = simple
 [merge]
     # tool = code
-    tool = cursor
+    # tool = cursor
+    tool = vimdiff3
 [diff]
     colorMoved = default
-    tool = diff
+    tool = vimdiff
 [pager]
     diff = delta
     log = delta
