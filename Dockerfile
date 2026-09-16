@@ -27,6 +27,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update -yqq && \
     apt-get install -yqq --no-install-recommends \
         apt-transport-https \
+        bash \
         curl \
         git \
         gpg \
