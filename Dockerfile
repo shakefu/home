@@ -11,9 +11,9 @@ RUN mkdir -p /build && \
     cp home /build/home
 
 # Default Dockerfile for Go development containers.
-# This is based on debian:bullseye-slim and installs the latest Go release.
+# This is based on mcr.microsoft.com/devcontainers/base:bookworm.
 # TODO: This is incompatible with a multi-arch build
-FROM mcr.microsoft.com/devcontainers/base:bullseye AS base
+FROM mcr.microsoft.com/devcontainers/base:bookworm AS base
 
 ARG USER=vscode
 
