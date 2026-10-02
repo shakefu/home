@@ -209,6 +209,9 @@ _paths+=(
     "$HOME/.nodenv/bin"
     "$HOME/.goenv/shims"
     "$HOME/.goenv/bin"
+    "$HOME/.bun/bin"
+    "$HOME/.ghcup/bin"
+    "$HOME/.cabal/bin"
     "$HOME/.local/bin"
     "$HOME/.bin"
 )
@@ -719,6 +722,14 @@ functions -c ls exa_ls
 unfunction ls
 
 function ls {
+    # TODO(shakefu): This just ignores anything that has an argument... which
+    # AI tends to do.
+    if [ -n "$1" ]; then
+        /bin/ls "$@"
+        return $?
+    fi
+
+    # These don't do anything now because of the short circuit above
     if [ "$1" = "-la" ]; then
         /bin/ls "$@"
         return $?
@@ -730,6 +741,41 @@ function ls {
     exa_ls "$@"
 }
 
+
+function claude {
+    local prompt
+    prompt="$(cat $HOME/.claude/system_prompt.txt)"
+    local args
+    args=(
+        --prompt-suggestions "off"
+        --dangerously-skip-permissions
+        --system-prompt "$prompt"
+        # --settings '{"ultracode": true}'
+        )
+
+    # if [[ "$1" == "--" ]]; then
+    #     shift
+    # else
+    #     args+=(
+    #         --worktree
+    #     )
+    # fi
+
+    "$HOME/.local/bin/claude" "${args[@]}" "$@"
+}
+
+function checkout {
+    if [[ "$1" == "rm" ]]; then
+        shift
+
+        local args="${@:-.}"
+        wt remove -D "$@"
+
+        return $?
+    fi
+
+    wt switch -x 'prek install' -c "$@"
+}
 
 
 ###########################################
@@ -747,6 +793,9 @@ fi
 # Load in the profile baybee
 [[ ! -f ~/.profile ]] || source ~/.profile
 
+# Load worktree
+if command -v wt >/dev/null 2>&1; then eval "$(command wt config shell init zsh)"; fi
+
 # Load goenv
 if command -v goenv &>/dev/null; then eval "$(goenv init - )"; fi
 
@@ -761,7 +810,7 @@ if command -v nodenv &>/dev/null; then eval "$(nodenv init - )"; fi
 # export TFENV_AUTO_INSTALL=true
 
 # pnpm
-export PNPM_HOME="/Users/shakefu/Library/pnpm"
+export PNPM_HOME="$HOME/Library/pnpm"
 case ":$PATH:" in
   *":$PNPM_HOME:"*) ;;
   *) export PATH="$PNPM_HOME:$PATH" ;;
