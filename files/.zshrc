@@ -207,8 +207,6 @@ _paths+=(
     "$HOME/.cargo/bin"
     "$HOME/.pyenv/bin"
     "$HOME/.nodenv/bin"
-    "$HOME/.goenv/shims"
-    "$HOME/.goenv/bin"
     "$HOME/.bun/bin"
     "$HOME/.ghcup/bin"
     "$HOME/.cabal/bin"
@@ -795,9 +793,6 @@ fi
 
 # Load worktree
 if command -v wt >/dev/null 2>&1; then eval "$(command wt config shell init zsh)"; fi
-
-# Load goenv
-if command -v goenv &>/dev/null; then eval "$(goenv init - )"; fi
 
 # Load pyenv
 if command -v pyenv &>/dev/null; then eval "$(pyenv init - )"; fi
